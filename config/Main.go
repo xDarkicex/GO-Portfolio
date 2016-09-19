@@ -1,11 +1,8 @@
 package main
-  import(
 
-  )
-  func init(){
-
-  }
-  func main(){
-
+func init() {
+	routes()
+}
+func main() {
 
 }
