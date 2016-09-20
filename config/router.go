@@ -1,10 +1,13 @@
 package config
 
 import (
-	"github.com/julienschmidt/httprouter"
+	"net/http"
 
+	"github.com/julienschmidt/httprouter"
+	"github.com/xDarkicex/PortfolioGo/app/controllers/about"
 	"github.com/xDarkicex/PortfolioGo/app/controllers/application"
 	"github.com/xDarkicex/PortfolioGo/app/controllers/example"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
 // func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -17,6 +20,9 @@ func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
 	router.GET("/", application.Index)
 	router.GET("/example", example.Index)
+	router.GET("/about_me", about.Index)
+	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
+	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	// router.GET("/hello/:name", Hello)
 	return router
 }

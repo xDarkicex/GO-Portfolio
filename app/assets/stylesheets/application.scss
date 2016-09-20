@@ -1,0 +1,27 @@
+* { margin:0; padding: 0; box-sizing: border-box;}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    main{
+        padding-top: 50px;
+        flex-grow: 1;
+        .jumbotron{
+            min-height: 95vh;
+            background: #F44336;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+        }
+    }
+    .well{
+    margin-bottom: 0!important;
+        }
+}
+button{
+    > i{
+        color: white;
+    }
+}

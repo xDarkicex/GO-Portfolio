@@ -4,11 +4,58 @@ html(lang="en")
     block title
       title My Application
     block extra-header
+    link(rel='stylesheet',type="text/css",href='/assets/stylesheets/application.css')
+    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css')
+    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
+    script(src='https://code.jquery.com/jquery-3.1.0.min.js', integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=", crossorigin="anonymous")
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
+    script(src='/static/assets/javascripts/page-accelerator.min.js')
+    script(src='/static/assets/javascripts/application.js')
+    
   body
     header
-      p Header
+      nav.navbar.navbar-default.navbar-fixed-top
+        div.container-fluid
+          div.navbar-header
+            a.navbar-brand(href="/") Gentry Rolofson
+            button.btn.btn-default.navbar-toggle.collapsed(data-toggle='collapse')
+              i.fa.fa-bars.fa-fw
+          ul#nav-content.nav.navbar-nav.navbar-right.collapse.navbar-collapse
+            li
+              a(href="#") Examples
+            li
+              a(href="/about_me") About Me
+            li
+              a(href="#") Blog
+      //- p Header
     main 
       block main
         p Your view is empty
-    footer
-      p Footer
+    footer.well
+      div.row
+        div.col-sm-6
+          div.col-xs-6
+            h4 Resources
+            ul.list-unstyled
+              li
+                a(href="#") Privacy Policy
+              li
+                a(href="#") Terms & Conditions
+        div.col-sm-6
+          div.col-xs-6
+            h4 Social Media
+            ul.list-unstyled
+              li
+                a(href="https://www.facebook.com/gentry.miller.1") Facebook
+              li
+                a(href="https://twitter.com/xDarkicex") Twitter
+              li 
+                a(href="https://www.linkedin.com/in/gentry-rolofson-b0752032") Linkedin
+              li
+                a(href="https://github.com/xDarkicex") Github
+              li
+                a(href="https://www.flickr.com/photos/129128612@N03/") Flickr
+              
+      div.row
+        p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)

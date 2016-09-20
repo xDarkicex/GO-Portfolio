@@ -1,5 +1,8 @@
 package config
 
+// Version number
+var Version = "1.0.0"
+
 // Port is the hole we should use.
 var Port = 3000
 
