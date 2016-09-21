@@ -34,7 +34,7 @@ func Create(email string, name string, password string) bool {
 		Name:     name,
 		Password: string(hashedPass),
 	}
-	c := Session.DB(config.ENV).C("user")
+	c := config.Session.DB(config.ENV).C("user")
 	// Insert Datas
 	err = c.Insert(user)
 

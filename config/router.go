@@ -7,6 +7,7 @@ import (
 	"github.com/xDarkicex/PortfolioGo/app/controllers/about"
 	"github.com/xDarkicex/PortfolioGo/app/controllers/application"
 	"github.com/xDarkicex/PortfolioGo/app/controllers/example"
+	"github.com/xDarkicex/PortfolioGo/app/controllers/users"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
@@ -21,6 +22,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/", application.Index)
 	router.GET("/example", example.Index)
 	router.GET("/about_me", about.Index)
+	router.POST("/register", users.Create)
 	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
 	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))

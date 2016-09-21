@@ -14,3 +14,8 @@ block main
             P console.log("Styled by: SCSS");
             p console.log("Developed by: Gentry Rolofson");
             p console.log("Don't let your dreams be memes");
+        form(method="POST", action="Create", id="registration")
+            input(id="Email",name="Email", type="email", placeholder="Enter your email")
+            input(id="Name", name="Name" placeholder="Enter your Name" autocomplete="off")
+            input(id="Password", name="Password", type="password", placeholder="Create your password")
+            input(id="Password2", name="password2", type="password", placeholder="Retype your password")
