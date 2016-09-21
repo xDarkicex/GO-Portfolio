@@ -22,6 +22,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/example", example.Index)
 	router.GET("/about_me", about.Index)
 	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
+	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	// router.GET("/hello/:name", Hello)
 	return router

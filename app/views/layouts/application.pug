@@ -10,15 +10,15 @@ html(lang="en")
     link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
     script(src='https://code.jquery.com/jquery-3.1.0.min.js', integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=", crossorigin="anonymous")
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
-    script(src='/static/assets/javascripts/page-accelerator.min.js')
-    script(src='/static/assets/javascripts/application.js')
+    //- script(src='/static/assets/javascripts/page-accelerator.min.js')
+    script(src='/assets/javascripts/application.js')
     
   body
     header
       nav.navbar.navbar-default.navbar-fixed-top
         div.container-fluid
           div.navbar-header
-            a.navbar-brand(href="/") Gentry Rolofson
+            a.navbar-brand(href="/")
             button.btn.btn-default.navbar-toggle.collapsed(data-toggle='collapse')
               i.fa.fa-bars.fa-fw
           ul#nav-content.nav.navbar-nav.navbar-right.collapse.navbar-collapse

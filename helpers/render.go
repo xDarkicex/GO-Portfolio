@@ -20,6 +20,19 @@ func Render(w http.ResponseWriter, view string) {
 	}
 }
 
+// RenderKobraScript command to render kobrascript too javascript
+func RenderKobraScript(w http.ResponseWriter, view string) {
+	compiled, err := exec.Command(
+		"kobrac",
+		fmt.Sprintf("app/assets/kobrascripts/%s.ks", view)).Output()
+	if err != nil {
+		fmt.Fprintf(w, "KobraScript %s Error: %s\n", view, err)
+	} else {
+		w.Header().Set("Content-Type", "application/javascript;")
+		fmt.Fprintf(w, "%s", compiled)
+	}
+}
+
 // RenderScss for scss Render command for scss
 //sass --scss -C --sourcemap=none --style=compressed app/assets/stylesheets/application.scss
 func RenderScss(w http.ResponseWriter, view string) {
@@ -47,5 +60,16 @@ func HandleScssRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		fmt.Fprintf(w, "505 Asset Error: %s\n", err)
 	} else {
 		RenderScss(w, sheet)
+	}
+}
+
+//HandleKobraRequest Dicks
+func HandleKobraRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	exp, err := regexp.CompilePOSIX("\\.js$")
+	sheet := exp.ReplaceAllString(ps.ByName("sheet"), "")
+	if err != nil {
+		fmt.Fprintf(w, "505 Asset Error: %s\n", err)
+	} else {
+		RenderKobraScript(w, sheet)
 	}
 }
