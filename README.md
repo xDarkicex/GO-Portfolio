@@ -1,5 +1,8 @@
 #README GO-Portfolio
 
-This Site will make use of Pugjs as the template engine, Go lang for backend server, mongoDB for datebase, bootstrap for front end.
-
-Webpack will be used for pug and sass compilations.
+##dependencies 
+- [ x ] Go-lang https://golang.org/
+- [ x ] Pugjs https://github.com/pugjs
+- [ x ] SCSS http://sass-lang.com/
+- [ x ] KobraScript https://github.com/AuthorOfTheSurf/KobraScript
+- [ x ] mgo https://labix.org/mgo
