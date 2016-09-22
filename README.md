@@ -1,5 +1,5 @@
 #README GO-Portfolio
-----
+
 
 ##dependencies 
 - [x] Go-lang https://golang.org/
@@ -8,6 +8,7 @@
 - [x] KobraScript https://github.com/AuthorOfTheSurf/KobraScript
 - [x] mgo https://labix.org/mgo
 - [x] bash (pug.js)
+
 ----
 
 ##TODOS
