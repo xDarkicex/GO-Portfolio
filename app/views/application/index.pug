@@ -15,6 +15,7 @@ block main
             P console.log("Styled by: SCSS");
             p console.log("Developed by: Gentry Rolofson");
             p console.log("Don't let your dreams be memes");
+            p {{.Name}}
         form(method="POST", action="/register", id="registration")
             input(id="email",name="email", type="email", placeholder="Enter your email")
             input(id="name", name="name" placeholder="Enter your Name" autocomplete="off")
