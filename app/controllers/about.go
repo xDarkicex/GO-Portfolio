@@ -1,4 +1,4 @@
-package about
+package controllers
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
-// Index is our index action.
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+// AboutIndex is our index action.
+func AboutIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	helpers.Render(w, "about/index")
 }

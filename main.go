@@ -5,23 +5,23 @@ import (
 	"log"
 	"net/http"
 
-	"gopkg.in/mgo.v2"
+	mgo "gopkg.in/mgo.v2"
 
 	"github.com/julienschmidt/httprouter"
 
 	"github.com/xDarkicex/PortfolioGo/config"
+	"github.com/xDarkicex/PortfolioGo/config/router"
+	"github.com/xDarkicex/PortfolioGo/db"
 )
 
 var routes *httprouter.Router
-var session *mgo.Session
 
-//Session is a session to DB
+var session *mgo.Session
 
 func init() {
 	fmt.Println("Getting routes")
-	routes = config.GetRoutes()
-	session := config.Dial()
-
+	routes = router.GetRoutes()
+	session := db.Dial()
 	session.SetMode(mgo.Monotonic, true)
 }
 

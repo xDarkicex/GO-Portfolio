@@ -1,13 +1,10 @@
-package config
+package router
 
 import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/xDarkicex/PortfolioGo/app/controllers/about"
-	"github.com/xDarkicex/PortfolioGo/app/controllers/application"
-	"github.com/xDarkicex/PortfolioGo/app/controllers/example"
-	"github.com/xDarkicex/PortfolioGo/app/controllers/users"
+	"github.com/xDarkicex/PortfolioGo/app/controllers"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
@@ -19,10 +16,10 @@ import (
 // public Router getRoutes() { Router router = new httprouter.Router(); return router; }
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
-	router.GET("/", application.Index)
-	router.GET("/example", example.Index)
-	router.GET("/about_me", about.Index)
-	router.POST("/register", users.Create)
+	router.GET("/", controllers.ApplicationIndex)
+	router.GET("/example", controllers.ExampleIndex)
+	router.GET("/about_me", controllers.AboutIndex)
+	router.POST("/register", controllers.UserCreate)
 	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
 	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))

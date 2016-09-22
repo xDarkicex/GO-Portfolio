@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// Render renders views
+// Render renders views blaim pug
 func Render(w http.ResponseWriter, view string) {
 	compiled, err := exec.Command("bash", "render.sh", view).Output()
 	if err != nil {
