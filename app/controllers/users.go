@@ -11,8 +11,12 @@ import (
 // UserCreate a new user
 func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	// ctx := appengine.NewContext(req)#
+	fmt.Println("Username")
+	fmt.Println(req.FormValue("name"))
 	fmt.Println("Email")
 	fmt.Println(req.FormValue("email"))
+	fmt.Println("Password")
+	fmt.Println(req.FormValue("hashedPass"))
 	worked := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
 	if worked {
 		fmt.Fprintln(res, "User Created.")

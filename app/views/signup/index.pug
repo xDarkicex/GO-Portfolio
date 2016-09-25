@@ -1,0 +1,22 @@
+extends ../layouts/application.pug
+block main
+    br
+    div.container-fluid
+        div.row
+            div.container.col-xs-6
+                form(method="POST", action="/register", id="registration")
+                    div.form-group
+                        label(for="name") Username
+                        input.form-control(id="name", name="name" placeholder="Enter your Name" autocomplete="off")
+                        br
+                        label(for="email") Email address
+                        input.form-control(id="email", name="email", type="email", placeholder="Enter your email")
+                        small(id="emailHelp", class="form-text text-muted") We'll never share your email with anyone else.
+                        br
+                        label(for="password") Password
+                        input.form-control(id="password", name="password", type="password", placeholder="Create your password")
+                        //- input(id="Password2", name="password2", type="password", placeholder="Retype your password")
+                        br
+                        input.btn.btn-primary(type="submit") 
+
+                        a.btn.btn-primary.space(type="button", href="/login") login

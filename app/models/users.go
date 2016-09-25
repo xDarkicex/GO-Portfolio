@@ -3,6 +3,8 @@ package models
 import (
 	// "github.com/xDarkicex/Portfolienfig"
 
+	"fmt"
+
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"golang.org/x/crypto/bcrypt"
@@ -20,9 +22,9 @@ type Address struct {
 //User Struct
 type User struct {
 	ID       bson.ObjectId `bson:"_id,omitempty"`
-	Name     string
-	Email    string
-	Password string
+	Name     string        `bson:"name"`
+	Email    string        `bson:"email"`
+	Password string        `bson:"password"`
 	// Address  Address
 }
 
@@ -30,19 +32,23 @@ type User struct {
 func CreateUser(email string, name string, password string) bool {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		fmt.Println("create user failed")
 		return false
+
 	}
-	c := db.Session.DB(config.ENV).C("user")
+	fmt.Println("Success")
+	c := db.Session.DB(config.ENV).C("User")
 	// Insert Datas
 	err = c.Insert(&User{
+
 		Email:    email,
 		Name:     name,
 		Password: string(hashedPass),
 	})
 
-	if err != nil {
-		panic(err)
-	}
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	return true
 }

@@ -11,3 +11,4 @@ jQuery(fn ():
     say (project.lang +" "+ project.version)
     say ("Developed by: " + project.name)
 end)
+

@@ -19,6 +19,8 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/", controllers.ApplicationIndex)
 	router.GET("/example", controllers.ExampleIndex)
 	router.GET("/about_me", controllers.AboutIndex)
+	router.GET("/login", controllers.LoginIndex)
+	router.GET("/signup", controllers.SignupIndex)
 	router.POST("/register", controllers.UserCreate)
 	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
 	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
