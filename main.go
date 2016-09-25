@@ -21,8 +21,9 @@ var session *mgo.Session
 func init() {
 	fmt.Println("Getting routes")
 	routes = router.GetRoutes()
-	session := db.Dial()
-	session.SetMode(mgo.Monotonic, true)
+	db.Dial()
+	//session := db.Dial()
+	//session.SetMode(mgo.Monotonic, true)
 }
 
 func main() {
