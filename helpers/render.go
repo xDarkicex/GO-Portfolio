@@ -2,21 +2,27 @@ package helpers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os/exec"
 	"regexp"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/xDarkicex/PortfolioGo/config"
 )
 
-// Render renders views blaim pug
+// Render renders views blaim pug Not Secure
 func Render(w http.ResponseWriter, view string) {
-	compiled, err := exec.Command("bash", "render.sh", view).Output()
-	if err != nil {
-		fmt.Fprintf(w, "Error: %s\n", err)
+	if config.ENV == "development" {
+		compiled, err := exec.Command("bash", "render.sh", view).Output()
+		if err != nil {
+			fmt.Fprintf(w, "Error: %s\n", err)
+		} else {
+			fmt.Fprintf(w, "%s", compiled)
+			fmt.Println(view)
+		}
 	} else {
-		fmt.Fprintf(w, "%s", compiled)
-		fmt.Println(view)
+		ioutil.ReadFile(view)
 	}
 }
 

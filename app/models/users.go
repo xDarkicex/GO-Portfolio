@@ -3,6 +3,7 @@ package models
 import (
 	// "github.com/xDarkicex/Portfolienfig"
 
+	"errors"
 	"fmt"
 
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -37,7 +38,9 @@ func CreateUser(email string, name string, password string) bool {
 
 	}
 	fmt.Println("Success")
-	c := db.Session.DB(config.ENV).C("User")
+	s := db.Session()
+	defer s.Close()
+	c := s.DB(config.ENV).C("User")
 	// Insert Datas
 	err = c.Insert(&User{
 
@@ -45,10 +48,21 @@ func CreateUser(email string, name string, password string) bool {
 		Name:     name,
 		Password: string(hashedPass),
 	})
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	return true
+}
+
+func GetUser(name, password string) (user User, err error) {
+	fmt.Println(name)
+	fmt.Println(password)
+	s := db.Session()
+	defer s.Close()
+	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
+	if err != nil {
+		return
+	}
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err == nil {
+		return
+	} else {
+		return user, errors.New("Here is no user with this name/password combination")
+	}
 }

@@ -22,6 +22,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/login", controllers.LoginIndex)
 	router.GET("/signup", controllers.SignupIndex)
 	router.POST("/register", controllers.UserCreate)
+	router.POST("/auth", controllers.UserAuth)
 	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
 	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
