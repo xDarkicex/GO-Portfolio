@@ -16,12 +16,11 @@ func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params)
 	fmt.Println(req.FormValue("email"))
 	fmt.Println("Password")
 	fmt.Println(req.FormValue("password"))
-	worked := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
-	if worked {
-		fmt.Fprintln(res, "User Created.")
-	} else {
-		fmt.Fprintln(res, "Error creating user.")
-	} // createSession(res, req, user)
+	success, _ := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
+	// fmt.Fprintln(res, message)
+	if success {
+		http.Redirect(res, req, "/", 302)
+	}
 	// redirect
 	// http.Redirect(res, req, "/", 302)
 }

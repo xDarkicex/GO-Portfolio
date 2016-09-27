@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	s "github.com/xDarkicex/GO-CLASS/lazy"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"golang.org/x/crypto/bcrypt"
@@ -30,39 +31,47 @@ type User struct {
 }
 
 // CreateUser create a new user in the database
-func CreateUser(email string, name string, password string) bool {
+func CreateUser(email string, name string, password string) (bool, string) {
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("create user failed")
-		return false
-
+		fmt.Println("Hashing Password incomplete")
+		return false, "Encryption Failure"
 	}
 	fmt.Println("Success")
-	s := db.Session()
-	defer s.Close()
-	c := s.DB(config.ENV).C("User")
+	session := db.Session()
+	defer session.Close()
+	c := session.DB(config.ENV).C("User")
+	amount, _ := c.Find(bson.M{"name": name}).Count()
+	if amount > 0 {
+		return false, "Username already exists."
+	}
 	// Insert Datas
 	err = c.Insert(&User{
-
 		Email:    email,
 		Name:     name,
 		Password: string(hashedPass),
 	})
-	return true
+	if err != nil {
+		s.Say("Can not Insert User")
+		return false, "Can't tell if in yet"
+	}
+	return true, "User created"
 }
 
-func GetUser(name, password string) (user User, err error) {
+// GetUser for things
+func GetUser(name string, password string) (user User, err error) {
 	fmt.Println(name)
 	fmt.Println(password)
 	s := db.Session()
 	defer s.Close()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
 	if err != nil {
-		return
-	}
-	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err == nil {
-		return
-	} else {
 		return user, errors.New("Here is no user with this name/password combination")
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return user, errors.New("Here is no user with this name/password combination")
+	} else {
+		return user, nil
 	}
 }

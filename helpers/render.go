@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"github.com/julienschmidt/httprouter"
+	s "github.com/xDarkicex/GO-CLASS/lazy"
 	"github.com/xDarkicex/PortfolioGo/config"
 )
 
@@ -22,6 +23,7 @@ func Render(w http.ResponseWriter, view string) {
 			fmt.Println(view)
 		}
 	} else {
+		s.Say("I think this is it")
 		ioutil.ReadFile(view)
 	}
 }
@@ -69,7 +71,7 @@ func HandleScssRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 }
 
-//HandleKobraRequest Dicks
+//HandleKobraRequest For Kobrascript Kobrac
 func HandleKobraRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	exp, err := regexp.CompilePOSIX("\\.js$")
 	sheet := exp.ReplaceAllString(ps.ByName("sheet"), "")

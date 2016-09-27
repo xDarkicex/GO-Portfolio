@@ -10,4 +10,4 @@ var Port = 3000
 var Host = "0.0.0.0"
 
 //ENV is the enviroment for database
-var ENV = "develoment"
+var ENV = "development"

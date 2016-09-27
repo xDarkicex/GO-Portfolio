@@ -8,13 +8,15 @@
 - [x] SCSS http://sass-lang.com/
 - [x] KobraScript https://github.com/AuthorOfTheSurf/KobraScript
 - [x] mgo https://labix.org/mgo
+- [x] mongoDB https://www.mongodb.com/
 - [x] bash (pug.js)
 
 ----
 
 ##TODOS
-- [ ] Get Mongo DB working/may switch too rethinkDB 
+- [x] Get Mongo DB working
 - [ ] Find pure go way to server pug.js without bash.
+- [ ] Check this later: https://godoc.org/github.com/badgerodon/stack/storage
 - [ ] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
 - [ ] Authentication Options
     - 1 Gomniauth https://github.com/stretchr/gomniauth
