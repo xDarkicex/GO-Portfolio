@@ -6,10 +6,23 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
-// UserCreate a new user
-func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+// UserIndex for indexing all users
+func UserIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	users, err := models.AllUsers()
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+	// fmt.Printf("Users %s", users)
+	helpers.RenderDynamic(res, "users/index", map[string]interface{}{
+		"users": users,
+	})
+}
+
+// UserNew a new user
+func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	fmt.Println("Username")
 	fmt.Println(req.FormValue("name"))
 	fmt.Println("Email")
@@ -19,16 +32,25 @@ func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params)
 	success, _ := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
 	// fmt.Fprintln(res, message)
 	if success {
+		user, err := models.Login(req.FormValue("name"), req.FormValue("password"))
+		if err != nil {
+			panic(err)
+		} else {
+			SessionsSignIn(user, res)
+		}
 		http.Redirect(res, req, "/", 302)
 	}
-	// redirect
-	// http.Redirect(res, req, "/", 302)
 }
 
-func UserAuth(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	user, err := models.GetUser(req.FormValue("name"), req.FormValue("password"))
+//UserShow Show page for users
+func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	user, err := models.FindUserByName(params.ByName("name"))
+	// user, err := models.Login(req.FormValue("name"), req.FormValue("password"))
 	if err != nil {
-		panic(err)
+		http.Redirect(res, req, "/404", 404)
+	} else {
+		helpers.RenderDynamic(res, "users/show", map[string]interface{}{
+			"user": user,
+		})
 	}
-	fmt.Println(user.Email)
 }

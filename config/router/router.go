@@ -5,7 +5,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/controllers"
-	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
 // func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -16,16 +15,23 @@ import (
 // public Router getRoutes() { Router router = new httprouter.Router(); return router; }
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
+	// Pages and shit
 	router.GET("/", controllers.ApplicationIndex)
-	router.GET("/example", controllers.ExampleIndex)
-	router.GET("/about_me", controllers.AboutIndex)
-	router.GET("/login", controllers.LoginIndex)
-	router.GET("/signup", controllers.SignupIndex)
-	router.POST("/register", controllers.UserCreate)
-	router.POST("/auth", controllers.UserAuth)
-	router.GET("/assets/stylesheets/*sheet", helpers.HandleScssRequest)
-	router.GET("/assets/javascripts/*sheet", helpers.HandleKobraRequest)
+	router.GET("/example", controllers.ApplicationExamples)
+	router.GET("/about", controllers.ApplicationAbout)
+
+	// Users
+	router.GET("/users", controllers.UserIndex)
+	router.GET("/users/:name", controllers.UserShow)
+	router.POST("/register", controllers.UserNew)
+	// Session Management
+	router.GET("/signin", controllers.SessionNew)
+	router.POST("/signin", controllers.SessionCreate)
+	router.GET("/signout", controllers.SessionDestroy)
+
+	// Blog routes
+	// router.Get("/blog")
+
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
-	// router.GET("/hello/:name", Hello)
 	return router
 }

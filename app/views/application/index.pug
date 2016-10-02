@@ -1,5 +1,6 @@
 extends ../layouts/application.pug
 block main
+    //- - object = {name:"Hello World"}
     div.jumbotron
         h1.display-1
             b 
@@ -10,10 +11,10 @@ block main
         h1 Gentry Rolofson
         div.container
             P console.log("Backend Powered by: Go version 1.7");
-            p console.log("Javascript Preprocessor: kobraScript");
+            p console.log("Javascript Preprocessor: TypeScript");
             p console.log("Frontend by: Bootstrap");
             P console.log("Templated by: Pug.Js");
             P console.log("Styled by: SCSS");
             p console.log("Developed by: Gentry Rolofson");
             p console.log("Don't let your dreams be memes");
-            p {{.Name}}
+            //- p= object.name

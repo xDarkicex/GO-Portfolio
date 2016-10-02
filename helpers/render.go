@@ -1,14 +1,13 @@
 package helpers
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os/exec"
-	"regexp"
 
-	"github.com/julienschmidt/httprouter"
-	s "github.com/xDarkicex/GO-CLASS/lazy"
 	"github.com/xDarkicex/PortfolioGo/config"
 )
 
@@ -23,61 +22,24 @@ func Render(w http.ResponseWriter, view string) {
 			fmt.Println(view)
 		}
 	} else {
-		s.Say("I think this is it")
 		ioutil.ReadFile(view)
 	}
 }
 
-// RenderKobraScript command to render kobrascript too javascript
-func RenderKobraScript(w http.ResponseWriter, view string) {
-	compiled, err := exec.Command(
-		"kobrac",
-		fmt.Sprintf("app/assets/kobrascripts/%s.ks", view)).Output()
-	if err != nil {
-		fmt.Fprintf(w, "KobraScript %s Error: %s\n", view, err)
+//RenderDynamic Dicks
+func RenderDynamic(w http.ResponseWriter, view string, object interface{}) {
+	if config.ENV == "development" {
+		// Turn object into a json
+		buf := new(bytes.Buffer)
+		json.NewEncoder(buf).Encode(object)
+		compiled, err := exec.Command("bash", "render.sh", view, buf.String()).Output()
+		if err != nil {
+			fmt.Fprintf(w, "Error: %s\n%s", err, compiled)
+		} else {
+			fmt.Fprintf(w, "%s", compiled)
+			fmt.Println(view)
+		}
 	} else {
-		w.Header().Set("Content-Type", "application/javascript;")
-		fmt.Fprintf(w, "%s", compiled)
-	}
-}
-
-// RenderScss for scss Render command for scss
-//sass --scss -C --sourcemap=none --style=compressed app/assets/stylesheets/application.scss
-func RenderScss(w http.ResponseWriter, view string) {
-	compiled, err := exec.Command(
-		"sass",
-		"--scss",
-		"-C",
-		"--sourcemap=none",
-		"--style=compressed",
-		fmt.Sprintf("app/assets/stylesheets/%s.scss", view)).Output()
-	if err != nil {
-		fmt.Fprintf(w, "Stylesheet %s Error: %s\n", view, err)
-	} else {
-		// set server document type to css !important
-		w.Header().Set("Content-Type", "text/css;")
-		fmt.Fprintf(w, "%s", compiled)
-	}
-}
-
-// HandleScssRequest captures scss cli output
-func HandleScssRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	exp, err := regexp.CompilePOSIX("\\.css$")
-	sheet := exp.ReplaceAllString(ps.ByName("sheet"), "")
-	if err != nil {
-		fmt.Fprintf(w, "505 Asset Error: %s\n", err)
-	} else {
-		RenderScss(w, sheet)
-	}
-}
-
-//HandleKobraRequest For Kobrascript Kobrac
-func HandleKobraRequest(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	exp, err := regexp.CompilePOSIX("\\.js$")
-	sheet := exp.ReplaceAllString(ps.ByName("sheet"), "")
-	if err != nil {
-		fmt.Fprintf(w, "505 Asset Error: %s\n", err)
-	} else {
-		RenderKobraScript(w, sheet)
+		ioutil.ReadFile(view)
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"errors"
 	"fmt"
+	"net/http"
 
 	s "github.com/xDarkicex/GO-CLASS/lazy"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -25,6 +26,7 @@ type Address struct {
 type User struct {
 	ID       bson.ObjectId `bson:"_id,omitempty"`
 	Name     string        `bson:"name"`
+	Admin    bool          `bson:"admin"`
 	Email    string        `bson:"email"`
 	Password string        `bson:"password"`
 	// Address  Address
@@ -40,8 +42,13 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	fmt.Println("Success")
 	session := db.Session()
 	defer session.Close()
+	admin := false
 	c := session.DB(config.ENV).C("User")
-	amount, _ := c.Find(bson.M{"name": name}).Count()
+	amount, _ := c.Count()
+	if amount == 0 {
+		admin = true
+	}
+	amount, _ = c.Find(bson.M{"name": name}).Count()
 	if amount > 0 {
 		return false, "Username already exists."
 	}
@@ -49,6 +56,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	err = c.Insert(&User{
 		Email:    email,
 		Name:     name,
+		Admin:    admin,
 		Password: string(hashedPass),
 	})
 	if err != nil {
@@ -58,12 +66,12 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	return true, "User created"
 }
 
-// GetUser for things
-func GetUser(name string, password string) (user User, err error) {
+// Login as a user
+func Login(name string, password string) (user User, err error) {
 	fmt.Println(name)
 	fmt.Println(password)
+	// defer s.Close()
 	s := db.Session()
-	defer s.Close()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
 	if err != nil {
 		return user, errors.New("Here is no user with this name/password combination")
@@ -71,7 +79,29 @@ func GetUser(name string, password string) (user User, err error) {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return user, errors.New("Here is no user with this name/password combination")
-	} else {
-		return user, nil
 	}
+	return user, nil
+}
+
+//FindUserByName finds a user by name
+func FindUserByName(name string) (user User, err error) {
+	err = db.Session().DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
+	return user, err
+}
+
+//AllUsers finds all the users
+func AllUsers() (users []User, err error) {
+	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&users)
+	return users, err
+}
+
+// GetUser Authenticates shit
+func GetUser(req *http.Request) (user User, err error) {
+	s := db.Session()
+	idCookie, err := req.Cookie("id")
+	if err != nil {
+		return user, err
+	}
+	err = s.DB(config.ENV).C("User").FindId(bson.ObjectIdHex(idCookie.Value)).One(&user)
+	return user, err
 }

@@ -1,0 +1,8 @@
+extends ../layouts/application.pug
+block main
+  //- - object = {name:"Hello World"}
+  div.container-fluid
+    ul
+      each user in users
+        li
+          a(href=("/users/"+user.Name))= user.Name
