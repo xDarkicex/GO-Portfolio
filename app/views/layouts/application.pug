@@ -60,14 +60,14 @@ html(lang="en")
                 a(href="https://github.com/xDarkicex") Github
               li
                 i.fa.fa-fw.fa-flickr
-                a(href="https://www.flickr.com/photos/129128612@N03/") Flickr
-              
-      div.row
-        if user == null
-          a(href='/login') Sign in
-        else
-          a(href='/logout') Sign Out
-            //- p= object.name
-        
-      div.row
-        p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)
+                a(href="https://www.flickr.com/photos/129128612@N03/") flickr
+      div  
+        div.row   
+          div.col-md-6
+            if user == null
+              a(href='/signin') Sign in
+            else
+              a(href='/signout') Sign Out
+                //- p= object.name
+          div.col-md-6
+            p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)

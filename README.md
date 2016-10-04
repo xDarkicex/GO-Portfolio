@@ -6,7 +6,8 @@
 - [x] Go-lang https://golang.org/
 - [x] Pugjs https://github.com/pugjs
 - [x] SCSS http://sass-lang.com/
-- [x] KobraScript https://github.com/AuthorOfTheSurf/KobraScript
+- [x] CKeditor http://ckeditor.com/
+- [x] Typescript https://www.typescriptlang.org/
 - [x] mgo https://labix.org/mgo
 - [x] mongoDB https://www.mongodb.com/
 - [x] bash (pug.js)
@@ -14,17 +15,14 @@
 ----
 
 ##TODOS
+- [ ] Setup Dynamic Port listening
 - [x] Get Mongo DB working
-- [ ] Find pure go way to server pug.js without bash.
 - [ ] Check this later: https://godoc.org/github.com/badgerodon/stack/storage
 - [ ] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
-- [ ] Authentication Options
-    - 1 Gomniauth https://github.com/stretchr/gomniauth
-    - 2 Go-http-auth(I like this one) https://github.com/abbot/go-http-auth
-    - 3 Httpauth(I like this one also) https://github.com/apexskier/Httpauth
-    - 4 AuthBoss(Seems bulky might be useful though) https://github.com/go-authboss/authboss
+- [x] Authentication Done manually through standard lib
 - [ ] Build image uploader https://golang.org/pkg/image/
 - [ ] Build Profile Pages template
 - [ ] Build Blog
+- [ ] Blog tags for relational lookup
 - [ ] Examples Pages
 - [ ] Contact Page

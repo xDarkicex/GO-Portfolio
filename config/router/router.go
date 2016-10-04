@@ -30,7 +30,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/signout", controllers.SessionDestroy)
 
 	// Blog routes
-	// router.Get("/blog")
+	router.GET("/blog", controllers.BlogIndex)
 
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	return router

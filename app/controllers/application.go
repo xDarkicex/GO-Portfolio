@@ -12,12 +12,12 @@ func ApplicationIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Param
 	helpers.Render(w, "application/index")
 }
 
-// ApplicationExamples is the project examples I guess
+// ApplicationExamples example pages
 func ApplicationExamples(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	helpers.Render(w, "application/examples")
 }
 
-//ApplicationAbout I guess this is the about me
+//ApplicationAbout About me Pages
 func ApplicationAbout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	helpers.Render(w, "application/about")
 }
