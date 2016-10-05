@@ -19,3 +19,9 @@ func AllBlogs() (blogs []Blog, err error) {
 	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{}).All(&blogs)
 	return blogs, err
 }
+
+// FindBlogByTitle Returns blog by Title
+func FindBlogByTitle(title string) (blog Blog, err error) {
+	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{"title": title}).One(&blog)
+	return blog, err
+}

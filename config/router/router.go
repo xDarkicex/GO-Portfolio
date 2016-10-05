@@ -15,23 +15,36 @@ import (
 // public Router getRoutes() { Router router = new httprouter.Router(); return router; }
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
-	// Pages and shit
+
+	///////////////////////////////////////////////////////////
+	// Main application routes
+	///////////////////////////////////////////////////////////
 	router.GET("/", controllers.ApplicationIndex)
 	router.GET("/example", controllers.ApplicationExamples)
 	router.GET("/about", controllers.ApplicationAbout)
+	router.GET("/404", controllers.Error404)
+	///////////////////////////////////////////////////////////
+	// users routes
+	///////////////////////////////////////////////////////////
 
-	// Users
 	router.GET("/users", controllers.UserIndex)
 	router.GET("/users/:name", controllers.UserShow)
 	router.POST("/register", controllers.UserNew)
+	///////////////////////////////////////////////////////////
 	// Session Management
+	///////////////////////////////////////////////////////////
 	router.GET("/signin", controllers.SessionNew)
 	router.POST("/signin", controllers.SessionCreate)
 	router.GET("/signout", controllers.SessionDestroy)
-
+	///////////////////////////////////////////////////////////
 	// Blog routes
+	///////////////////////////////////////////////////////////
 	router.GET("/blog", controllers.BlogIndex)
-
+	router.GET("/blog/new", controllers.BlogNew)
+	router.GET("/blog/edit/:title", controllers.BlogEdit)
+	///////////////////////////////////////////////////////////
+	// Static routes
+	///////////////////////////////////////////////////////////
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	return router
 }

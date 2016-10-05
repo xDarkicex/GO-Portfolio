@@ -20,3 +20,32 @@ func BlogIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) 
 		"title": blogs,
 	})
 }
+
+// BlogNew for new post
+func BlogNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	helpers.RenderDynamic(res, "blog/new", map[string]interface{}{})
+}
+
+// BlogEdit for edit blog Post
+func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	blog, err := models.FindBlogByTitle(params.ByName("title"))
+	if err != nil {
+		http.Redirect(res, req, "/404", 404)
+	} else {
+		helpers.RenderDynamic(res, "blog/edit", map[string]interface{}{
+			"blog": blog,
+		})
+	}
+}
+
+// BlogShow shows selected blog
+func BlogShow(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	blog, err := models.FindBlogByTitle(params.ByName("title"))
+	if err != nil {
+		http.Redirect(res, req, "/404", 404)
+	} else {
+		helpers.RenderDynamic(res, "blog/show", map[string]interface{}{
+			"blog": blog,
+		})
+	}
+}

@@ -70,6 +70,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 func Login(name string, password string) (user User, err error) {
 	fmt.Println(name)
 	fmt.Println(password)
+	// Not sure if I should close DB here?
 	// defer s.Close()
 	s := db.Session()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
@@ -95,7 +96,7 @@ func AllUsers() (users []User, err error) {
 	return users, err
 }
 
-// GetUser Authenticates shit
+// GetUser Authenticates User access
 func GetUser(req *http.Request) (user User, err error) {
 	s := db.Session()
 	idCookie, err := req.Cookie("id")

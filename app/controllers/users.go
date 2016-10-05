@@ -34,7 +34,7 @@ func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	if success {
 		user, err := models.Login(req.FormValue("name"), req.FormValue("password"))
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		} else {
 			SessionsSignIn(user, res)
 		}
@@ -45,9 +45,12 @@ func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 //UserShow Show page for users
 func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	user, err := models.FindUserByName(params.ByName("name"))
-	// user, err := models.Login(req.FormValue("name"), req.FormValue("password"))
 	if err != nil {
-		http.Redirect(res, req, "/404", 404)
+		fmt.Println("/////////////////////////")
+		defer fmt.Println("/////////////////////////")
+		fmt.Println("Error /404")
+		fmt.Println(err)
+		http.ServeFile(res, req, "404.pug")
 	} else {
 		helpers.RenderDynamic(res, "users/show", map[string]interface{}{
 			"user": user,

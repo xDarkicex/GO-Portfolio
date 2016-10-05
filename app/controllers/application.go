@@ -21,3 +21,8 @@ func ApplicationExamples(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 func ApplicationAbout(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	helpers.Render(w, "application/about")
 }
+
+// Error404 is our index action.
+func Error404(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	helpers.Render(w, "application/404")
+}
