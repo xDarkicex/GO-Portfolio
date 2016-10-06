@@ -23,12 +23,12 @@ func UserIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) 
 
 // UserNew a new user
 func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	fmt.Println("Username")
-	fmt.Println(req.FormValue("name"))
-	fmt.Println("Email")
-	fmt.Println(req.FormValue("email"))
-	fmt.Println("Password")
-	fmt.Println(req.FormValue("password"))
+	/////////////////////////////////////////////
+	// This is for testing.
+	/////////////////////////////////////////////
+	// fmt.Println(req.FormValue("name"))
+	// fmt.Println(req.FormValue("email"))
+	// fmt.Println(req.FormValue("password"))
 	success, _ := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
 	// fmt.Fprintln(res, message)
 	if success {

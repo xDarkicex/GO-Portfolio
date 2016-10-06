@@ -11,7 +11,7 @@ import (
 // 	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
 // }
 
-// GetRoutes does some shit. Here's a java example.
+// GetRoutes. Here's a java example.
 // public Router getRoutes() { Router router = new httprouter.Router(); return router; }
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
@@ -20,7 +20,7 @@ func GetRoutes() *httprouter.Router {
 	// Main application routes
 	///////////////////////////////////////////////////////////
 	router.GET("/", controllers.ApplicationIndex)
-	router.GET("/example", controllers.ApplicationExamples)
+	router.GET("/examples", controllers.ApplicationExamples)
 	router.GET("/about", controllers.ApplicationAbout)
 	router.GET("/404", controllers.Error404)
 	///////////////////////////////////////////////////////////

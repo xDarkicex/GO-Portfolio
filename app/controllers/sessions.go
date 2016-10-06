@@ -31,9 +31,7 @@ func SessionDestroy(res http.ResponseWriter, req *http.Request, _ httprouter.Par
 	http.Redirect(res, req, "/", 302)
 }
 
-// Not actually controller bits
-
-// SessionsSignIn Sign the current session in as a user
+// SessionsSignIn creates new cookie on signin
 func SessionsSignIn(user models.User, w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "id",

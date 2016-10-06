@@ -14,12 +14,16 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Address of user
+////////////////////////////////////////////////////////////
+//Address of user plan to implement at some time in future
+////////////////////////////////////////////////////////////
+
+// Address This will be for user profiles geolocation
 type Address struct {
-	Zip    string
-	State  string
-	City   string
-	Street string
+	Zip    string `bson:"zip"`
+	State  string `bson:"state"`
+	City   string `bson:"city"`
+	Street string `bson:"street"`
 }
 
 //User Struct
