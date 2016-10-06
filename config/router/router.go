@@ -41,6 +41,7 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 	router.GET("/blog", controllers.BlogIndex)
 	router.GET("/blog/new", controllers.BlogNew)
+	// router.POST("/blog/new/create", controllers.BlogCreate)
 	router.GET("/blog/edit/:title", controllers.BlogEdit)
 	///////////////////////////////////////////////////////////
 	// Static routes

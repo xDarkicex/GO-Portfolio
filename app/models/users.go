@@ -43,7 +43,6 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		fmt.Println("Hashing Password incomplete")
 		return false, "Encryption Failure"
 	}
-	fmt.Println("Success")
 	session := db.Session()
 	defer session.Close()
 	admin := false
