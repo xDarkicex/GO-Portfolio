@@ -26,3 +26,8 @@ func ApplicationAbout(w http.ResponseWriter, r *http.Request, _ httprouter.Param
 func Error404(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	helpers.Render(w, "application/404")
 }
+
+// RegisterNew Users
+func RegisterNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	helpers.Render(res, "users/new")
+}

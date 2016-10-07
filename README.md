@@ -4,6 +4,7 @@
 
 ##dependencies 
 - [x] Go-lang https://golang.org/
+- [x] JulienSchmidt HTTP Mux https://github.com/julienschmidt/httprouter
 - [x] Pugjs https://github.com/pugjs
 - [x] SCSS http://sass-lang.com/
 - [x] CKeditor http://ckeditor.com/

@@ -22,9 +22,21 @@ func BlogIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) 
 }
 
 // BlogNew for new post
-func BlogNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	helpers.RenderDynamic(res, "blog/new", map[string]interface{}{})
+func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	success, _ := models.BlogCreate(req.FormValue("title"), req.FormValue("body"))
+	if success != true {
+		http.Redirect(res, req, "/", 302)
+	}
+	blog, err := models.FindBlogByTitle(params.ByName("title"))
+	if err != nil {
+		fmt.Println("There was an error")
+	}
+	helpers.RenderDynamic(res, "users/show", map[string]interface{}{
+		"blog": blog,
+	})
 }
+
+// helpers.RenderDynamic(res, "blog/new", map[string]interface{}{})
 
 // BlogEdit for edit blog Post
 func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Params) {

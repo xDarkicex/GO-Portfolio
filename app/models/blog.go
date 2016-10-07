@@ -26,8 +26,8 @@ func FindBlogByTitle(title string) (blog Blog, err error) {
 	return blog, err
 }
 
-// CreateBlog creates a new blog post
-func CreateBlog(title string, body string) (bool, string) {
+// BlogCreate creates a new blog post
+func BlogCreate(title string, body string) (bool, string) {
 	session := db.Session()
 	defer session.Close()
 	c := session.DB(config.ENV).C("Blog")
