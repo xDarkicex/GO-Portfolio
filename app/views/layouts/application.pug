@@ -29,7 +29,7 @@ html(lang="en")
             li
               a(href="/about") About Me
             li
-              a(href="/blog") Blog
+              a(href="/blogs") Blog
       //- p Header
     main 
       block main
@@ -66,10 +66,9 @@ html(lang="en")
       div  
         div.row   
           div.col-md-6
-            if user == null
+            if UserID == null
               a(href='/signin') Sign in
             else
               a(href='/signout') Sign Out
-                //- p= object.name
           div.col-md-6
             p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)

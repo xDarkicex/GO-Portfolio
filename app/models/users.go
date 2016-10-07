@@ -5,9 +5,7 @@ import (
 
 	"errors"
 	"fmt"
-	"net/http"
 
-	s "github.com/xDarkicex/GO-CLASS/lazy"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"golang.org/x/crypto/bcrypt"
@@ -63,7 +61,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		Password: string(hashedPass),
 	})
 	if err != nil {
-		s.Say("Can not Insert User")
+		fmt.Println("Can not Insert User")
 		return false, "Can't tell if in yet"
 	}
 	return true, "User created"
@@ -71,11 +69,12 @@ func CreateUser(email string, name string, password string) (bool, string) {
 
 // Login as a user
 func Login(name string, password string) (user User, err error) {
-	fmt.Println(name)
-	fmt.Println(password)
+	// fmt.Println(name)
+	// fmt.Println(password)
 	// Not sure if I should close DB here?
 	// defer s.Close()
 	s := db.Session()
+	defer s.Close()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
 	if err != nil {
 		return user, errors.New("Here is no user with this name/password combination")
@@ -100,12 +99,12 @@ func AllUsers() (users []User, err error) {
 }
 
 // GetUser Authenticates User access
-func GetUser(req *http.Request) (user User, err error) {
-	s := db.Session()
-	idCookie, err := req.Cookie("id")
-	if err != nil {
-		return user, err
-	}
-	err = s.DB(config.ENV).C("User").FindId(bson.ObjectIdHex(idCookie.Value)).One(&user)
-	return user, err
-}
+// func GetUser(req *http.Request) (user User, err error) {
+// 	s := db.Session()
+// 	idCookie, err := req.Cookie("id")
+// 	if err != nil {
+// 		return user, err
+// 	}
+// 	err = s.DB(config.ENV).C("User").FindId(bson.ObjectIdHex(idCookie.Value)).One(&user)
+// 	return user, err
+// }

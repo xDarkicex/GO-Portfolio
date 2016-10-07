@@ -23,6 +23,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/examples", controllers.ApplicationExamples)
 	router.GET("/about", controllers.ApplicationAbout)
 	router.GET("/404", controllers.Error404)
+
 	///////////////////////////////////////////////////////////
 	// users routes
 	///////////////////////////////////////////////////////////
@@ -31,19 +32,23 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/users/:name", controllers.UserShow)
 	router.GET("/register", controllers.RegisterNew)
 	router.POST("/register", controllers.UserNew)
+
 	///////////////////////////////////////////////////////////
 	// Session Management
 	///////////////////////////////////////////////////////////
+
 	router.GET("/signin", controllers.SessionNew)
 	router.POST("/signin", controllers.SessionCreate)
 	router.GET("/signout", controllers.SessionDestroy)
+
 	///////////////////////////////////////////////////////////
 	// Blog routes
 	///////////////////////////////////////////////////////////
-	router.GET("/blog", controllers.BlogIndex)
-	router.GET("/blog/new", controllers.BlogNew)
-	// router.POST("/blog/new", controllers.BlogNew)
-	// router.GET("/blog/:blog", controllers.BlogShow)
+
+	router.GET("/blogs", controllers.BlogIndex)
+	router.GET("/blog/new/post", controllers.BlogPostNew)
+	router.POST("/blog/new/post", controllers.BlogNew)
+	router.GET("/blogs/:title", controllers.BlogShow)
 	router.GET("/blog/edit/:title", controllers.BlogEdit)
 	///////////////////////////////////////////////////////////
 	// Static routes

@@ -1,18 +1,15 @@
 script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
-form(method='???', action="???", id="??")
+form(method='post', action="???", id="blogForm")
     div.form-group
         label(for="title") Title
         input.form-control(id="title", name="title" placeholder="Enter Title" autocomplete="off")
         br
-        label(for="bodyArea") Body
-        textarea(name="bodyArea" id="bodyArea" rows="10" cols="80")
+        label(for="body") Body
+        textarea(name="body" id="bodyArea" rows="10" cols="80")
         br
         //- should someday have tags
-        //- label(for="password") Password
-        //- input.form-control(id="password", name="password", type="password", placeholder="Create your password")
-        //- input(id="Password2", name="password2", type="password", placeholder="Retype your password")
         br 
         input.btn.btn-primary(type="submit") 
         
 script.
-    CKEDITOR.replace('bodyArea')
+    CKEDITOR.replace('body')

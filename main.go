@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os/exec"
@@ -17,8 +18,11 @@ import (
 /////////////////////////////////////////////////////////////
 // Declared Var
 /////////////////////////////////////////////////////////////
+
 var routes *httprouter.Router
 var session *mgo.Session
+
+// var Store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 func init() {
 	compileAssets()
@@ -27,7 +31,29 @@ func init() {
 	db.Dial()
 }
 
+// Close Wrapper not yet finished
+func _close(c io.Closer) {
+	err := c.Close()
+	if err != nil {
+		log.Println(err)
+	}
+	session.Close()
+}
 func main() {
+	// go func() {
+	// 	interruptChannel := make(chan os.Signal, 0)
+	// 	signal.Notify(interruptChannel, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+	// 	<-interruptChannel
+
+	// 	// Other cleanup tasks
+	// 	// Dont for get this is not fucntion 100% correct.
+	// 	// _close()
+	// 	session.Close()
+	// 	// Other cleanup tasks
+
+	// 	os.Exit(0)
+	// }()
+
 	defer session.Close()
 	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	fmt.Printf("Listening on %s\n", listen)

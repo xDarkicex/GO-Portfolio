@@ -29,6 +29,7 @@ func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	// fmt.Println(req.FormValue("name"))
 	// fmt.Println(req.FormValue("email"))
 	// fmt.Println(req.FormValue("password"))
+
 	success, _ := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
 	// fmt.Fprintln(res, message)
 	if success {
@@ -36,7 +37,8 @@ func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			SessionsSignIn(user, res)
+			// SessionsSignIn(user, res)
+			fmt.Println("I got here", user)
 		}
 		http.Redirect(res, req, "/", 302)
 	}
@@ -44,7 +46,14 @@ func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 
 //UserShow Show page for users
 func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	session, err := Store.Get(req, "user-session")
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
 	user, err := models.FindUserByName(params.ByName("name"))
+	helpers.Logger.Println(user)
 	if err != nil {
 		fmt.Println("/////////////////////////")
 		defer fmt.Println("/////////////////////////")
@@ -53,7 +62,8 @@ func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 		http.ServeFile(res, req, "404.pug")
 	} else {
 		helpers.RenderDynamic(res, "users/show", map[string]interface{}{
-			"user": user,
+			"UserID": session.Values["UserID"],
+			"user":   user,
 		})
 	}
 }

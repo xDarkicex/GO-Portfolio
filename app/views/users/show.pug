@@ -2,5 +2,9 @@ extends ../layouts/application.pug
 block main
     //- - object = {name:"Hello World"}
     div.container-fluid
+        if user.Admin == true
+            h1 Admin
+        else
+            h1 User
         h1= user.Name
         h2= user.Email

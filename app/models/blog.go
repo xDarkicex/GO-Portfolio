@@ -1,9 +1,12 @@
 package models
 
 import (
-	s "github.com/xDarkicex/GO-CLASS/lazy"
+	"encoding/json"
+	"fmt"
+
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -14,15 +17,18 @@ type Blog struct {
 	Body  string        `bson:"body"`
 }
 
-//AllBlogs finds all the users
+//AllBlogs finds all blog posts
 func AllBlogs() (blogs []Blog, err error) {
 	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{}).All(&blogs)
+	json.Marshal(blogs)
+	fmt.Println("error in all blogs")
 	return blogs, err
 }
 
 // FindBlogByTitle Returns blog by Title
 func FindBlogByTitle(title string) (blog Blog, err error) {
 	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{"title": title}).One(&blog)
+
 	return blog, err
 }
 
@@ -37,7 +43,8 @@ func BlogCreate(title string, body string) (bool, string) {
 		Body:  body,
 	})
 	if err != nil {
-		s.Say("Can not Create New Blog post")
+		helpers.Logger.Println(err)
+		fmt.Println("Can not Create New Blog post")
 		return false, "This didnt work"
 	}
 	return true, "Blog Post created"
