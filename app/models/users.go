@@ -8,6 +8,7 @@ import (
 
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -89,6 +90,15 @@ func Login(name string, password string) (user User, err error) {
 //FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
 	err = db.Session().DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
+	return user, err
+}
+
+// FindUserByID ...
+func FindUserByID(userID string) (user User, err error) {
+	err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(userID)).One(&user)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
 	return user, err
 }
 

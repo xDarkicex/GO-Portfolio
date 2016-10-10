@@ -40,14 +40,13 @@ func RenderDynamic(res http.ResponseWriter, view string, object interface{}) {
 		buf := new(bytes.Buffer)
 		json.NewEncoder(buf).Encode(object)
 		compiled, err := exec.Command("bash", "render.sh", view, buf.String()).Output()
-		fmt.Println(compiled)
 		if err != nil {
 			fmt.Fprintf(res, "Error: %s\n%s", err, compiled)
 			Logger.Println(err)
-
 		} else {
+			// fmt.Println(compiled)
 			fmt.Fprintf(res, "%s", compiled)
-			// fmt.Println(view)
+			fmt.Printf("Rendering %s dynamically\n", view)
 		}
 	} else {
 		ioutil.ReadFile(view)

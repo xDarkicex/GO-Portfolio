@@ -5,8 +5,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -28,7 +31,16 @@ func init() {
 	compileAssets()
 	fmt.Println("Getting routes")
 	routes = router.GetRoutes()
-	db.Dial()
+	err := db.Dial()
+	if err != nil {
+		log.Fatal(err)
+	}
+	session = db.Session()
+	// var err error
+	// session, err = mgo.Dial("localhost")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 // Close Wrapper not yet finished
@@ -37,24 +49,24 @@ func _close(c io.Closer) {
 	if err != nil {
 		log.Println(err)
 	}
-	session.Close()
 }
 func main() {
-	// go func() {
-	// 	interruptChannel := make(chan os.Signal, 0)
-	// 	signal.Notify(interruptChannel, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
-	// 	<-interruptChannel
+	go func() {
+		interruptChannel := make(chan os.Signal, 0)
+		signal.Notify(interruptChannel, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+		<-interruptChannel
 
-	// 	// Other cleanup tasks
-	// 	// Dont for get this is not fucntion 100% correct.
-	// 	// _close()
-	// 	session.Close()
-	// 	// Other cleanup tasks
+		// Other cleanup tasks
+		// Dont for get this is not fucntion 100% correct.
+		// _close()
+		fmt.Println("bye")
+		session.Close()
+		// Other cleanup tasks
 
-	// 	os.Exit(0)
-	// }()
+		os.Exit(0)
+	}()
 
-	defer session.Close()
+	// defer session.Close()
 	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	fmt.Printf("Listening on %s\n", listen)
 	log.Fatal(http.ListenAndServe(listen, routes))

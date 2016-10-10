@@ -2,3 +2,22 @@ extends ../layouts/application.pug
 block main
     div.container-fluid
         h1 Blog Index
+        table
+            thead
+                tr
+                    th Title
+                    th Body
+                    th Author
+                    th URL
+            tbody
+                if blog
+                    each post in blog
+                        tr(data-href=post.URL)
+                            td= post.Title
+                            td!= post.Body
+                            //- td= post.Author
+                            td= post.URL
+
+        //- ul
+            each post in blog
+                li= JSON.stringify(post)

@@ -45,11 +45,13 @@ func GetRoutes() *httprouter.Router {
 	// Blog routes
 	///////////////////////////////////////////////////////////
 
-	router.GET("/blogs", controllers.BlogIndex)
-	router.GET("/blog/new/post", controllers.BlogPostNew)
-	router.POST("/blog/new/post", controllers.BlogNew)
-	router.GET("/blogs/:title", controllers.BlogShow)
-	router.GET("/blog/edit/:title", controllers.BlogEdit)
+	router.GET("/posts", controllers.BlogIndex)         // index
+	router.GET("/posts/new", controllers.BlogPostNew)   // new 		To make a new Post
+	router.POST("/posts", controllers.BlogNew)          // create	To actually throw it in the database
+	router.GET("/post/:url", controllers.BlogShow)      // show		Show a specific post
+	router.GET("/post/:url/edit", controllers.BlogEdit) // edit		Edit a specific post
+	// router.DELETE("/posts/:title", ) 				   // destroy Destroy a specific post
+	// router.PATCH("/posts/:title", )	                   // update Update a specific post
 	///////////////////////////////////////////////////////////
 	// Static routes
 	///////////////////////////////////////////////////////////

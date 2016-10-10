@@ -17,13 +17,13 @@ func ApplicationIndex(res http.ResponseWriter, req *http.Request, params httprou
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	user, err := models.FindUserByName(params.ByName("name"))
-	if err != nil {
-		fmt.Println("There was an error")
-	}
+	// user, err := models.FindUserByName(params.ByName("name"))
+	// if err != nil {
+	// 	helpers.Logger.Println(err)
+	// }
 	helpers.RenderDynamic(res, "application/index", map[string]interface{}{
 		"UserID": session.Values["UserID"],
-		"user":   user,
+		// "user":   user,
 	})
 }
 

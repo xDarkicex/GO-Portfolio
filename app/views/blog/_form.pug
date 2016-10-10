@@ -1,13 +1,18 @@
 script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
-form(method='post', action="???", id="blogForm")
+form(method='post', action="/posts", id="blogForm", enctype="multipart/form-data")
     div.form-group
+        label(for="URL") Permalink
+        input.form-control(id="URL", name="url", placeholder="PERMALINK...", autocomplete="off")
+        br
+        label(for="file")
+        input.form-control(type="file", id="fileUploader", name="file")
+        br
         label(for="title") Title
         input.form-control(id="title", name="title" placeholder="Enter Title" autocomplete="off")
         br
         label(for="body") Body
         textarea(name="body" id="bodyArea" rows="10" cols="80")
         br
-        //- should someday have tags
         br 
         input.btn.btn-primary(type="submit") 
         

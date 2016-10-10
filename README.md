@@ -27,3 +27,6 @@
 - [ ] Blog tags for relational lookup
 - [ ] Examples Pages
 - [ ] Contact Page
+- [ ] Get Author
+- [ ] Figure out Mongo relational database structures and how you can use them for blog posts
+- [ ] I need to turn user ID into a user object

@@ -55,11 +55,13 @@ func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 	user, err := models.FindUserByName(params.ByName("name"))
 	helpers.Logger.Println(user)
 	if err != nil {
-		fmt.Println("/////////////////////////")
-		defer fmt.Println("/////////////////////////")
-		fmt.Println("Error /404")
-		fmt.Println(err)
-		http.ServeFile(res, req, "404.pug")
+		http.Redirect(res, req, "/404", 302)
+		// fmt.Println("/////////////////////////")
+		// defer fmt.Println("/////////////////////////")
+		// fmt.Println("Error /404")
+		// fmt.Println(err)
+		// http.Redirect(res, req, "/404", 404)
+
 	} else {
 		helpers.RenderDynamic(res, "users/show", map[string]interface{}{
 			"UserID": session.Values["UserID"],
