@@ -16,17 +16,15 @@
 ----
 
 ##TODOS
-- [ ] Setup Dynamic Port listening
 - [x] Get Mongo DB working
-- [ ] Check this later: https://godoc.org/github.com/badgerodon/stack/storage
 - [ ] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
 - [x] Authentication Done manually through standard lib
-- [ ] Build image uploader https://golang.org/pkg/image/
+- [x] Build image uploader GridFS
 - [ ] Build Profile Pages template
-- [ ] Build Blog
-- [ ] Blog tags for relational lookup
+- [ ] Build Blog half done
+    - [ ] comments need work.
+- [ ] Blog tags for relational lookup half done currently
 - [ ] Examples Pages
 - [ ] Contact Page
-- [ ] Get Author
-- [ ] Figure out Mongo relational database structures and how you can use them for blog posts
-- [ ] I need to turn user ID into a user object
+- [x] Get Author
+- [x] I need to turn user ID into a user object
