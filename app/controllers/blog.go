@@ -41,7 +41,6 @@ func BlogPostNew(res http.ResponseWriter, req *http.Request, params httprouter.P
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	fmt.Println(session.Values["IsAdmin"])
 	if session.Values["IsAdmin"] == false || session.Values["IsAdmin"] == nil {
 		// Need flash message here!!!
 		http.Redirect(res, req, "/", 302)
@@ -59,7 +58,7 @@ func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Param
 	session, err := Store.Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
-
+		http.Redirect(res, req, "/", 302)
 		return
 	}
 	User := session.Values["UserID"]
@@ -84,17 +83,29 @@ func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Param
 	})
 }
 
-// BlogEdit for edit blog Post
-func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+// BlogReplace for edit blog Post
+func BlogReplace(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	session, err := Store.Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
+	fmt.Println("I made it to replace")
 	blog, err := models.FindBlogByURL(params.ByName("url"))
+	User := session.Values["UserID"]
+	// File processing ...
+	// Note to self, this needs to be made optional...
+	file, _, _ := req.FormFile("file")
+	fileBytes, _ := ioutil.ReadAll(file)
+	tags := strings.Split(req.FormValue("tags"), ",")
+	for k, v := range tags {
+		tags[k] = strings.TrimSpace(v)
+	}
+	id := blog.ID.Hex()
+	err = models.BlogUpdate(req.FormValue("title"), req.FormValue("body"), tags, id, User.(string), req.FormValue("url"), fileBytes)
 	if err != nil {
-		http.Redirect(res, req, "/404", 404)
+		http.Redirect(res, req, "/", 302)
 		return
 	}
 	view := "blog/edit"
@@ -118,6 +129,7 @@ func BlogShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
+
 	}
 	user, err := models.FindUserByID(blog.UserID)
 	if err != nil {
@@ -142,9 +154,6 @@ func BlogImage(res http.ResponseWriter, req *http.Request, params httprouter.Par
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-
-	log.Println(b)
-
 	res.Write(b)
 }
 

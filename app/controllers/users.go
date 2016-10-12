@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -30,8 +31,7 @@ func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			// SessionsSignIn(user, res)
-			fmt.Println("I got here", user)
+			log.Print(user)
 		}
 		http.Redirect(res, req, "/", 302)
 	}

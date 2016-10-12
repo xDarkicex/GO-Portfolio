@@ -70,10 +70,6 @@ func CreateUser(email string, name string, password string) (bool, string) {
 
 // Login as a user
 func Login(name string, password string) (user User, err error) {
-	// fmt.Println(name)
-	// fmt.Println(password)
-	// Not sure if I should close DB here?
-	// defer s.Close()
 	s := db.Session()
 	defer s.Close()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
@@ -107,14 +103,3 @@ func AllUsers() (users []User, err error) {
 	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&users)
 	return users, err
 }
-
-// GetUser Authenticates User access
-// func GetUser(req *http.Request) (user User, err error) {
-// 	s := db.Session()
-// 	idCookie, err := req.Cookie("id")
-// 	if err != nil {
-// 		return user, err
-// 	}
-// 	err = s.DB(config.ENV).C("User").FindId(bson.ObjectIdHex(idCookie.Value)).One(&user)
-// 	return user, err
-// }

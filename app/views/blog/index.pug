@@ -8,8 +8,4 @@ block main
                     div.card-block
                         h4.card-title= post.Title
                         p.card-text!= post.Body
-                        a.btn.btn-primary(href=("/users/"+post.URL)) Read More
-
-        //- ul
-            each post in blog
-                li= JSON.stringify(post)
+                        a.btn.btn-primary(href=("/post/"+post.URL)) Read More
