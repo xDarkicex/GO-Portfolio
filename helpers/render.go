@@ -5,16 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"os/exec"
 
 	"github.com/xDarkicex/PortfolioGo/config"
 )
-
-// Logger is a helpper method to print out a more useful error message
-var Logger = log.New(os.Stdout, "", log.Lmicroseconds|log.Lshortfile)
 
 // Render renders views blaim pug Not Secure
 func Render(w http.ResponseWriter, view string) {
@@ -44,7 +39,6 @@ func RenderDynamic(res http.ResponseWriter, view string, object interface{}) {
 			fmt.Fprintf(res, "Error: %s\n%s", err, compiled)
 			Logger.Println(err)
 		} else {
-			// fmt.Println(compiled)
 			fmt.Fprintf(res, "%s", compiled)
 			fmt.Printf("Rendering %s dynamically\n", view)
 		}

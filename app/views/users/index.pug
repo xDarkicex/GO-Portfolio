@@ -2,7 +2,10 @@ extends ../layouts/application.pug
 block main
   //- - object = {name:"Hello World"}
   div.container-fluid
-    ul
-      each user in users
-        li
-          a(href=("/users/"+user.Name))= user.Name
+    br
+    div.panel.panel-default
+      div.panel-heading 
+        p Current Users Index: ##TODO add search bar
+        br
+        each user in users
+          a.list-group-item(href=("/users/"+user.Name))= user.Name

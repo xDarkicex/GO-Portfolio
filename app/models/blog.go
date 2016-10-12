@@ -13,10 +13,11 @@ import (
 type Blog struct {
 	ID        bson.ObjectId `bson:"_id,omitempty"`
 	UserID    string        `bson:"userID"`
-	BlogImage []byte        `bson:"blogImage"`
+	BlogImage string        `bson:"blogImage"`
 	Title     string        `bson:"title"`
 	Body      string        `bson:"body"`
 	URL       string        `bson:"url"`
+	Tags      []string      `bson:"tags"`
 }
 
 //AllBlogs finds all blog posts
@@ -36,17 +37,32 @@ func FindBlogByURL(url string) (blog Blog, err error) {
 }
 
 // BlogCreate creates a new blog post
-func BlogCreate(title string, body string, userID string, url string, blogImage []byte) (string, error) {
+func BlogCreate(title string, body string, tags []string, userID string, url string, blogImage []byte) (string, error) {
 	session := db.Session()
 	defer session.Close()
+	gridFS := session.DB(config.ENV).GridFS("fs")
+	gridFile, err := gridFS.Create("")
+	if err != nil {
+		helpers.Logger.Println(err)
+		fmt.Println("Can not Create New Blog post")
+		return "This didnt work", err
+	}
+	defer helpers.Close(gridFile)
+	_, err = gridFile.Write(blogImage)
+	if err != nil {
+		helpers.Logger.Println(err)
+		fmt.Println("Can not Create New Blog post")
+		return "This didnt work", err
+	}
 	c := session.DB(config.ENV).C("Blog")
 	// Insert Datas
-	err := c.Insert(&Blog{
+	err = c.Insert(&Blog{
 		Title:     title,
 		Body:      body,
 		UserID:    userID,
 		URL:       url,
-		BlogImage: blogImage,
+		BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
+		Tags:      tags,
 	})
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -54,4 +70,40 @@ func BlogCreate(title string, body string, userID string, url string, blogImage 
 		return "This didnt work", err
 	}
 	return "Blog Post created", nil
+}
+
+// GetImageByID ...
+func GetImageByID(imageID string) ([]byte, error) {
+	gridFS := db.Session().DB(config.ENV).GridFS("fs")
+	gridFile, err := gridFS.OpenId(bson.ObjectIdHex(imageID))
+	if err != nil {
+		helpers.Logger.Println(err)
+		fmt.Println("Can not Create New Blog post")
+		return nil, err
+	}
+	defer gridFile.Close()
+
+	b := make([]byte, gridFile.Size())
+	_, err = gridFile.Read(b)
+	if err != nil {
+		helpers.Logger.Println(err)
+		fmt.Println("Error encoding image")
+		return nil, err
+	}
+	return b, nil
+}
+
+// GetBlogsByTags ...
+func GetBlogsByTags(searchTerm string) ([]Blog, error) {
+	var blogs []Blog
+	err := db.Session().DB(config.ENV).C("Blog").Find(bson.M{
+		"tags": searchTerm,
+	}).All(&blogs)
+	if err != nil {
+		helpers.Logger.Println(err)
+		fmt.Println("Error locating blog by tag, no tag found")
+		return nil, err
+	}
+
+	return blogs, err
 }

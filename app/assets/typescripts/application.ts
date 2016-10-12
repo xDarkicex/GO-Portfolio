@@ -10,7 +10,4 @@
      for (var i = 0; i < project.lang["length"]; i++) {
          jQuery(".lang").append("<span>" + myArray[i] + "</span>");
      }
-     console.log((project.lang + " " + project.version));
-     console.log(("Developed by: " + project.name));
-     console.log(myArray[0]);
  });

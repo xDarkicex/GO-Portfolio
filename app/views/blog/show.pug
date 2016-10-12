@@ -1,11 +1,9 @@
 extends ../layouts/application.pug
-//- each user in users
-
 
 block main
     div.container-fluid
         h1 blog post
         p= user.Name
-        img.titleImage(sytle='background-image: url(data:image/jpeg;base64,'+blog.BlogImage+');')
+        img.titleImage(src='/post/'+blog.URL+'/images/'+blog.BlogImage)
         p= blog.Title
         p!= blog.Body

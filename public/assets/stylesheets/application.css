@@ -57,6 +57,9 @@ button > i {
     transform: translateY(-30px); }
   60% {
     transform: translateY(-15px); } }
+body > main > div > h1 > ul > div > div {
+  cursor: inherit !important; }
+
 /*
  * Adding the animation to our element
 */

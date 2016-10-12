@@ -4,8 +4,9 @@ form(method='post', action="/posts", id="blogForm", enctype="multipart/form-data
         label(for="URL") Permalink
         input.form-control(id="URL", name="url", placeholder="PERMALINK...", autocomplete="off")
         br
-        label(for="file")
-        input.form-control(type="file", id="fileUploader", name="file")
+        label.custom-file(for="file")
+            input.form-control.custom-file-input(type="file", id="file", name="file")
+            span.custom-file-control
         br
         label(for="title") Title
         input.form-control(id="title", name="title" placeholder="Enter Title" autocomplete="off")
@@ -14,6 +15,9 @@ form(method='post', action="/posts", id="blogForm", enctype="multipart/form-data
         textarea(name="body" id="bodyArea" rows="10" cols="80")
         br
         br 
+        label(for="tags")
+        input.form-control(id="tags", name="tags", placeholder="categories",data-role="tagsinput", autocomplete="off")
+        br
         input.btn.btn-primary(type="submit") 
         
 script.

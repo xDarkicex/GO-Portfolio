@@ -3,7 +3,9 @@ package controllers
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
@@ -21,10 +23,13 @@ func BlogIndex(res http.ResponseWriter, req *http.Request, params httprouter.Par
 	blogs, err := models.AllBlogs()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
+		return
 	}
-	helpers.RenderDynamic(res, "blog/index", map[string]interface{}{
+	view := "blog/index"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"blog":   blogs,
+		"view":   view,
 	})
 }
 
@@ -36,8 +41,16 @@ func BlogPostNew(res http.ResponseWriter, req *http.Request, params httprouter.P
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	helpers.RenderDynamic(res, "blog/new", map[string]interface{}{
+	fmt.Println(session.Values["IsAdmin"])
+	if session.Values["IsAdmin"] == false || session.Values["IsAdmin"] == nil {
+		// Need flash message here!!!
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+	view := "blog/new"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
+		"view":   view,
 	})
 }
 
@@ -46,27 +59,30 @@ func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Param
 	session, err := Store.Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
-		http.Redirect(res, req, "/", 302)
+
 		return
 	}
 	User := session.Values["UserID"]
-	f, _, _ := req.FormFile("file")
-	b, _ := ioutil.ReadAll(f)
-	_, err = models.BlogCreate(req.FormValue("title"), req.FormValue("body"), User.(string), req.FormValue("url"), b)
+	// File processing ...
+	// Note to self, this needs to be made optional...
+	file, _, _ := req.FormFile("file")
+	fileBytes, _ := ioutil.ReadAll(file)
+	tags := strings.Split(req.FormValue("tags"), ",")
+	for k, v := range tags {
+		tags[k] = strings.TrimSpace(v)
+	}
+	_, err = models.BlogCreate(req.FormValue("title"), req.FormValue("body"), tags, User.(string), req.FormValue("url"), fileBytes)
 	if err != nil {
 		http.Redirect(res, req, "/", 302)
+		return
 	}
-	// blog, err := models.FindBlogByTitle(params.ByName("title"))
-	// if err != nil {
-	// 	fmt.Println("There was an error")
-	// }
-	helpers.RenderDynamic(res, "blog/new", map[string]interface{}{
+	fmt.Println(tags)
+	view := "blog/new"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
-		// 	"blog":   blog,
+		"view":   view,
 	})
 }
-
-// helpers.RenderDynamic(res, "blog/new", map[string]interface{}{})
 
 // BlogEdit for edit blog Post
 func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
@@ -79,12 +95,14 @@ func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Para
 	blog, err := models.FindBlogByURL(params.ByName("url"))
 	if err != nil {
 		http.Redirect(res, req, "/404", 404)
-	} else {
-		helpers.RenderDynamic(res, "blog/edit", map[string]interface{}{
-			"UserID": session.Values["UserID"],
-			"blog":   blog,
-		})
+		return
 	}
+	view := "blog/edit"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
+		"UserID": session.Values["UserID"],
+		"blog":   blog,
+		"view":   view,
+	})
 }
 
 // BlogShow shows selected blog
@@ -101,29 +119,45 @@ func BlogShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	fmt.Println(blog.UserID)
 	user, err := models.FindUserByID(blog.UserID)
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	helpers.RenderDynamic(res, "blog/show", map[string]interface{}{
+	view := "blog/show"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"blog":   blog,
 		"user":   user,
+		"view":   view,
 	})
-	// users, err := models.AllUsers()
-	// if err != nil {
-	// 	defer fmt.Println("/////////////////////////////")
-	// 	fmt.Println("/////////////////////////////")
-	// 	helpers.Logger.Println(blog)
-	// 	http.Redirect(res, req, "/404", 404)
-	// } else {
-	// 	helpers.RenderDynamic(res, "blog/show", map[string]interface{}{
-	// 		"UserID": session.Values["UserID"],
-	// 		"blog":   blog,
-	// 		"users":  users,
-	// 	})
-	// }
+}
+
+// BlogImage shows selected blog
+func BlogImage(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	b, err := models.GetImageByID(params.ByName("imageID"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+
+	log.Println(b)
+
+	res.Write(b)
+}
+
+// BlogSearch ...
+func BlogSearch(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	blogs, err := models.GetBlogsByTags(params.ByName("searchTerm"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+
+	log.Println(blogs)
+
+	res.Write([]byte("ok"))
 }

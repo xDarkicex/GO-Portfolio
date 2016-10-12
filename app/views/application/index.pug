@@ -1,15 +1,15 @@
 extends ../layouts/application.pug
 block main
-    //- - object = {name:"Hello World"}
+    //- script(src='/static/assets/scripts/home.js')
     div.jumbotron
         h1.display-1
             b 
                 span.lang 
             b DEVELOPER
-        i.fa.fa-wa.fa-angle-double-down.fa-4x.animated.bounce
+        i.fa.fa-wa.fa-angle-double-down.fa-4x.animated.bounce#arrows
     div.container-fluid
         h1 Gentry Rolofson
-        div.container
+        div.container#scrolled
             P console.log("Backend Powered by: Go version 1.7.1");
             p console.log("Javascript Preprocessor: TypeScript");
             p console.log("serverMux: httprouter");
@@ -19,13 +19,13 @@ block main
             P console.log("Styled by: SCSS");
             p console.log("Developed by: Gentry Rolofson");
             p console.log("Don't let your dreams be memes");
-            script.
-                console.log("Backend Powered by: Go version 1.7.1");
-                console.log("Javascript Preprocessor: TypeScript");
-                console.log("serverMux: httprouter");
-                console.log("Frontend by: Bootstrap");
-                console.log("Templated by: Pug.Js");
-                console.log("Styled by: SCSS");
-                console.log("Developed by: Gentry Rolofson");
-                console.log("session: gorilla sessions");
-                console.log("Don't let your dreams be memes");
+            //- script.
+            //-     console.log("Backend Powered by: Go version 1.7.1");
+            //-     console.log("Javascript Preprocessor: TypeScript");
+            //-     console.log("serverMux: httprouter");
+            //-     console.log("Frontend by: Bootstrap");
+            //-     console.log("Templated by: Pug.Js");
+            //-     console.log("Styled by: SCSS");
+            //-     console.log("Developed by: Gentry Rolofson");
+            //-     console.log("session: gorilla sessions");
+            //-     console.log("Don't let your dreams be memes");

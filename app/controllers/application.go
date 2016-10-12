@@ -10,7 +10,22 @@ import (
 )
 
 // ApplicationIndex is our index action.
-func ApplicationIndex(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func ApplicationIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	session, err := Store.Get(req, "user-session")
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+	view := "application/index"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
+		"UserID": session.Values["UserID"],
+		"view":   view,
+	})
+}
+
+// ApplicationExamples example pages
+func ApplicationExamples(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	session, err := Store.Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -18,48 +33,35 @@ func ApplicationIndex(res http.ResponseWriter, req *http.Request, params httprou
 		return
 	}
 	// user, err := models.FindUserByName(params.ByName("name"))
-	// if err != nil {
-	// 	helpers.Logger.Println(err)
-	// }
-	helpers.RenderDynamic(res, "application/index", map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		// "user":   user,
-	})
-}
 
-// ApplicationExamples example pages
-func ApplicationExamples(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(res, req, "/", 302)
-		return
-	}
-	user, err := models.FindUserByName(params.ByName("name"))
 	if err != nil {
 		fmt.Println("There was an error")
 	}
-	helpers.RenderDynamic(res, "application/examples", map[string]interface{}{
+	view := "application/examples"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
-		"user":   user,
+		// "user":   user,
+		"view": view,
 	})
 }
 
 //ApplicationAbout About me Pages
-func ApplicationAbout(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func ApplicationAbout(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	session, err := Store.Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	user, err := models.FindUserByName(params.ByName("name"))
+	user, err := models.FindUserByName("Gentry Rolofson")
 	if err != nil {
 		fmt.Println("There was an error")
 	}
-	helpers.RenderDynamic(res, "application/about", map[string]interface{}{
+	view := "application/about"
+	helpers.RenderDynamic(res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"user":   user,
+		"view":   view,
 	})
 }
 
@@ -76,9 +78,11 @@ func RegisterNew(res http.ResponseWriter, req *http.Request, params httprouter.P
 		http.Redirect(res, req, "/", 302)
 		return
 	}
+	view := "users/new"
 	if session.Values["UserID"] == nil {
-		helpers.RenderDynamic(res, "users/new", map[string]interface{}{
+		helpers.RenderDynamic(res, view, map[string]interface{}{
 			"UserID": session.Values["UserID"],
+			"view":   view,
 		})
 	} else {
 		http.Redirect(res, req, "/", 302)

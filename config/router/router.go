@@ -11,7 +11,7 @@ import (
 // 	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
 // }
 
-// GetRoutes. Here's a java example.
+// GetRoutes . Here's a java example.
 // public Router getRoutes() { Router router = new httprouter.Router(); return router; }
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
@@ -31,7 +31,7 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/users", controllers.UserIndex)
 	router.GET("/users/:name", controllers.UserShow)
 	router.GET("/register", controllers.RegisterNew)
-	router.POST("/register", controllers.UserNew)
+	router.POST("/register", controllers.UserCreate)
 
 	///////////////////////////////////////////////////////////
 	// Session Management
@@ -55,6 +55,9 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 	// Static routes
 	///////////////////////////////////////////////////////////
+
+	router.GET("/post/:url/images/:imageID", controllers.BlogImage)
+	router.GET("/posts/search/:searchTerm", controllers.BlogSearch)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	return router
 }

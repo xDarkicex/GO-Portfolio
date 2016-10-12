@@ -21,15 +21,8 @@ func UserIndex(res http.ResponseWriter, req *http.Request, _ httprouter.Params) 
 	})
 }
 
-// UserNew a new user
-func UserNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	/////////////////////////////////////////////
-	// This is for testing.
-	/////////////////////////////////////////////
-	// fmt.Println(req.FormValue("name"))
-	// fmt.Println(req.FormValue("email"))
-	// fmt.Println(req.FormValue("password"))
-
+// UserCreate a new user
+func UserCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	success, _ := models.CreateUser(req.FormValue("email"), req.FormValue("name"), req.FormValue("password"))
 	// fmt.Fprintln(res, message)
 	if success {
@@ -53,19 +46,11 @@ func UserShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 		return
 	}
 	user, err := models.FindUserByName(params.ByName("name"))
-	helpers.Logger.Println(user)
 	if err != nil {
 		http.Redirect(res, req, "/404", 302)
-		// fmt.Println("/////////////////////////")
-		// defer fmt.Println("/////////////////////////")
-		// fmt.Println("Error /404")
-		// fmt.Println(err)
-		// http.Redirect(res, req, "/404", 404)
-
-	} else {
-		helpers.RenderDynamic(res, "users/show", map[string]interface{}{
-			"UserID": session.Values["UserID"],
-			"user":   user,
-		})
 	}
+	helpers.RenderDynamic(res, "users/show", map[string]interface{}{
+		"UserID": session.Values["UserID"],
+		"user":   user,
+	})
 }

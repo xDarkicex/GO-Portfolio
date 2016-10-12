@@ -2,3 +2,7 @@ extends ../layouts/application.pug
 block main
     div.container-fluid
         h1 ABOUT ME
+        p I am 
+         a(href=("/users/"+user.Name))= user.Name
+        hr
+        p This is my bio

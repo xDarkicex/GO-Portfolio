@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -34,11 +35,15 @@ func SessionCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Para
 		http.Redirect(res, req, "/signin", 302)
 	} else {
 		session.Values["UserID"] = user.ID.Hex()
+		if user.Admin {
+			session.Values["IsAdmin"] = true
+		} else {
+			session.Values["IsAdmin"] = false
+		}
+		fmt.Println(session.Values["IsAdmin"])
 		err := session.Save(req, res)
 		if err != nil {
 			helpers.Logger.Println(err)
-		} else {
-			helpers.Logger.Println("No errors found here")
 		}
 		http.Redirect(res, req, "/users/"+user.Name, 302)
 	}
