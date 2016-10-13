@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -10,13 +9,6 @@ import (
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
-// Store stores all cookies.. maybe..
-var Store *sessions.CookieStore
-
-func init() {
-	Store = sessions.NewCookieStore([]byte("something-very-secret"))
-}
-
 // SessionNew GET
 func SessionNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	helpers.Render(res, "sessions/new")
@@ -24,7 +16,7 @@ func SessionNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params)
 
 // SessionCreate POST validate and login
 func SessionCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
@@ -35,12 +27,6 @@ func SessionCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Para
 		http.Redirect(res, req, "/signin", 302)
 	} else {
 		session.Values["UserID"] = user.ID.Hex()
-		if user.Admin {
-			session.Values["IsAdmin"] = true
-		} else {
-			session.Values["IsAdmin"] = false
-		}
-		fmt.Println(session.Values["IsAdmin"])
 		err := session.Save(req, res)
 		if err != nil {
 			helpers.Logger.Println(err)
@@ -51,7 +37,7 @@ func SessionCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Para
 
 // SessionDestroy GET destroy our session
 func SessionDestroy(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)

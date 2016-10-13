@@ -10,4 +10,5 @@
      for (var i = 0; i < project.lang["length"]; i++) {
          jQuery(".lang").append("<span>" + myArray[i] + "</span>");
      }
+    
  });

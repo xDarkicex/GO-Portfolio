@@ -14,7 +14,7 @@ import (
 
 // BlogIndex for indexing all blog posts
 func BlogIndex(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
@@ -26,36 +26,34 @@ func BlogIndex(res http.ResponseWriter, req *http.Request, params httprouter.Par
 		return
 	}
 	view := "blog/index"
-	helpers.RenderDynamic(res, view, map[string]interface{}{
+	helpers.RenderDynamic(req, res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"blog":   blogs,
-		"view":   view,
 	})
 }
 
-// BlogPostNew render blog post page
-func BlogPostNew(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+// BlogNew render blog post page
+func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	if session.Values["IsAdmin"] == false || session.Values["IsAdmin"] == nil {
-		// Need flash message here!!!
-		http.Redirect(res, req, "/", 302)
-		return
-	}
-	view := "blog/new"
-	helpers.RenderDynamic(res, view, map[string]interface{}{
+	helpers.RenderDynamic(req, res, "blog/new", map[string]interface{}{
 		"UserID": session.Values["UserID"],
-		"view":   view,
+		"blog": &models.Blog{
+			Title: "",
+			Body:  "",
+			Tags:  []string{},
+			URL:   "",
+		},
 	})
 }
 
-// BlogNew for new post
-func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+// BlogCreate for new post
+func BlogCreate(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
@@ -75,50 +73,71 @@ func BlogNew(res http.ResponseWriter, req *http.Request, params httprouter.Param
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	fmt.Println(tags)
-	view := "blog/new"
-	helpers.RenderDynamic(res, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"view":   view,
-	})
+	http.Redirect(res, req, "/post/"+string(req.FormValue("url")), 302)
 }
 
-// BlogReplace for edit blog Post
-func BlogReplace(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+// BlogUpdate for edit blog Post
+func BlogUpdate(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	_, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	fmt.Println("I made it to replace")
+	if len(req.FormValue("_method")) > 0 && string(req.FormValue("_method")) == "DELETE" {
+		blog, err := models.FindBlogByURL(params.ByName("url"))
+		if err != nil {
+			helpers.Logger.Println(err)
+			http.Redirect(res, req, "/", 302)
+			return
+		}
+		// Actually update
+		err = models.BlogDestroy(blog.ID)
+		if err != nil {
+			helpers.Logger.Println(err)
+			http.Redirect(res, req, "/", 302)
+			return
+		}
+		http.Redirect(res, req, "/posts", 302)
+		return
+	}
 	blog, err := models.FindBlogByURL(params.ByName("url"))
-	User := session.Values["UserID"]
-	// File processing ...
-	// Note to self, this needs to be made optional...
-	file, _, _ := req.FormFile("file")
-	fileBytes, _ := ioutil.ReadAll(file)
 	tags := strings.Split(req.FormValue("tags"), ",")
 	for k, v := range tags {
 		tags[k] = strings.TrimSpace(v)
 	}
-	id := blog.ID.Hex()
-	err = models.BlogUpdate(req.FormValue("title"), req.FormValue("body"), tags, id, User.(string), req.FormValue("url"), fileBytes)
+	newPost := map[string]interface{}{}
+	for _, key := range []string{"title", "body", "url"} {
+		value := req.FormValue(key)
+		if len(value) > 0 {
+			newPost[key] = value
+		}
+	}
+	if tags != nil {
+		newPost["tags"] = tags
+	}
+	// Get file
+	file, _, err := req.FormFile("file")
+	if err == nil {
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			log.Println(err)
+		} else {
+			newPost["blogImage"] = fileBytes
+		}
+	}
+	// Actually update
+	err = models.BlogUpdate(blog.ID.Hex(), newPost)
 	if err != nil {
 		http.Redirect(res, req, "/", 302)
 		return
 	}
-	view := "blog/edit"
-	helpers.RenderDynamic(res, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"blog":   blog,
-		"view":   view,
-	})
+	http.Redirect(res, req, "/post/"+string(req.FormValue("url")), 302)
 }
 
 // BlogShow shows selected blog
 func BlogShow(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-	session, err := Store.Get(req, "user-session")
+	session, err := helpers.Store().Get(req, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
@@ -131,18 +150,40 @@ func BlogShow(res http.ResponseWriter, req *http.Request, params httprouter.Para
 		return
 
 	}
-	user, err := models.FindUserByID(blog.UserID)
+
+	author, err := models.FindUserByID(blog.UserID)
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(res, req, "/", 302)
 		return
 	}
 	view := "blog/show"
-	helpers.RenderDynamic(res, view, map[string]interface{}{
+	helpers.RenderDynamic(req, res, view, map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"blog":   blog,
-		"user":   user,
-		"view":   view,
+		"author": author,
+	})
+}
+
+// BlogEdit shows selected blog
+func BlogEdit(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	session, err := helpers.Store().Get(req, "user-session")
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+	blog, err := models.FindBlogByURL(params.ByName("url"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(res, req, "/", 302)
+		return
+
+	}
+	view := "blog/edit"
+	helpers.RenderDynamic(req, res, view, map[string]interface{}{
+		"UserID": session.Values["UserID"],
+		"blog":   blog,
 	})
 }
 

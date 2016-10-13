@@ -5,8 +5,11 @@ block main
         div.container.col-xs-6
             form(method="POST", action="/signin", id="registration")
                 div.form-group
+                    
                     label(for="name") Username
-                    input.form-control(id="name", name="name" placeholder="Enter your Name" autocomplete="off")
+                    div.input-group
+                        span.input-group-addon#basic-addon1 @
+                        input.form-control(id="name", name="name" placeholder="Enter your Github username" autocomplete="off", aria-describedby="basic-addon1")
                     br
                     label(for="password") Password
                     input.form-control(id="password", name="password", type="password", placeholder="Create your password")

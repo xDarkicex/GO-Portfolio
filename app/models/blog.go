@@ -78,6 +78,7 @@ func BlogCreate(title string, body string, tags []string, userID string, url str
 		URL:       url,
 		BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
 		Tags:      tags,
+		Time:      time.Now(),
 	})
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -87,43 +88,99 @@ func BlogCreate(title string, body string, tags []string, userID string, url str
 	return "Blog Post created", nil
 }
 
-// BlogUpdate creates a new blog post
-func BlogUpdate(title string, body string, tags []string, id string, userID string, url string, blogImage []byte) error {
-	fmt.Println("I made it too update function")
+// BlogDestroy Blog Destroy
+func BlogDestroy(id bson.ObjectId) error {
 	session := db.Session()
 	defer session.Close()
-	gridFS := session.DB(config.ENV).GridFS("fs")
-	gridFile, err := gridFS.Create("")
-	if err != nil {
-		helpers.Logger.Println(err)
-		return err
-	}
+	return session.DB(config.ENV).C("Blog").RemoveId(id)
+}
 
-	defer helpers.Close(gridFile)
-	_, err = gridFile.Write(blogImage)
-	if err != nil {
-		helpers.Logger.Println(err)
-		return err
-	}
-
+// BlogUpdate Blog Update!
+func BlogUpdate(id string, updated map[string]interface{}) error {
+	session := db.Session()
+	defer session.Close()
 	c := session.DB(config.ENV).C("Blog")
-	// Insert Datas
-	err = c.Update(bson.ObjectIdHex(id),
-		bson.M{"$set": &Blog{
-			Title:     title,
-			Body:      body,
-			UserID:    userID,
-			URL:       url,
-			BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
-			Tags:      tags,
-		},
-		})
+	// Update Data currently is making new posts not updating, Also
+	// Want to make each field optional how?
+	newPost, err := FindBlogByID(id)
+	if err != nil {
+		return err
+	}
+	for key, actual := range map[string]*string{
+		"title":  &newPost.Title,
+		"body":   &newPost.Body,
+		"userID": &newPost.UserID,
+		"url":    &newPost.URL,
+	} {
+		if updated[key] != nil {
+			*actual = updated[key].(string)
+		}
+	}
+	if updated["tags"] != nil {
+		newPost.Tags = updated["tags"].([]string)
+	}
+	if updated["blogImage"] != nil {
+		gridFS := session.DB(config.ENV).GridFS("fs")
+		gridFile, err := gridFS.Create("")
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		defer helpers.Close(gridFile)
+		_, err = gridFile.Write(updated["blogImage"].([]byte))
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		newPost.BlogImage = gridFile.Id().(bson.ObjectId).Hex()
+	}
+	err = c.UpdateId(bson.ObjectIdHex(id), newPost)
 	if err != nil {
 		helpers.Logger.Println(err)
 		return err
 	}
 	return nil
 }
+
+// BlogUpdate creates a new blog post
+// func BlogUpdate(title string, body string, tags []string, id string, userID string, url string, blogImage []byte) error {
+// 	fmt.Println("I made it too update function")
+// 	session := db.Session()
+// 	defer session.Close()
+// 	gridFS := session.DB(config.ENV).GridFS("fs")
+// 	gridFile, err := gridFS.Create("")
+// 	if err != nil {
+// 		helpers.Logger.Println(err)
+// 		return err
+// 	}
+
+// 	defer helpers.Close(gridFile)
+// 	_, err = gridFile.Write(blogImage)
+// 	if err != nil {
+// 		helpers.Logger.Println(err)
+// 		return err
+// 	}
+
+// 	c := session.DB(config.ENV).C("Blog")
+// 	// Update Data currently is making new posts not updating, Also
+// 	// Want to make each field optional how?
+
+// 	err = c.UpdateId(bson.ObjectIdHex(id),
+// 		bson.M{"$set": &Blog{
+// 			Title:     title,
+// 			Body:      body,
+// 			UserID:    userID,
+// 			URL:       url,
+// 			BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
+// 			Tags:      tags,
+// 		},
+// 		})
+// 	if err != nil {
+// 		helpers.Logger.Println(err)
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // GetImageByID ...
 func GetImageByID(imageID string) ([]byte, error) {

@@ -45,19 +45,22 @@ func GetRoutes() *httprouter.Router {
 	// Blog routes
 	///////////////////////////////////////////////////////////
 
-	router.GET("/posts", controllers.BlogIndex)       // index
-	router.GET("/posts/new", controllers.BlogPostNew) // new 		To make a new Post
-	router.POST("/posts", controllers.BlogNew)        // create	To actually throw it in the database
-	router.GET("/post/:url", controllers.BlogShow)    // show		Show a specific post
+	router.GET("/posts", controllers.BlogIndex)    // index
+	router.GET("/posts/new", controllers.BlogNew)  // new 		To make a new Post
+	router.POST("/posts", controllers.BlogCreate)  // create	To actually throw it in the database
+	router.GET("/post/:url", controllers.BlogShow) // show		Show a specific post
+	// router.DELETE("/posts/:url", controllers.BlogDestroy) // destroy Delete a post
+	router.POST("/post/:url", controllers.BlogUpdate)    // update Update a specific post
+	router.GET("/post/:url/edit/", controllers.BlogEdit) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
 	// router.DELETE("/posts/:title", ) 				   // destroy Destroy a specific post
-	router.GET("/post/:url/update/", controllers.BlogPostNew)   // update Update a specific post
-	router.PATCH("/post/:url/update/", controllers.BlogReplace) // update Update a specific post
+
+	router.GET("/post/:url/images/:imageID", controllers.BlogImage)
+	router.GET("/posts/search/:searchTerm", controllers.BlogSearch)
+
 	///////////////////////////////////////////////////////////
 	// Static routes
 	///////////////////////////////////////////////////////////
 
-	router.GET("/post/:url/images/:imageID", controllers.BlogImage)
-	router.GET("/posts/search/:searchTerm", controllers.BlogSearch)
 	router.ServeFiles("/static/*filepath", http.Dir("public"))
 	return router
 }

@@ -67,4 +67,22 @@ body > main > div > h1 > ul > div > div {
   -webkit-animation-name: bounce;
   animation-name: bounce; }
 
+.form-control-feedback {
+  position: relative !important;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  line-height: inherit !important;
+  text-align: initial !important;
+  pointer-events: none; }
+
+.flash {
+  position: relative;
+  z-index: 9999;
+  top: 20px;
+  left: 20px; }
+
 /*# sourceMappingURL=application.css.map */

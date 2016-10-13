@@ -7,16 +7,22 @@ block main
                 form(method="POST", action="/register", id="registration")
                     div.form-group
                         label(for="name") Username
-                        input.form-control(id="name", name="name" placeholder="Enter your Name" autocomplete="off")
+                        div.input-group
+                            span.input-group-addon#basic-addon1 @
+                            input.form-control(id="name", name="name" placeholder="Enter your Github username" autocomplete="off", aria-describedby="basic-addon1")
                         br
                         label(for="email") Email address
                         input.form-control(id="email", name="email", type="email", placeholder="Enter your email")
                         small(id="emailHelp", class="form-text text-muted") We'll never share your email with anyone else.
                         br
-                        label(for="password") Password
-                        input.form-control(id="password", name="password", type="password", placeholder="Create your password")
-                        //- input(id="Password2", name="password2", type="password", placeholder="Retype your password")
+                        div.form-group
+                            label(for="password") Password
+                            input.form-control#Password(name="originalPassword", type="password", placeholder="Create your password")
+                            br
+                            input.form-control#Password2(name="password", type="password", placeholder="Retype your password", onChange="checkPasswordMatch();")
+                            p#passwordHelpBlock.form-text.text-muted Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+                            div.form-control-feedback#divCheckPasswordMatch
                         br 
-                        input.btn.btn-primary(type="submit") 
+                        input.btn.btn-primary#isValid(type="submit", disabled) 
 
                         a.btn.btn-primary.space(type="button", href="/signin") login

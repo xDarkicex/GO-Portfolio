@@ -22,8 +22,10 @@ import (
 // Declared Var
 /////////////////////////////////////////////////////////////
 
-var routes *httprouter.Router
-var session *mgo.Session
+var (
+	routes  *httprouter.Router
+	session *mgo.Session
+)
 
 // var Store = sessions.NewCookieStore([]byte("something-very-secret"))
 
@@ -86,6 +88,12 @@ func compileAssets() {
 	}
 	blogFiles, _ := filepath.Glob("./app/assets/typescripts/blog/*.ts")
 	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/blog/", "--watch"}, blogFiles...)...).Start()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	userFiles, _ := filepath.Glob("./app/assets/typescripts/users/*.ts")
+	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/users/", "--watch"}, userFiles...)...).Start()
 	if err != nil {
 		fmt.Println(err)
 		return

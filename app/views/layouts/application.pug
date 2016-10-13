@@ -13,6 +13,7 @@ html(lang="en")
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     script(src='/static/assets/scripts/application.js')
     script(src='/static/assets/javascripts/tagsinput.js')
+    script(src='/static/assets/javascripts/restfulizer.js')
     if view
       script(src='/static/assets/scripts/'+view+'.js')
   body
@@ -36,10 +37,18 @@ html(lang="en")
             li
               a(href="/posts") Blog
       //- p Header
-    main 
+    main
+      p.flash= JSON.stringify(flash)
+        if flash
+          div.flash=flash
       block main
         p Your view is empty
     footer.well
+      if user
+        div.row
+          p= JSON.stringify(user)
+          if user.Admin
+            p Hi Admin.
       div.row
         div.col-sm-6
           div.col-xs-6
