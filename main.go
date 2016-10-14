@@ -54,7 +54,10 @@ func main() {
 		fmt.Println("Saving session")
 		// Accually Close DB session, maintain DATA integrity
 		session.Close()
-
+		// Removes Temp, compiled JS files
+		os.RemoveAll("./public/assets/scripts/")
+		// Remove Temp, comipled stylesheets
+		os.RemoveAll("./public/assets/stylesheets/")
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
