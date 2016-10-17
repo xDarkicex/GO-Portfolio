@@ -10,10 +10,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Blog struct for mongoDB structure
-type Blog struct {
+//dbBlog struct for MongoDB structure
+type dbBlog struct {
 	ID        bson.ObjectId `bson:"_id,omitempty"`
-	UserID    string        `bson:"userID"`
+	UserID    bson.ObjectId `bson:"user_id"`
 	BlogImage string        `bson:"blogImage"`
 	Title     string        `bson:"title"`
 	Body      string        `bson:"body"`
@@ -22,37 +22,62 @@ type Blog struct {
 	Time      time.Time     `bson:"time"`
 }
 
-// VideoBlog ..
-type VideoBlog struct {
-	ID        bson.ObjectId `bson:"_id,omitempty"`
-	URL       string        `bson:"url"`
-	BlogVideo string        `bson:"BlogVideo"`
-	Time      time.Time     `bson:"time"`
+//Blog struct for our structure
+type Blog struct {
+	ID        bson.ObjectId
+	Author    User
+	BlogImage string
+	Title     string
+	Body      string
+	URL       string
+	Tags      []string
+	Time      time.Time
 }
 
 //AllBlogs finds all blog posts
 func AllBlogs() (blogs []Blog, err error) {
-	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{}).All(&blogs)
+	var rawblogs []dbBlog
+	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{}).All(&rawblogs)
+	for _, e := range rawblogs {
+		blogs = append(blogs, blogify(e))
+	}
 	if err != nil {
 		fmt.Println("error in all blogs")
 	}
 	return blogs, err
 }
+func blogify(e dbBlog) (blog Blog) {
+	author, _ := FindUserByID(e.UserID)
+	blog = Blog{
+		Author:    author,
+		ID:        e.ID,
+		BlogImage: e.BlogImage,
+		Body:      e.Body,
+		Tags:      e.Tags,
+		Time:      e.Time,
+		URL:       e.URL,
+	}
+	return blog
+}
 
 // FindBlogByURL Returns blog by Title
 func FindBlogByURL(url string) (blog Blog, err error) {
-	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{"url": url}).One(&blog)
+	var rawblog dbBlog
+	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{"url": url}).One(&rawblog)
+	blog = blogify(rawblog)
 	return blog, err
 }
 
 // FindBlogByID ...
 func FindBlogByID(id string) (blog Blog, err error) {
-	err = db.Session().DB(config.ENV).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
+	var rawblog dbBlog
+	err = db.Session().DB(config.ENV).C("Blog").FindId(bson.ObjectIdHex(id)).One(&rawblog)
+	blog = blogify(rawblog)
 	return blog, err
 }
 
 // BlogCreate creates a new blog post
-func BlogCreate(title string, body string, tags []string, userID string, url string, blogImage []byte) (string, error) {
+func BlogCreate(title string, body string, tags []string, userID bson.ObjectId, url string, blogImage []byte) (string, error) {
 	session := db.Session()
 	defer session.Close()
 	gridFS := session.DB(config.ENV).GridFS("fs")
@@ -71,7 +96,7 @@ func BlogCreate(title string, body string, tags []string, userID string, url str
 	}
 	c := session.DB(config.ENV).C("Blog")
 	// Insert Datas
-	err = c.Insert(&Blog{
+	err = c.Insert(&dbBlog{
 		Title:     title,
 		Body:      body,
 		UserID:    userID,
@@ -107,10 +132,9 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 		return err
 	}
 	for key, actual := range map[string]*string{
-		"title":  &newPost.Title,
-		"body":   &newPost.Body,
-		"userID": &newPost.UserID,
-		"url":    &newPost.URL,
+		"title": &newPost.Title,
+		"body":  &newPost.Body,
+		"url":   &newPost.URL,
 	} {
 		if updated[key] != nil {
 			*actual = updated[key].(string)

@@ -8,7 +8,7 @@ html(lang="en")
     link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css')
     link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
     link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
-    link(rel='stylesheet', type="text/css", href='/static/assets/stylesheets/tags-jquery-css.css')
+    link(rel='stylesheet', type="text/css", href='/static/assets/CSS/tags.css')
     script(src='https://code.jquery.com/jquery-3.1.0.min.js', integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=", crossorigin="anonymous")
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     script(src='/static/assets/scripts/application.js')
@@ -24,9 +24,9 @@ html(lang="en")
             a.navbar-brand(href="/")
             button.btn.btn-default.navbar-toggle.collapsed(data-toggle='collapse', data-target='.navbar-collapse')
               i.fa.fa-bars.fa-fw
-          form.navbar-form.navbar-right(role="search", method="post", action="/posts/search/")
+          form.navbar-form.navbar-right(role="search", method="get", action="/posts/")
             div.form-group
-              input.form-control(type="text", placeholder="Search")
+              input.form-control(type="text", placeholder="Search" name="search")
             button.btn.btn-default(type="submit", role="button") 
               i.fa-search.fa
           ul#nav-content.nav.navbar-nav.navbar-right.collapse.navbar-collapse

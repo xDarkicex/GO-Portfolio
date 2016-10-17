@@ -9,38 +9,44 @@ import (
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
-// SessionNew GET
-func SessionNew(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	helpers.Render(res, "sessions/new")
+// Sessions Controller!
+type Sessions helpers.Controller
+
+// New ...
+func (c Sessions) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	helpers.Render(a, "sessions/new", map[string]interface{}{})
 }
 
-// SessionCreate POST validate and login
-func SessionCreate(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	session, err := helpers.Store().Get(req, "user-session")
+// Create ..
+func (c Sessions) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	session, err := helpers.Store().Get(a.Request, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
-		http.Redirect(res, req, "/", 302)
+		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
-	user, err := models.Login(req.FormValue("name"), req.FormValue("password"))
+	user, err := models.Login(a.Request.FormValue("name"), a.Request.FormValue("password"))
 	if err != nil {
-		http.Redirect(res, req, "/signin", 302)
+		http.Redirect(a.Response, a.Request, "/signin", 302)
 	} else {
 		session.Values["UserID"] = user.ID.Hex()
-		err := session.Save(req, res)
+		err := session.Save(a.Request, a.Response)
 		if err != nil {
 			helpers.Logger.Println(err)
 		}
-		http.Redirect(res, req, "/users/"+user.Name, 302)
+		http.Redirect(a.Response, a.Request, "/users/"+user.Name, 302)
 	}
 }
 
-// SessionDestroy GET destroy our session
-func SessionDestroy(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	session, err := helpers.Store().Get(req, "user-session")
+// Destroy ...
+func (c Sessions) Destroy(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	session, err := helpers.Store().Get(a.Request, "user-session")
 	if err != nil {
 		helpers.Logger.Println(err)
-		http.Redirect(res, req, "/", 302)
+		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
 	session.Options = &sessions.Options{
@@ -48,29 +54,6 @@ func SessionDestroy(res http.ResponseWriter, req *http.Request, _ httprouter.Par
 		Path:   "/",
 	}
 
-	session.Save(req, res)
-	http.Redirect(res, req, "/", 302)
+	session.Save(a.Request, a.Response)
+	http.Redirect(a.Response, a.Request, "/", 302)
 }
-
-// SessionsSignIn creates new cookie on signin
-// func SessionsSignIn(user models.User, w http.ResponseWriter) {
-// 	http.SetCookie(w, &http.Cookie{
-// 		Name:     "id",
-// 		Value:    hex.EncodeToString([]byte(user.ID)),
-// 		MaxAge:   0,
-// 		Secure:   false,
-// 		HttpOnly: true,
-// 	})
-// }
-
-// SessionsSignOut Sign out of whatever session existed
-// func SessionsSignOut(w http.ResponseWriter) {
-// 	// http.SetCookie(w, &http.Cookie{
-// 	// 	Name:     "id",
-// 	// 	Value:    "",
-// 	// 	MaxAge:   -1,
-// 	// 	Secure:   false,
-// 	// 	HttpOnly: true,
-// 	// })
-
-// }

@@ -3,9 +3,9 @@ extends ../layouts/application.pug
 block main
     div.container-fluid
         h1 blog post
-        p= author.Name
-        img.titleImage(src='/post/'+blog.URL+'/images/'+blog.BlogImage)
-        p= blog.Title
-        p!= blog.Body
+        p= post.Author.Name
+        img.titleImage(src='/post/'+post.URL+'/images/'+post.BlogImage)
+        p= post.Title
+        p!= post.Body
         if user && user.Admin
-            a.btn.btn-primary(data-method="DELETE" href=('/post/'+blog.URL) confirmable="Are you sure you want to delete this post?") DELETE
+            a.btn.btn-primary(data-method="DELETE" href=('/post/'+post.URL) confirmable="Are you sure you want to delete this post?") DELETE

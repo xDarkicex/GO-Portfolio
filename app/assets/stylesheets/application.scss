@@ -16,7 +16,7 @@ body {
             flex-direction: column;
             .lang{
                 text-transform: uppercase;
-            }
+            } 
         }
     }
     .well{
@@ -95,4 +95,10 @@ body > main > div > h1 > ul > div > div{
     top: 20px; 
     left: 20px;
     
+}
+
+span {
+    .devicons{
+        font-size: 10em;
+    }
 }

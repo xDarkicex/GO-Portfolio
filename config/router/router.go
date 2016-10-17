@@ -7,55 +7,54 @@ import (
 	"github.com/xDarkicex/PortfolioGo/app/controllers"
 )
 
-// func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-// 	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
-// }
-
-// GetRoutes . Here's a java example.
-// public Router getRoutes() { Router router = new httprouter.Router(); return router; }
+// GetRoutes func to setup all routes
 func GetRoutes() *httprouter.Router {
 	router := httprouter.New()
-
+	// Might switch to iris if I can figure it out...
+	// func GetRoutes() *iris.Context {
+	// 	router := iris.New()
 	///////////////////////////////////////////////////////////
 	// Main application routes
 	///////////////////////////////////////////////////////////
-	router.GET("/", controllers.ApplicationIndex)
-	router.GET("/examples", controllers.ApplicationExamples)
-	router.GET("/about", controllers.ApplicationAbout)
-	router.GET("/404", controllers.Error404)
+
+	application := controllers.Application{}
+	router.GET("/", application.Index)
+	router.GET("/about", application.About)
 
 	///////////////////////////////////////////////////////////
 	// users routes
 	///////////////////////////////////////////////////////////
 
-	router.GET("/users", controllers.UserIndex)
-	router.GET("/users/:name", controllers.UserShow)
-	router.GET("/register", controllers.RegisterNew)
-	router.POST("/register", controllers.UserCreate)
+	users := controllers.Users{}
+	router.GET("/users", users.Index)
+	router.GET("/users/:name", users.Show)
+	router.GET("/register", users.New)
+	router.POST("/register", users.Create)
 
 	///////////////////////////////////////////////////////////
 	// Session Management
 	///////////////////////////////////////////////////////////
 
-	router.GET("/signin", controllers.SessionNew)
-	router.POST("/signin", controllers.SessionCreate)
-	router.GET("/signout", controllers.SessionDestroy)
+	sessions := controllers.Sessions{}
+	router.GET("/signin", sessions.New)
+	router.POST("/signin", sessions.Create)
+	router.GET("/signout", sessions.Destroy)
 
 	///////////////////////////////////////////////////////////
 	// Blog routes
 	///////////////////////////////////////////////////////////
 
-	router.GET("/posts", controllers.BlogIndex)    // index
-	router.GET("/posts/new", controllers.BlogNew)  // new 		To make a new Post
-	router.POST("/posts", controllers.BlogCreate)  // create	To actually throw it in the database
-	router.GET("/post/:url", controllers.BlogShow) // show		Show a specific post
-	// router.DELETE("/posts/:url", controllers.BlogDestroy) // destroy Delete a post
-	router.POST("/post/:url", controllers.BlogUpdate)    // update Update a specific post
-	router.GET("/post/:url/edit/", controllers.BlogEdit) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
-	// router.DELETE("/posts/:title", ) 				   // destroy Destroy a specific post
+	blog := controllers.Blog{}
+	blog.Globals.Count++
+	router.GET("/posts", blog.Index)          // index
+	router.GET("/posts/new", blog.New)        // new 		To make a new Post
+	router.POST("/posts", blog.Create)        // create	To actually throw it in the database
+	router.GET("/post/:url", blog.Show)       // show		Show a specific post
+	router.POST("/post/:url", blog.Update)    // update Update a specific post
+	router.GET("/post/:url/edit/", blog.Edit) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
+	router.GET("/post/:url/images/:imageID", blog.Image)
 
-	router.GET("/post/:url/images/:imageID", controllers.BlogImage)
-	router.GET("/posts/search/:searchTerm", controllers.BlogSearch)
+	// example := controllers.Example{}
 
 	///////////////////////////////////////////////////////////
 	// Static routes

@@ -18,12 +18,6 @@ import (
 ////////////////////////////////////////////////////////////
 
 // Address This will be for user profiles geolocation
-type Address struct {
-	Zip    string `bson:"zip"`
-	State  string `bson:"state"`
-	City   string `bson:"city"`
-	Street string `bson:"street"`
-}
 
 //User Struct
 type User struct {
@@ -32,7 +26,10 @@ type User struct {
 	Admin    bool          `bson:"admin"`
 	Email    string        `bson:"email"`
 	Password string        `bson:"password"`
-	// Address  Address
+	Zip      string        `bson:"zip"`
+	State    string        `bson:"state"`
+	City     string        `bson:"city"`
+	Street   string        `bson:"street"`
 }
 
 // CreateUser create a new user in the database
@@ -90,8 +87,8 @@ func FindUserByName(name string) (user User, err error) {
 }
 
 // FindUserByID ...
-func FindUserByID(userID string) (user User, err error) {
-	err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(userID)).One(&user)
+func FindUserByID(userID bson.ObjectId) (user User, err error) {
+	err = db.Session().DB(config.ENV).C("User").FindId(userID).One(&user)
 	if err != nil {
 		helpers.Logger.Println(err)
 	}
