@@ -19,7 +19,7 @@ type Blog helpers.Controller
 
 //Index New index function
 func (c Blog) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	c.Globals.Count++
+
 	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
 	session, err := helpers.Store().Get(a.Request, "user-session")
 	if err != nil {
@@ -28,8 +28,8 @@ func (c Blog) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 		return
 	}
 	var blogs []models.Blog
-	if len(a.Request.FormValue("search")) > 0 {
-		blogs, err = models.GetBlogsByTags(a.Request.FormValue("search"))
+	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
+		blogs, err = models.GetBlogsByTags(strings.ToLower(a.Request.FormValue("search")))
 	} else {
 		blogs, err = models.AllBlogs()
 	}
@@ -62,10 +62,11 @@ func (c Blog) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	helpers.Render(a, "blog/new", map[string]interface{}{
 		"UserID": session.Values["UserID"],
 		"blog": &models.Blog{
-			Title: "",
-			Body:  "",
-			Tags:  []string{},
-			URL:   "",
+			Title:   "",
+			Body:    "",
+			Summary: "",
+			Tags:    []string{},
+			URL:     "",
 		},
 	})
 }
@@ -85,16 +86,19 @@ func (c Blog) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	// Note to self, this needs to be made optional...
 	file, _, _ := a.Request.FormFile("file")
 	fileBytes, _ := ioutil.ReadAll(file)
-	tags := strings.Split(a.Request.FormValue("tags"), ",")
+	tags := strings.Split(strings.ToLower(a.Request.FormValue("tags")), ",")
 	for k, v := range tags {
 		tags[k] = strings.TrimSpace(v)
 	}
-	_, err = models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), tags, bson.ObjectIdHex(User.(string)), a.Request.FormValue("url"), fileBytes)
+	// URL Processing
+	rawURL := a.Request.FormValue("title")
+	URL := strings.Replace(rawURL, " ", "-", -1)
+	_, err = models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes)
 	if err != nil {
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
-	http.Redirect(a.Response, a.Request, "/post/"+string(a.Request.FormValue("url")), 302)
+	http.Redirect(a.Response, a.Request, "/post/"+URL, 302)
 }
 
 // Update ...

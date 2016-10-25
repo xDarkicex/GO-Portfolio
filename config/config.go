@@ -1,36 +1,27 @@
 package config
 
-import "net"
+import "os"
 
 // Version number
-var Version = "1.0.0"
+var Version = "1.8.1"
 
 // Port is the hole we should use.
 var Port = 3000
 
-// DynamicPort scan for availible port
-func DynamicPort() int {
-	///////////////////////////////////
-	// Returning Zero because of this
-	//////////////////////////////////
-	var Port int
-	/////////////////////////////////
-	for i := 3000; i < 8080; i++ {
-		_, err := net.Listen("tcp", string(i))
-		if err == nil {
-			Port := i
-			///////////////////////////////////
-			//Want to pass this to next return
-			//////////////////////////////////
-			return Port
-			//////////////////////////////////
-		}
-	}
-	return Port
-}
-
 // Host is the ip we use to listen on.
 var Host = "0.0.0.0"
 
-//ENV is the enviroment for database
-var ENV = "development"
+//ENV is the enviroment for server
+var ENV = os.Getenv("ENV")
+
+// EMAIL address ..
+var EMAIL = os.Getenv("EMAIL")
+
+// SMTPHOST smtp ...
+var SMTPHOST = os.Getenv("SMTPHOST")
+
+// SMTPPORT ..
+var SMTPPORT = os.Getenv("SMTPPORT")
+
+// SMTPPASSWORD ...
+var SMTPPASSWORD = os.Getenv("SMTPPASSWORD")

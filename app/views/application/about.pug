@@ -3,12 +3,14 @@ block main
     div.container-fluid
         h1 ABOUT ME
         p Hello I am @
-         a(href=("/users/"+user.Name))= user.Name
+            a(href=("/users/"+user.Name))= user.Name
+        p.small I am the founder of #[a(href="https//:bitdev.io") Bitdev.io ]
+        P.small Bitdev.io utilize Google's Golang, Dart, and Ruby on Rails as backend technologies.
+        p.small Bitdev.io Builds on top of Amazon's web services and Google's AppEngine for a complete custom FullStack web Application.
         P #[a(href=("/posts?search=node&nodejs")) Ruby on Rails] | #[a(href=("/posts?search=node&nodejs")) NodeJs] | #[a(href=("/posts?search=angular&angularJS")) Angular] | #[a(href=("/posts?search=bash")) Bash] | #[a(href=("/posts?search=go&golang")) Golang] 
         hr
         p.lead I am a web developer specialized in backend development. This is my first full fledged Golang website, It has been a challenge getting to this point, I would not be here without the support from my friend, coworkers and mentors who have all helped me learn this fasinating new language. I hope to spread this knowlegde to everyone I can.
-        p.lead I am the founder of #[a(href="https//:bitdev.io") Bitdev.io ]
-        P.lead At Bitdev.io we utilize Ruby on Rails, Googles Dart, and Googles Golang as our backend technologies built on top of Amazons web services and or Googles AppEngine for a complete custom FullStack web Application.
+        P.lead No one takes data more seriously then I do, I have an extensive knowledge of more traditional database technologies such as mySQL, SQlite and PostgreSQL. I'm also very interested in NoSQL databases this website's database is MongoDB which has an amazing driver for golang, mGO.
         br
         div.panel.panel-default 
             div.panel-heading

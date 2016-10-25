@@ -4,7 +4,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     main{
-        padding-top: 50px;
+        padding-top: 60px;
         flex-grow: 1;
         .jumbotron{
             min-height: 95vh;
@@ -45,10 +45,7 @@ button{
     animation-iteration-count: infinite;
 }
 
-// 
-.titleImage{
 
-}
 /*
  * Animation for webkit
 */
@@ -89,16 +86,61 @@ body > main > div > h1 > ul > div > div{
     pointer-events: none;
 }
 
-.flash{
-    position: relative;
-    z-index: 9999;
-    top: 20px; 
-    left: 20px;
-    
-}
-
 span {
     .devicons{
         font-size: 10em;
     }
+}
+#searching{
+    border: 0;
+    outline: 0;
+    overflow: hidden;
+    color: white;
+    width:12em;
+    $transition: linear all 0.25s;
+    transition: $transition;
+    -moz-transition: $transition;
+    -webkit-transition: $transition;
+    > input {
+        border: 0;
+        border-bottom: 2px solid white;
+        outline: 0;
+        color: white;
+        background: transparent;
+        transition: $transition;
+        -moz-transition: $transition;
+        -webkit-transition: $transition;
+        &:focus{
+            border-bottom-color:#2780e3;
+            transition: $transition;
+            -moz-transition: $transition;
+            -webkit-transition: $transition;
+        }
+    }
+}
+.card{
+   max-width: 14em;
+   min-width: 14em;
+   min-height: 20em;
+   &:not(:first-of-type){
+       margin-left: 1em;
+   }
+   .card-block{
+    .truncate{
+        width: 12em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+   }
+}
+
+#cards{
+    display: flex;
+    flex-wrap: wrap;
+
+}
+.shrinking{
+    padding:0!important;
+    width: 0!important;
 }

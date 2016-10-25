@@ -2,10 +2,15 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"net/mail"
+	"net/smtp"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/scorredoira/email"
 	"github.com/xDarkicex/PortfolioGo/app/models"
+	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
@@ -56,20 +61,20 @@ func (c Application) About(w http.ResponseWriter, r *http.Request, ps httprouter
 	})
 }
 
-// RegisterNew Users
-// func RegisterNew(res http.ResponseWriter, req *http.Request, params httprouter.Params) {
-// 	session, err := helpers.Store().Get(req, "user-session")
-// 	if err != nil {
-// 		helpers.Logger.Println(err)
-// 		http.Redirect(res, req, "/", 302)
-// 		return
-// 	}
-// 	view := "users/new"
-// 	if session.Values["UserID"] == nil {
-// 		helpers.RenderDynamic(req, res, view, map[string]interface{}{
-// 			"UserID": session.Values["UserID"],
-// 		})
-// 	} else {
-// 		http.Redirect(res, req, "/", 302)
-// 	}
-// }
+//Contact form function
+func (c Application) Contact(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	name := (a.Request.FormValue("contactName"))
+	address := (a.Request.FormValue("contactAddress"))
+	body := (a.Request.FormValue("contactBody"))
+	subject := "Message From " + name + " - " + address
+	m := email.NewMessage(subject, body)
+	m.From = mail.Address{Name: "From", Address: config.EMAIL}
+	m.To = []string{"grolofson@bitdev.io"}
+	auth := smtp.PlainAuth("", config.EMAIL, config.SMTPPASSWORD, config.SMTPHOST)
+	gmailSMTP := config.SMTPHOST + ":" + config.SMTPPORT
+	if err := email.Send(gmailSMTP, auth, m); err != nil {
+		log.Fatal(err)
+	}
+	http.Redirect(a.Response, a.Request, "/", 302)
+}

@@ -1,6 +1,6 @@
 /// <reference path="../jquery.d.ts"/>
 $(function(){
-    console.log(" I worked!!")
+    $(".card-block > p").addClass("truncate")
     $("#arrows").click(function() {
     $('html,body').animate({
         scrollTop: $("#scrolled").offset().top},

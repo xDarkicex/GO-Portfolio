@@ -20,7 +20,7 @@ block main
                             input.form-control#Password(name="originalPassword", type="password", placeholder="Create your password")
                             br
                             input.form-control#Password2(name="password", type="password", placeholder="Retype your password", onChange="checkPasswordMatch();")
-                            p#passwordHelpBlock.form-text.text-muted Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+                            p#passwordHelpBlock.form-text.text-muted Your password must be 8-20 characters long, contain letters and numbers, at least one special character, and must not contain spaces.
                             div.form-control-feedback#divCheckPasswordMatch
                         br 
                         input.btn.btn-primary#isValid(type="submit", disabled) 

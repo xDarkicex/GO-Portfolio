@@ -3,9 +3,8 @@ block main
     br
     div.container-fluid
         div.container.col-xs-6
-            form(method="POST", action="/signin", id="registration")
+            form(method="post", action="/signin", id="registration")
                 div.form-group
-                    
                     label(for="name") Username
                     div.input-group
                         span.input-group-addon#basic-addon1 @
@@ -13,8 +12,6 @@ block main
                     br
                     label(for="password") Password
                     input.form-control(id="password", name="password", type="password", placeholder="Create your password")
-                    //- input(id="Password2", name="password2", type="password", placeholder="Retype your password")
                     br
-                    input.btn.btn-primary(type="submit") 
-
+                    input.btn.btn-primary(type="submit")
                     a.btn.btn-primary.space(type="button", href="/register") Sign up

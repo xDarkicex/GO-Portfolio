@@ -4,61 +4,56 @@ html(lang="en")
     block title
       title My Application
     block extra-header
-    link(rel='stylesheet',type="text/css",href='/static/assets/stylesheets/application.css')
-    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css')
-    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
-    link(rel='stylesheet',type="text/css",href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
-    link(rel='stylesheet', type="text/css", href='/static/assets/CSS/tags.css')
-    script(src='https://code.jquery.com/jquery-3.1.0.min.js', integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=", crossorigin="anonymous")
+    link(rel='stylesheet' type="text/css" href='/static/assets/stylesheets/application.css')
+    link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css')
+    link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
+    link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
+    link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
+    link(rel="icon" type="image/png" href="/static/assets/images/favicon.png")
+    script(src='https://code.jquery.com/jquery-3.1.0.min.js' integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous")
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     script(src='/static/assets/scripts/application.js')
     script(src='/static/assets/javascripts/tagsinput.js')
     script(src='/static/assets/javascripts/restfulizer.js')
     if view
       script(src='/static/assets/scripts/'+view+'.js')
+      link(rel='stylesheet' type="text/css" href='/static/assets/stylesheets/'+view+'.css')
   body
     header
       nav.navbar.navbar-default.navbar-fixed-top
         div.container-fluid
           div.navbar-header
             a.navbar-brand(href="/")
-            button.btn.btn-default.navbar-toggle.collapsed(data-toggle='collapse', data-target='.navbar-collapse')
-              i.fa.fa-bars.fa-fw
+            button.btn.btn-default.navbar-toggle.collapsed(data-toggle='collapse', data-target='.navbar-collapse'): i.fa.fa-bars.fa-fw
           form.navbar-form.navbar-right(role="search", method="get", action="/posts/")
-            div.form-group
-              input.form-control(type="text", placeholder="Search" name="search")
-            button.btn.btn-default(type="submit", role="button") 
-              i.fa-search.fa
+            div.form-group.shrinking#searching: input.form-control(type="text", name="search",autocomplete="off", placeholder="Search...")
+            div.btn.btn-default(onclick="shrinker()"): i.fa-search.fa
           ul#nav-content.nav.navbar-nav.navbar-right.collapse.navbar-collapse
-            li
-              a(href="/examples") Examples
-            li
-              a(href="/about") About Me
-            li
-              a(href="/posts") Blog
+            li: a(href="/examples") Examples
+            li: a(href="/about") About Me
+            li: a(href="/posts") Blog
       //- p Header
     main
-      p.flash= JSON.stringify(flash)
-        if flash
-          div.flash=flash
+      if flashes
+        each str in flashes
+          -
+            flash = JSON.parse(str);
+            classes = "flash alert alert-dismissible alert-"+flash.Type;
+          div(class=classes style="display: none;")
+            button(type="button" class="close" data-dismiss="alert") &times;
+            strong= flash.Message
+        script $(function(){ $(".flash").slideToggle().delay(400+5000).slideToggle() });
       block main
         p Your view is empty
     footer.well
-      if user
-        div.row
-          p= JSON.stringify(user)
-          if user.Admin
-            p Hi Admin.
       div.row
-        div.col-sm-6
+        div.col-sm-3
           div.col-xs-6
             h4 Resources
             ul.list-unstyled
-              li
-                a(href="#") Privacy Policy
-              li
-                a(href="#") Terms & Conditions
-        div.col-sm-6
+              li: a(href="#") Privacy Policy
+              li: a(href="#") Terms & Conditions
+        div.col-sm-3
           div.col-xs-6
             h4 Social Media
             ul.list-unstyled
@@ -77,12 +72,38 @@ html(lang="en")
               li
                 i.fa.fa-fw.fa-flickr
                 a(href="https://www.flickr.com/photos/129128612@N03/") flickr
+        div.col-sm-6
+          div
+            h4 Contact Me
+            div
+              form(method="post", action="/contact", id="contactForm")
+                div.form-group
+                  label(for="title") Name
+                  input.form-control(id="contactName" name="contactName" placeholder="Enter name..." autocomplete="off")
+                div.form-group
+                  label(for="title") Email
+                  input.form-control(id="contactEmail" name="contactAddress" placeholder="Enter email..." autocomplete="off")
+                div.form-group
+                  label(for="body") Body
+                  br
+                  textarea(name="contactBody" id="bodyArea" class="form-control" style="min-width: 100%")
+                input.btn.btn-primary(type="submit")
       div  
         div.row   
           div.col-md-6
+            if user
+              if user.Admin
+                p Hello #[= user.Name]
+                p.badge Admin
+              br
+              if !user.Admin
+                p Hello #[= user.Name]
+                p.badge User
+              br
             if UserID == null
               a(href='/signin') Sign in
             else
               a(href='/signout') Sign Out
-          div.col-md-6
+        div.row
+          div.col-lg-12
             p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)

@@ -3,14 +3,12 @@ block main
     //- script(src='/static/assets/scripts/home.js')
     link(href='//cdn.jsdelivr.net/devicons/1.8.0/css/devicons.min.css', rel='stylesheet',type="text/css")
     div.jumbotron
-        h1.display-1
-            b
-                span.lang
+        h1.display-1: b.lang
         span.devicons
         i.fa.fa-wa.fa-angle-double-down.fa-4x.animated.bounce#arrows
     div.container-fluid
         h1 Gentry Rolofson
-        div.container#scrolled
+        div#scrolled
             P console.log("Backend Powered by: Go version 1.7.1");
             p console.log("Javascript Preprocessor: TypeScript");
             p console.log("serverMux: httprouter");
@@ -20,10 +18,15 @@ block main
             P console.log("Styled by: SCSS");
             p console.log("Developed by: Gentry Rolofson");
             p console.log("Don't let your dreams be memes");
-        if blog
-            each post in blog
-                div.card
-                    div.card-block
-                        h4.card-title= post.Title
-                        p.card-text!= post.Body
-                        a.btn.btn-primary(href=("/post/"+post.URL)) Read More
+            div.header
+                p.h3 Newest Blog Posts
+                hr
+            div#cards
+                if blog
+                    each post in blog
+                        div.card
+                            div.card-img-top(style="height: 150px; background: url(/post/"+post.URL+"/images/"+post.BlogImage+")center center no-repeat;background-size: cover;")
+                            div.card-block
+                                h4.card-title= post.Title
+                                p.card-text!= post.Body
+                                a.btn.btn-primary(href=("/post/"+post.URL)) Read More

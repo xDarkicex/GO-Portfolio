@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -29,9 +30,13 @@ func (c Sessions) Create(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	}
 	user, err := models.Login(a.Request.FormValue("name"), a.Request.FormValue("password"))
 	if err != nil {
+		fmt.Println(err)
+		helpers.AddFlash(a, helpers.Flash{Type: "danger", Message: err.Error()})
+		err = session.Save(a.Request, a.Response)
 		http.Redirect(a.Response, a.Request, "/signin", 302)
 	} else {
 		session.Values["UserID"] = user.ID.Hex()
+		helpers.AddFlash(a, helpers.Flash{Type: "success", Message: "Sucessully logged in!"})
 		err := session.Save(a.Request, a.Response)
 		if err != nil {
 			helpers.Logger.Println(err)

@@ -12,6 +12,7 @@ import (
 // Examples controllers
 type Examples helpers.Controller
 
+// Index ...
 func (c Examples) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
 	session, err := helpers.Store().Get(a.Request, "user-session")
@@ -28,7 +29,7 @@ func (c Examples) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	if len(examples) >= 5 {
 		examples = examples[0:5]
 	}
-	view := "application/index"
+	view := "examples/index"
 	helpers.Render(a, view, map[string]interface{}{
 		"UserID":  session.Values["UserID"],
 		"example": examples,

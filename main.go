@@ -61,9 +61,9 @@ func main() {
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
-
-	// If uncommneted you will notice that when you kill server this code is never executed.
-	// defer fmt.Println("goodbye")
+	// ServerTitle title for server
+	var ServerTitle = "Golang Server version 1.7.1"
+	fmt.Print("\033]0;" + ServerTitle + "\007")
 	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	fmt.Printf("Listening on %s\n", listen)
 	helpers.Logger.Fatal(http.ListenAndServe(listen, routes))

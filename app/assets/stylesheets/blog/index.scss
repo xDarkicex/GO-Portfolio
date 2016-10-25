@@ -1,0 +1,6 @@
+.card{
+    min-width: 100%!important;
+   &:not(:first-of-type){
+       margin-left: 0px;
+   }
+}

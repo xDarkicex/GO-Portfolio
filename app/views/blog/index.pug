@@ -1,21 +1,16 @@
 extends ../layouts/application.pug
 block main
     div.container-fluid
-        h1 Blog Index #{count}
-         if user && user.Admin
-            div.panel.panel-default 
-                div.panel-heading
-                    h3.panel-title Admin controls
-                div.panel-body
-                    a.btn.btn-primary(href=('/posts/new')) New Post
+        div.row(style="padding-top:20px;margin-left:0.1em;margin-right:5em;")
+            if user && user.Admin
+                div.pull-right: a.btn.btn-primary(href=('/posts/new')) New Post
+            h1 Blog Index
         if blog
             each post in blog
                 div.card
                     div.card-block
-                        h4.card-title
-                            time #[= post.Time]
-                        p.Card-text
-                            p Post Created by: #[= post.Author.Name]
+                        h4.card-title: time #[= post.Time]
+                        p.Card-text: p Post Created by: #[= post.Author.Name]
                         p.card-text!= post.Body
                         a.btn.btn-primary(href=("/post/"+post.URL)) Read More
                         if user && user.Admin

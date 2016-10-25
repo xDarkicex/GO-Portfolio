@@ -2,8 +2,8 @@ script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
 - var form = ((view.endsWith('edit'))?['POST','/post/'+blog.URL]:['POST','/posts'])
 form(method=form[0], action=form[1], id="blogForm", enctype="multipart/form-data")
     div.form-group
-        label(for="URL") Permalink
-        input.form-control(id="URL" name="url" placeholder="PERMALINK..." autocomplete="off" value=blog.URL)
+        //- label(for="URL") Permalink
+        input.form-control(id="URL" name="url" placeholder="PERMALINK..." autocomplete="off" value=blog.URL, type="hidden")
     div.form-group
         label.custom-file(for="file")
             input.form-control.custom-file-input(type="file" id="file" name="file")
@@ -11,6 +11,9 @@ form(method=form[0], action=form[1], id="blogForm", enctype="multipart/form-data
     div.form-group
         label(for="title") Title
         input.form-control(id="title" name="title" placeholder="Enter Title" autocomplete="off" value=blog.Title)
+    div.form-group
+        label(for="summary") Summary
+        input.form-control(id="summary" name="summary" placeholder="Enter Summary" autocomplete="off" value=blog.Summary)
     div.form-group
         label(for="body") Body
         textarea(name="body" id="bodyArea" rows="10" cols="80")= blog.Body

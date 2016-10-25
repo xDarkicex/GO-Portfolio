@@ -20,6 +20,7 @@ func GetRoutes() *httprouter.Router {
 	application := controllers.Application{}
 	router.GET("/", application.Index)
 	router.GET("/about", application.About)
+	router.POST("/contact", application.Contact)
 
 	///////////////////////////////////////////////////////////
 	// users routes
@@ -29,6 +30,8 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/users", users.Index)
 	router.GET("/users/:name", users.Show)
 	router.GET("/register", users.New)
+	router.POST("/users/:name", users.Update)
+	router.GET("/users/:name/edit/", users.Edit)
 	router.POST("/register", users.Create)
 
 	///////////////////////////////////////////////////////////
@@ -45,7 +48,6 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 
 	blog := controllers.Blog{}
-	blog.Globals.Count++
 	router.GET("/posts", blog.Index)          // index
 	router.GET("/posts/new", blog.New)        // new 		To make a new Post
 	router.POST("/posts", blog.Create)        // create	To actually throw it in the database
@@ -54,7 +56,12 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/post/:url/edit/", blog.Edit) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
 	router.GET("/post/:url/images/:imageID", blog.Image)
 
-	// example := controllers.Example{}
+	///////////////////////////////////////////////////////////
+	// Examples routes
+	///////////////////////////////////////////////////////////
+
+	examples := controllers.Examples{}
+	router.GET("/examples", examples.Index)
 
 	///////////////////////////////////////////////////////////
 	// Static routes

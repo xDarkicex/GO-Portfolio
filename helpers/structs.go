@@ -20,3 +20,9 @@ type RouterArgs struct {
 	Request  *http.Request
 	Params   httprouter.Params
 }
+
+// Flash ...
+type Flash struct {
+	Type    string
+	Message string
+}

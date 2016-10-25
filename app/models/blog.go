@@ -17,6 +17,7 @@ type dbBlog struct {
 	BlogImage string        `bson:"blogImage"`
 	Title     string        `bson:"title"`
 	Body      string        `bson:"body"`
+	Summary   string        `bson:"summary"`
 	URL       string        `bson:"url"`
 	Tags      []string      `bson:"tags"`
 	Time      time.Time     `bson:"time"`
@@ -28,6 +29,7 @@ type Blog struct {
 	Author    User
 	BlogImage string
 	Title     string
+	Summary   string
 	Body      string
 	URL       string
 	Tags      []string
@@ -46,13 +48,21 @@ func AllBlogs() (blogs []Blog, err error) {
 	}
 	return blogs, err
 }
+
+// So blogify will turn a database blog structure into the more code friendly Blog structure with relationships resolved to actual objects.
+// Your user_id will instead be Author
 func blogify(e dbBlog) (blog Blog) {
-	author, _ := FindUserByID(e.UserID)
+	author, err := FindUserByID(e.UserID)
+	if err != nil {
+		fmt.Println("Error in Finding an author for blog: " + e.URL)
+	}
 	blog = Blog{
 		Author:    author,
 		ID:        e.ID,
+		Title:     e.Title,
 		BlogImage: e.BlogImage,
 		Body:      e.Body,
+		Summary:   e.Summary,
 		Tags:      e.Tags,
 		Time:      e.Time,
 		URL:       e.URL,
@@ -76,8 +86,16 @@ func FindBlogByID(id string) (blog Blog, err error) {
 	return blog, err
 }
 
+// FindBlogByID ...
+func findDbBlogByID(id string) (blog dbBlog, err error) {
+	// var rawblog dbBlog
+	err = db.Session().DB(config.ENV).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
+	// blog = blogify(rawblog)
+	return blog, err
+}
+
 // BlogCreate creates a new blog post
-func BlogCreate(title string, body string, tags []string, userID bson.ObjectId, url string, blogImage []byte) (string, error) {
+func BlogCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, blogImage []byte) (string, error) {
 	session := db.Session()
 	defer session.Close()
 	gridFS := session.DB(config.ENV).GridFS("fs")
@@ -99,6 +117,7 @@ func BlogCreate(title string, body string, tags []string, userID bson.ObjectId, 
 	err = c.Insert(&dbBlog{
 		Title:     title,
 		Body:      body,
+		Summary:   summary,
 		UserID:    userID,
 		URL:       url,
 		BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
@@ -127,14 +146,15 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 	c := session.DB(config.ENV).C("Blog")
 	// Update Data currently is making new posts not updating, Also
 	// Want to make each field optional how?
-	newPost, err := FindBlogByID(id)
+	newPost, err := findDbBlogByID(id)
 	if err != nil {
 		return err
 	}
 	for key, actual := range map[string]*string{
-		"title": &newPost.Title,
-		"body":  &newPost.Body,
-		"url":   &newPost.URL,
+		"title":   &newPost.Title,
+		"body":    &newPost.Body,
+		"summary": &newPost.Summary,
+		"url":     &newPost.URL,
 	} {
 		if updated[key] != nil {
 			*actual = updated[key].(string)

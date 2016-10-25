@@ -5,6 +5,9 @@ import (
 
 	"errors"
 	"fmt"
+	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
@@ -19,21 +22,51 @@ import (
 
 // Address This will be for user profiles geolocation
 
+// dbUser Struct
+type dbUser struct {
+	ID           bson.ObjectId `bson:"_id,omitempty"`
+	Name         string        `bson:"name"`
+	FullName     string        `bson:"fullname,omitempty"`
+	Skills       string        `bson:"skills,omitempty"`
+	Experiance   string        `bson:"experiance,omitempty"`
+	Admin        bool          `bson:"admin"`
+	Email        string        `bson:"email"`
+	Password     string        `bson:"password"`
+	Zip          string        `bson:"zip,omitempty"`
+	State        string        `bson:"state,omitempty"`
+	City         string        `bson:"city,omitempty"`
+	Street       string        `bson:"street,omitempty"`
+	LoginAttempt int           `bson:"loginattempt,omitempty"`
+}
+
 //User Struct
 type User struct {
-	ID       bson.ObjectId `bson:"_id,omitempty"`
-	Name     string        `bson:"name"`
-	Admin    bool          `bson:"admin"`
-	Email    string        `bson:"email"`
-	Password string        `bson:"password"`
-	Zip      string        `bson:"zip"`
-	State    string        `bson:"state"`
-	City     string        `bson:"city"`
-	Street   string        `bson:"street"`
+	ID           bson.ObjectId
+	Name         string
+	FullName     string
+	Skills       string
+	Exeriance    string
+	Admin        bool
+	Email        string
+	Password     string
+	Zip          string
+	State        string
+	City         string
+	Street       string
+	LoginAttempt int
 }
 
 // CreateUser create a new user in the database
 func CreateUser(email string, name string, password string) (bool, string) {
+	if len(password) < 8 {
+		return false, "Password must be at least 8 characters!"
+	}
+	if strings.Contains(password, " ") {
+		return false, "Password must not contain spaces!"
+	}
+	if !strings.ContainsAny(password, "1234567890") {
+		return false, "Password must contain at least one number!"
+	}
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Println("Hashing Password incomplete")
@@ -50,6 +83,14 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	amount, _ = c.Find(bson.M{"name": name}).Count()
 	if amount > 0 {
 		return false, "Username already exists."
+	}
+	expression, _ := regexp.Compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
+	if !expression.MatchString(email) {
+		return false, "Email not valid."
+	}
+	github, err := http.Get("http://github.com/" + name)
+	if github.StatusCode == 404 {
+		return false, "Not vaild Github username!"
 	}
 	// Insert Datas
 	err = c.Insert(&User{
@@ -71,11 +112,11 @@ func Login(name string, password string) (user User, err error) {
 	defer s.Close()
 	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
 	if err != nil {
-		return user, errors.New("Here is no user with this name/password combination")
+		return user, errors.New("There is no user with this username/password combination")
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return user, errors.New("Here is no user with this name/password combination")
+		return user, errors.New("There is no user with this Username/password combination")
 	}
 	return user, nil
 }
@@ -95,8 +136,68 @@ func FindUserByID(userID bson.ObjectId) (user User, err error) {
 	return user, err
 }
 
+// FinddbUserByID ...
+func finddbUserByID(id string) (user dbUser, err error) {
+	err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
+	return user, err
+}
+
 //AllUsers finds all the users
 func AllUsers() (users []User, err error) {
 	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&users)
 	return users, err
+}
+
+// UserDestroy Blog Destroy
+func UserDestroy(id bson.ObjectId) error {
+	session := db.Session()
+	defer session.Close()
+	return session.DB(config.ENV).C("User").RemoveId(id)
+}
+
+// UserUpdate Blog Update!
+func UserUpdate(id string, updated map[string]interface{}) error {
+	session := db.Session()
+	defer session.Close()
+	c := session.DB(config.ENV).C("User")
+	// Update Data currently is making new posts not updating, Also
+	// Want to make each field optional how?
+	newUser, err := finddbUserByID(id)
+	if err != nil {
+		return err
+	}
+	for key, actual := range map[string]*string{
+		"fullname":   &newUser.FullName,
+		"skills":     &newUser.Skills,
+		"experiance": &newUser.Experiance,
+		"url":        &newPost.URL,
+	} {
+		if updated[key] != nil {
+			*actual = updated[key].(string)
+		}
+	}
+	if updated["tags"] != nil {
+		newPost.Tags = updated["tags"].([]string)
+	}
+	if updated["blogImage"] != nil {
+		gridFS := session.DB(config.ENV).GridFS("fs")
+		gridFile, err := gridFS.Create("")
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		defer helpers.Close(gridFile)
+		_, err = gridFile.Write(updated["blogImage"].([]byte))
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		newPost.BlogImage = gridFile.Id().(bson.ObjectId).Hex()
+	}
+	err = c.UpdateId(bson.ObjectIdHex(id), newPost)
+	if err != nil {
+		helpers.Logger.Println(err)
+		return err
+	}
+	return nil
 }
