@@ -27,8 +27,6 @@ var (
 	session *mgo.Session
 )
 
-// var Store = sessions.NewCookieStore([]byte("something-very-secret"))
-
 func init() {
 	compileAssets()
 	fmt.Println("Getting routes")
@@ -58,13 +56,16 @@ func main() {
 		os.RemoveAll("./public/assets/scripts/")
 		// Remove Temp, comipled stylesheets
 		os.RemoveAll("./public/assets/stylesheets/")
+		helpers.Logger.Println("Server Shutdown!!")
+
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
+
 	// ServerTitle title for server
-	var ServerTitle = "Golang Server version 1.7.1"
+	var ServerTitle = "Golang Server version 1.7.3"
 	fmt.Print("\033]0;" + ServerTitle + "\007")
-	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	listen := fmt.Sprintf("%s:%s", config.Host, config.Port)
 	fmt.Printf("Listening on %s\n", listen)
 	helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 }
@@ -79,32 +80,32 @@ func compileAssets() {
 		"--watch",
 		"./app/assets/stylesheets/:./public/assets/stylesheets/").Start()
 	if err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 		return
 	}
 
 	applicationFiles, _ := filepath.Glob("./app/assets/typescripts/application/*.ts")
 	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/application/", "--watch"}, applicationFiles...)...).Start()
 	if err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 		return
 	}
 	blogFiles, _ := filepath.Glob("./app/assets/typescripts/blog/*.ts")
 	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/blog/", "--watch"}, blogFiles...)...).Start()
 	if err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 		return
 	}
 	userFiles, _ := filepath.Glob("./app/assets/typescripts/users/*.ts")
 	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/users/", "--watch"}, userFiles...)...).Start()
 	if err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 		return
 	}
 	files, _ := filepath.Glob("./app/assets/typescripts/*.ts")
 	err = exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/", "--watch"}, files...)...).Start()
 	if err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 		return
 	}
 }

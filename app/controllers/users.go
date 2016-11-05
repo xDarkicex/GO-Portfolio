@@ -67,19 +67,12 @@ func (c Users) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 // Show Show page for users
 func (c Users) Show(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
 	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
 		http.Redirect(a.Response, a.Request, "/404", 302)
 	}
 	helpers.Render(a, "users/show", map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"user":   user,
+		"user": user,
 	})
 }
 
@@ -94,9 +87,7 @@ func (c Users) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	}
 	view := "users/new"
 	if session.Values["UserID"] == nil {
-		helpers.Render(a, view, map[string]interface{}{
-			"UserID": session.Values["UserID"],
-		})
+		helpers.Render(a, view, map[string]interface{}{})
 	} else {
 		http.Redirect(a.Response, a.Request, "/", 302)
 	}
@@ -113,6 +104,7 @@ func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
 		user, err := models.FindUserByName(a.Params.ByName("name"))
+		fmt.Println(user, "1")
 		if err != nil {
 			helpers.Logger.Println(err)
 			http.Redirect(a.Response, a.Request, "/", 302)
@@ -125,11 +117,17 @@ func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 			http.Redirect(a.Response, a.Request, "/", 302)
 			return
 		}
-		http.Redirect(a.Response, a.Request, "/posts", 302)
+		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
+	user, err := models.FindUserByName(a.Params.ByName("name"))
+	fmt.Println(user, "2")
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(" im not here")
+	}
 	newUser := map[string]interface{}{}
-	for _, key := range []string{"fullName", "age", "skills", "experiance", "bio"} {
+	for _, key := range []string{"fullname", "age", "skills", "experiance", "bio", "file", "country", "state", "city", "street", "zip"} {
 		value := a.Request.FormValue(key)
 		if len(value) > 0 {
 			newUser[key] = value
@@ -151,5 +149,39 @@ func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
-	http.Redirect(a.Response, a.Request, "/users/"+string(a.Request.FormValue("name")), 302)
+	http.Redirect(a.Response, a.Request, "/users/"+user.Name, 302)
+}
+
+// Edit shows selected user profile
+func (c Users) Edit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	session, err := helpers.Store().Get(a.Request, "user-session")
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
+	}
+	user, err := models.FindUserByName(a.Params.ByName("name"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
+
+	}
+	helpers.Render(a, "users/edit", map[string]interface{}{
+		"UserID": session.Values["UserID"],
+		"user":   user,
+	})
+}
+
+//Image for users
+func (c Users) Image(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+	b, err := models.GetImageByID(a.Params.ByName("imageID"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
+	}
+	a.Response.Write(b)
 }

@@ -186,53 +186,13 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 	return nil
 }
 
-// BlogUpdate creates a new blog post
-// func BlogUpdate(title string, body string, tags []string, id string, userID string, url string, blogImage []byte) error {
-// 	fmt.Println("I made it too update function")
-// 	session := db.Session()
-// 	defer session.Close()
-// 	gridFS := session.DB(config.ENV).GridFS("fs")
-// 	gridFile, err := gridFS.Create("")
-// 	if err != nil {
-// 		helpers.Logger.Println(err)
-// 		return err
-// 	}
-
-// 	defer helpers.Close(gridFile)
-// 	_, err = gridFile.Write(blogImage)
-// 	if err != nil {
-// 		helpers.Logger.Println(err)
-// 		return err
-// 	}
-
-// 	c := session.DB(config.ENV).C("Blog")
-// 	// Update Data currently is making new posts not updating, Also
-// 	// Want to make each field optional how?
-
-// 	err = c.UpdateId(bson.ObjectIdHex(id),
-// 		bson.M{"$set": &Blog{
-// 			Title:     title,
-// 			Body:      body,
-// 			UserID:    userID,
-// 			URL:       url,
-// 			BlogImage: gridFile.Id().(bson.ObjectId).Hex(),
-// 			Tags:      tags,
-// 		},
-// 		})
-// 	if err != nil {
-// 		helpers.Logger.Println(err)
-// 		return err
-// 	}
-// 	return nil
-// }
-
 // GetImageByID ...
 func GetImageByID(imageID string) ([]byte, error) {
 	gridFS := db.Session().DB(config.ENV).GridFS("fs")
 	gridFile, err := gridFS.OpenId(bson.ObjectIdHex(imageID))
 	if err != nil {
 		helpers.Logger.Println(err)
-		fmt.Println("Can not Create New Blog post")
+		fmt.Println("Can't find image")
 		return nil, err
 	}
 	defer gridFile.Close()

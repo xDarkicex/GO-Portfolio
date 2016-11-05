@@ -7,16 +7,17 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
-	// "github.com/xDarkicex/PortfolioGo/helpers"
 )
 
 // Render renders views blaim pug Not Secure
 func Render(a RouterArgs, view string, object map[string]interface{}) {
+	startedFunc := time.Now()
 	session, err := Store().Get(a.Request, "user-session")
 	if err != nil {
 		// helpers.Logger.Println(err)
@@ -26,7 +27,7 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	user := &User{}
 	if session.Values["UserID"] != nil {
 		err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(session.Values["UserID"].(string))).One(&user)
-		object["user"] = user
+		object["current_user"] = user
 	}
 	if session.Values["flash"] != nil {
 		object["flash"] = session.Values["flash"].(string)
@@ -36,16 +37,35 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	// Turn object into a json
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(object)
-	command := exec.Command("bash", "render.sh", view, buf.String())
-	compiled, err := command.CombinedOutput()
-	_ = command.Wait()
-	if err != nil {
-		fmt.Fprintf(a.Response, "Error: %s\n%s", err, compiled)
-		Logger.Println(err)
+
+	if config.Verbose == 1 {
+		start := time.Now()
+		command := exec.Command("bash", "render.sh", view, buf.String())
+		finish := float64(time.Since(start))
+		finishedFunc := float64(time.Since(startedFunc))
+		funcTime := (finishedFunc * 0.0001)
+		renderTime := (finish * 0.0001)
+		compiled, err := command.CombinedOutput()
+		_ = command.Wait()
+		if err != nil {
+			fmt.Fprintf(a.Response, "Error: %s\n%s", err, compiled)
+			Logger.Println(err)
+		} else {
+			session.Save(a.Request, a.Response)
+			fmt.Fprintf(a.Response, "%s", compiled)
+			fmt.Printf("Rendering => %s (200) OK in (%.02fms) funcTime => (%.02fms)\n", view, renderTime, funcTime)
+		}
 	} else {
-		session.Save(a.Request, a.Response)
-		fmt.Fprintf(a.Response, "%s", compiled)
-		fmt.Printf("Rendering %s dynamically\n", view)
+		command := exec.Command("bash", "render.sh", view, buf.String())
+		compiled, err := command.CombinedOutput()
+		_ = command.Wait()
+		if err != nil {
+			fmt.Fprintf(a.Response, "Error: %s\n%s", err, compiled)
+			Logger.Println(err)
+		} else {
+			session.Save(a.Request, a.Response)
+			fmt.Fprintf(a.Response, "%s", compiled)
+		}
 	}
 }
 
@@ -86,7 +106,7 @@ func RenderDynamic(req *http.Request, res http.ResponseWriter, view string, obje
 			Logger.Println(err)
 		} else {
 			fmt.Fprintf(res, "%s", compiled)
-			fmt.Printf("Rendering %s dynamically\n", view)
+			fmt.Printf("Rendering %s\n", view)
 		}
 	} else {
 		ioutil.ReadFile(view)

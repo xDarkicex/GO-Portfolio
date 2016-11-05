@@ -25,13 +25,17 @@ import (
 // dbUser Struct
 type dbUser struct {
 	ID           bson.ObjectId `bson:"_id,omitempty"`
-	Name         string        `bson:"name"`
+	Name         string        `bson:"name,omitempty"`
+	Avatar       string        `bson:"avatar,omitempty"`
 	FullName     string        `bson:"fullname,omitempty"`
 	Skills       string        `bson:"skills,omitempty"`
-	Experiance   string        `bson:"experiance,omitempty"`
+	Experience   string        `bson:"experience,omitempty"`
+	Bio          string        `bson:"bio,omitempty"`
 	Admin        bool          `bson:"admin"`
 	Email        string        `bson:"email"`
 	Password     string        `bson:"password"`
+	Country      string        `bson:"country,omitempty"`
+	Language     string        `bson:"language,omitempty"`
 	Zip          string        `bson:"zip,omitempty"`
 	State        string        `bson:"state,omitempty"`
 	City         string        `bson:"city,omitempty"`
@@ -43,17 +47,44 @@ type dbUser struct {
 type User struct {
 	ID           bson.ObjectId
 	Name         string
+	Avatar       string
 	FullName     string
 	Skills       string
-	Exeriance    string
+	Experience   string
+	Bio          string
 	Admin        bool
 	Email        string
 	Password     string
+	Country      string
+	Language     string
 	Zip          string
 	State        string
 	City         string
 	Street       string
 	LoginAttempt int
+}
+
+func userify(e dbUser) (user User) {
+	user = User{
+		ID:           e.ID,
+		Name:         e.Name,
+		Avatar:       e.Avatar,
+		FullName:     e.FullName,
+		Skills:       e.Skills,
+		Experience:   e.Experience,
+		Bio:          e.Bio,
+		Admin:        e.Admin,
+		Email:        e.Email,
+		Password:     e.Password,
+		Country:      e.Country,
+		Language:     e.Language,
+		Zip:          e.Zip,
+		State:        e.State,
+		City:         e.City,
+		Street:       e.Street,
+		LoginAttempt: e.LoginAttempt,
+	}
+	return user
 }
 
 // CreateUser create a new user in the database
@@ -110,7 +141,9 @@ func CreateUser(email string, name string, password string) (bool, string) {
 func Login(name string, password string) (user User, err error) {
 	s := db.Session()
 	defer s.Close()
-	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
+	var rawUser dbUser
+	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	user = userify(rawUser)
 	if err != nil {
 		return user, errors.New("There is no user with this username/password combination")
 	}
@@ -123,16 +156,20 @@ func Login(name string, password string) (user User, err error) {
 
 //FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
-	err = db.Session().DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&user)
+	var rawUser dbUser
+	err = db.Session().DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	user = userify(rawUser)
 	return user, err
 }
 
 // FindUserByID ...
 func FindUserByID(userID bson.ObjectId) (user User, err error) {
-	err = db.Session().DB(config.ENV).C("User").FindId(userID).One(&user)
+	var rawUser dbUser
+	err = db.Session().DB(config.ENV).C("User").FindId(userID).One(&rawUser)
 	if err != nil {
 		helpers.Logger.Println(err)
 	}
+	user = userify(rawUser)
 	return user, err
 }
 
@@ -144,7 +181,11 @@ func finddbUserByID(id string) (user dbUser, err error) {
 
 //AllUsers finds all the users
 func AllUsers() (users []User, err error) {
-	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&users)
+	var rawUsers []dbUser
+	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&rawUsers)
+	for _, e := range rawUsers {
+		users = append(users, userify(e))
+	}
 	return users, err
 }
 
@@ -155,7 +196,7 @@ func UserDestroy(id bson.ObjectId) error {
 	return session.DB(config.ENV).C("User").RemoveId(id)
 }
 
-// UserUpdate Blog Update!
+// UserUpdate Update!
 func UserUpdate(id string, updated map[string]interface{}) error {
 	session := db.Session()
 	defer session.Close()
@@ -163,23 +204,26 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 	// Update Data currently is making new posts not updating, Also
 	// Want to make each field optional how?
 	newUser, err := finddbUserByID(id)
+	fmt.Println(newUser)
 	if err != nil {
 		return err
 	}
 	for key, actual := range map[string]*string{
 		"fullname":   &newUser.FullName,
 		"skills":     &newUser.Skills,
-		"experiance": &newUser.Experiance,
-		"url":        &newPost.URL,
+		"bio":        &newUser.Bio,
+		"experience": &newUser.Experience,
+		"password":   &newUser.Password,
+		"zip":        &newUser.Zip,
+		"state":      &newUser.State,
+		"city":       &newUser.City,
+		"street":     &newUser.Street,
 	} {
 		if updated[key] != nil {
 			*actual = updated[key].(string)
 		}
 	}
-	if updated["tags"] != nil {
-		newPost.Tags = updated["tags"].([]string)
-	}
-	if updated["blogImage"] != nil {
+	if updated["Avatar"] != nil {
 		gridFS := session.DB(config.ENV).GridFS("fs")
 		gridFile, err := gridFS.Create("")
 		if err != nil {
@@ -187,14 +231,14 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 			return err
 		}
 		defer helpers.Close(gridFile)
-		_, err = gridFile.Write(updated["blogImage"].([]byte))
+		_, err = gridFile.Write(updated["Avatar"].([]byte))
 		if err != nil {
 			helpers.Logger.Println(err)
 			return err
 		}
-		newPost.BlogImage = gridFile.Id().(bson.ObjectId).Hex()
+		newUser.Avatar = gridFile.Id().(bson.ObjectId).Hex()
 	}
-	err = c.UpdateId(bson.ObjectIdHex(id), newPost)
+	err = c.UpdateId(bson.ObjectIdHex(id), newUser)
 	if err != nil {
 		helpers.Logger.Println(err)
 		return err

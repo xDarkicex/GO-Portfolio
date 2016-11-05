@@ -20,10 +20,10 @@
 - [ ] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
 - [x] Authentication Done manually through standard lib
 - [x] Build image uploader GridFS
-- [ ] Build Profile Pages template
+- [x] Build Profile Pages template
 - [ ] Build Blog half done
     - [ ] comments need work.
-- [ ] Blog tags for relational lookup half done currently
+- [x] Blog tags for relational 
 - [ ] Examples Pages
 - [ ] Contact Page
 - [x] Get Author

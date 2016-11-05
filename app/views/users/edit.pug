@@ -1,27 +1,44 @@
 extends ../layouts/application.pug
 block main
     script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
-- var form = ((view.endsWith('edit'))?['POST','/post/'+blog.URL]:['POST','/posts'])
-div.container-fluid
-    form(method=form[0], action=form[1], id="blogForm", enctype="multipart/form-data")
-        div.form-group
-            input.form-control(id="URL" name="url" placeholder="PERMALINK..." autocomplete="off" value=blog.URL, type="hidden")
-        div.form-group
-            label.custom-file(for="file")
-                input.form-control.custom-file-input(type="file" id="file" name="file")
-                span.custom-file-control
-        div.form-group
-            label(for="title") Title
-            input.form-control(id="title" name="title" placeholder="Enter Title" autocomplete="off" value=blog.Title)
-        div.form-group
-            label(for="summary") Summary
-            input.form-control(id="summary" name="summary" placeholder="Enter Summary" autocomplete="off" value=blog.Summary)
-        div.form-group
-            label(for="body") Body
-            textarea(name="body" id="bodyArea" rows="10" cols="80")= blog.Body
-        div.form-group
-            label(for="tags")
-            input.form-control(id="tags" name="tags" placeholder="categories" data-role="tagsinput" autocomplete="off" value=(blog.Tags.join(",")))
-        input.btn.btn-primary(type="submit")
-    script.
-        CKEDITOR.replace('body')
+    script(src='/static/assets/javascripts/tagsinput.js')
+    script(src='/static/assets/javascripts/restfulizer.js')
+    script(src='/static/assets/javascripts/boothelper.js')
+    link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
+    - var form = ((view.endsWith('edit'))?['POST','/users/'+user.Name]:['POST','/users/'+user.Name])
+    div.container-fluid
+        form(method=form[0], action=form[1], id="userForm", enctype="multipart/form-data")
+            div.form-group
+                label.custom-file(for="file")
+                    input.form-control.custom-file-input(type="file" id="file" name="file")
+                    span.custom-file-control
+            div.form-group
+                label(for="title") Full Name
+                input.form-control(id="fullname" name="fullname" placeholder="Enter Full Name" autocomplete="off")
+            div.form-group
+                label(for="experience") Experience
+                textarea(id="experience" name="experience" rows="10" cols="80")
+            div.form-group
+                label(for="bio") Bio
+                textarea(name="bio" id="bioArea" rows="10" cols="80")
+            div.form-group
+                label(for="skills") 
+                input.form-control(id="skills" name="skills" placeholder="skills" data-role="tagsinput" autocomplete="off")
+            div.form-group
+                select(class="input-medium bfh-countries" name="country" data-country="US")
+            div.form-group
+                select(class="input-medium bfh-states" name="state" data-country="US" data-state="CA")
+            div.form-group
+                div.col-xs-4
+                    label(for="city") City
+                    input(class="form-control" name="city")
+                div.col-xs-4
+                    label(for="street") Street
+                    input(class="form-control" name="street")
+                div.col-xs-4
+                    label(for="city") Zip
+                    input(class="form-control" name="zip")
+            input.btn.btn-primary(type="submit")
+        script.
+            CKEDITOR.replace('bio')
+            CKEDITOR.replace('experience')

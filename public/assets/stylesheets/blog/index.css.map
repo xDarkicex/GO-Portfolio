@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,KAAK;EACD,SAAS,EAAE,eAAc;EAC1B,yBAAqB;IACjB,WAAW,EAAE,GAAG",
-"sources": ["../../../../app/assets/stylesheets/blog/index.scss"],
-"names": [],
-"file": "index.css"
-}

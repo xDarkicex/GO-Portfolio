@@ -8,13 +8,10 @@ html(lang="en")
     link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css')
     link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
     link(rel='stylesheet' type="text/css" href='https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css')
-    link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
     link(rel="icon" type="image/png" href="/static/assets/images/favicon.png")
     script(src='https://code.jquery.com/jquery-3.1.0.min.js' integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous")
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     script(src='/static/assets/scripts/application.js')
-    script(src='/static/assets/javascripts/tagsinput.js')
-    script(src='/static/assets/javascripts/restfulizer.js')
     if view
       script(src='/static/assets/scripts/'+view+'.js')
       link(rel='stylesheet' type="text/css" href='/static/assets/stylesheets/'+view+'.css')
@@ -91,19 +88,18 @@ html(lang="en")
       div  
         div.row   
           div.col-md-6
-            if user
-              if user.Admin
-                p Hello #[= user.Name]
+            if current_user
+              if current_user.Admin
+                p Hello #[= current_user.Name]
                 p.badge Admin
               br
-              if !user.Admin
-                p Hello #[= user.Name]
+              if !current_user.Admin
+                p Hello #[= current_user.Name]
                 p.badge User
               br
-            if UserID == null
-              a(href='/signin') Sign in
-            else
               a(href='/signout') Sign Out
+            else
+              a(href='/signin') Sign in
         div.row
           div.col-lg-12
             p.text-muted.pull-right Copyright := Gentry.Rolofson(2016)
