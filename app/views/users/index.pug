@@ -1,5 +1,6 @@
 extends ../layouts/application.pug
-block main
+
+block main-content
   //- - object = {name:"Hello World"}
   div.container-fluid
     br
@@ -7,5 +8,5 @@ block main
       div.panel-heading 
         p Current Users Index: ##TODO add search bar lol
         br
-        each user in users
-          a.list-group-item(href=("/users/"+user.Name))= user.Name
+        range .users
+          a.list-group-item(href= /users/{{.Name}})= .Name

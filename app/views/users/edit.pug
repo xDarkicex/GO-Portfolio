@@ -1,13 +1,12 @@
-extends ../layouts/application.pug
-block main
+//- extends ../layouts/application.pug
+block main-content
     script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
     script(src='/static/assets/javascripts/tagsinput.js')
     script(src='/static/assets/javascripts/restfulizer.js')
     script(src='/static/assets/javascripts/boothelper.js')
     link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
-    - var form = ((view.endsWith('edit'))?['POST','/users/'+user.Name]:['POST','/users/'+user.Name])
     div.container-fluid
-        form(method=form[0], action=form[1], id="userForm", enctype="multipart/form-data")
+        form(method="POST", action=/users/{{.user.Name}}, id="blogForm", enctype="multipart/form-data")
             div.form-group
                 label.custom-file(for="file")
                     input.form-control.custom-file-input(type="file" id="file" name="file")

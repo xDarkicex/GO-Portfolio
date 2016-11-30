@@ -1,14 +1,8 @@
 package helpers
 
-import (
-	"io"
-	"log"
-)
+// layout, err := jade.ParseFile("./app/views/layouts/application.pug")
+// if err != nil {
+// 	Logger.Printf("\nParseFile error: %v", err)
+// }
 
-// Close Wrapper not yet finished
-func Close(c io.Closer) {
-	err := c.Close()
-	if err != nil {
-		log.Println(err)
-	}
-}
+// layout := handleErr("ParseFile error: %v\n", jade.ParseFile("./app/views/layouts/application.pug"))

@@ -1,6 +1,35 @@
 extends ../layouts/application.pug
 
-block main
+block main-content
     div.container-fluid
         h1 New Post
-        include _form.pug
+        //- include "_form.pug"
+        script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
+        script(src='/static/assets/javascripts/tagsinput.js')
+        //- script(src='/static/assets/javascripts/restfulizer.js')
+        script(src='/static/assets/javascripts/boothelper.js')
+        link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
+        //- - var form = ((view.endsWith('edit'))?['POST','/post/'+blog.URL]:['POST','/posts'])
+        form(method="POST", action="/posts", id="blogForm", enctype="multipart/form-data")
+            div.form-group
+                //- label(for="URL") Permalink
+                input.form-control(id="URL" name="url" autocomplete="off" type="hidden" value="{{.blog.URL}}")
+            div.form-group
+                label.custom-file(for="file")
+                    input.form-control.custom-file-input(type="file" id="file" name="file")
+                    span.custom-file-control
+            div.form-group
+                label(for="title") Title
+                input.form-control(id="title" name="title" placeholder="Enter Title" autocomplete="off" value= {{.blog.Title}})
+            div.form-group
+                label(for="summary") Summary
+                input.form-control(id="summary" name="summary" placeholder="Enter Summary" autocomplete="off" value= {{.blog.Summary}})
+            div.form-group
+                label(for="body") Body
+                textarea(name="body" id="bodyArea" rows="10" cols="80")= .blog.Body
+            div.form-group
+                label(for="tags")
+                input.form-control(id="tags" name="tags" placeholder="categories" data-role="tagsinput" autocomplete="off")
+            input.btn.btn-primary(type="submit")
+        script.
+            CKEDITOR.replace('body')

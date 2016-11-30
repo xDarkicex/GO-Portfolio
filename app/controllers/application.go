@@ -7,7 +7,8 @@ import (
 	"net/mail"
 	"net/smtp"
 
-	"github.com/julienschmidt/httprouter"
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/scorredoira/email"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -18,14 +19,7 @@ import (
 type Application helpers.Controller
 
 //Index New index function
-func (c Application) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Application) Index(a helpers.RouterArgs) {
 	blogs, err := models.AllBlogs()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -34,36 +28,24 @@ func (c Application) Index(w http.ResponseWriter, r *http.Request, ps httprouter
 	if len(blogs) >= 5 {
 		blogs = blogs[0:5]
 	}
-	view := "application/index"
-	helpers.Render(a, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"blog":   blogs,
+	helpers.Render(a, "application/index", map[string]interface{}{
+		"blog": blogs,
 	})
 }
 
 //About About me Pages
-func (c Application) About(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
-	user, err := models.FindUserByName("xDarkicex")
+func (c Application) About(a helpers.RouterArgs) {
+	user, err := models.FindUserByID(bson.ObjectIdHex("580c1a8e0d89b87abd33df91"))
 	if err != nil {
 		fmt.Println("There was an error")
 	}
-	view := "application/about"
-	helpers.Render(a, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"user":   user,
+	helpers.Render(a, "application/about", map[string]interface{}{
+		"user": user,
 	})
 }
 
 //Contact form function
-func (c Application) Contact(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+func (c Application) Contact(a helpers.RouterArgs) {
 	name := (a.Request.FormValue("contactName"))
 	address := (a.Request.FormValue("contactAddress"))
 	body := (a.Request.FormValue("contactBody"))

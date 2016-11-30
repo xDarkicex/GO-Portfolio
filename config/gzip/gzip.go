@@ -24,9 +24,10 @@ func (res GzipResponseWriter) Write(b []byte) (int, error) {
 }
 
 // Middleware force - bool, whether or not to force Gzip regardless of the sent headers.
-func Middleware(fn httprouter.Handle, force bool) httprouter.Handle {
+func Middleware(fn httprouter.Handle) httprouter.Handle {
 	return func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
-		if !strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") && !force {
+		res.Header().Set("Server", "Golang")
+		if !strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") {
 			fn(res, req, pm)
 			return
 		}

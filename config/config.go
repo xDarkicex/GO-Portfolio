@@ -32,4 +32,4 @@ var SMTPPASSWORD = os.Getenv("SMTPPASSWORD")
 var ErrorFile = "error.log"
 
 //Verbose is for turning error logs of and on.
-var Verbose = 1
+var Verbose = true

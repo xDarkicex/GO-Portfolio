@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
@@ -15,8 +14,7 @@ import (
 type Users helpers.Controller
 
 // Index function
-func (c Users) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+func (c Users) Index(a helpers.RouterArgs) {
 	users, err := models.AllUsers()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -28,16 +26,9 @@ func (c Users) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 }
 
 // Create a new user
-func (c Users) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		http.Error(a.Response, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// err := regex.MatchString()
+func (c Users) Create(a helpers.RouterArgs) {
+	session := a.Session
 	success, createErr := models.CreateUser(a.Request.FormValue("email"), a.Request.FormValue("name"), a.Request.FormValue("password"))
-	// fmt.Fprintln(a.Response, message)
 	if success {
 		user, err := models.Login(a.Request.FormValue("name"), a.Request.FormValue("password"))
 		if err != nil {
@@ -49,7 +40,6 @@ func (c Users) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 			if err != nil {
 				helpers.Logger.Println(err)
 			}
-
 			http.Redirect(a.Response, a.Request, "/users/"+user.Name, 302)
 			return
 		}
@@ -57,7 +47,7 @@ func (c Users) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		return
 	}
 	helpers.AddFlash(a, helpers.Flash{Type: "danger", Message: createErr})
-	err = session.Save(a.Request, a.Response)
+	err := session.Save(a.Request, a.Response)
 	if err != nil {
 		helpers.Logger.Println(err)
 	}
@@ -65,8 +55,7 @@ func (c Users) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 }
 
 // Show Show page for users
-func (c Users) Show(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+func (c Users) Show(a helpers.RouterArgs) {
 	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
 		http.Redirect(a.Response, a.Request, "/404", 302)
@@ -77,34 +66,18 @@ func (c Users) Show(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 }
 
 // New ...
-func (c Users) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
-	view := "users/new"
-	if session.Values["UserID"] == nil {
-		helpers.Render(a, view, map[string]interface{}{})
+func (c Users) New(a helpers.RouterArgs) {
+	if a.Session.Values["UserID"] == nil {
+		helpers.Render(a, "users/new", map[string]interface{}{})
 	} else {
 		http.Redirect(a.Response, a.Request, "/", 302)
 	}
 }
 
 // Update ...
-func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	_, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Users) Update(a helpers.RouterArgs) {
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
 		user, err := models.FindUserByName(a.Params.ByName("name"))
-		fmt.Println(user, "1")
 		if err != nil {
 			helpers.Logger.Println(err)
 			http.Redirect(a.Response, a.Request, "/", 302)
@@ -121,10 +94,8 @@ func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		return
 	}
 	user, err := models.FindUserByName(a.Params.ByName("name"))
-	fmt.Println(user, "2")
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println(" im not here")
 	}
 	newUser := map[string]interface{}{}
 	for _, key := range []string{"fullname", "age", "skills", "experiance", "bio", "file", "country", "state", "city", "street", "zip"} {
@@ -153,14 +124,7 @@ func (c Users) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 }
 
 // Edit shows selected user profile
-func (c Users) Edit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Users) Edit(a helpers.RouterArgs) {
 	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -168,15 +132,17 @@ func (c Users) Edit(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 		return
 
 	}
-	helpers.Render(a, "users/edit", map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"user":   user,
-	})
+	if a.User == user {
+		helpers.Render(a, "users/edit", map[string]interface{}{
+			"user": user,
+		})
+	} else {
+		http.Redirect(a.Response, a.Request, "/", 302)
+	}
 }
 
-//Image for users
-func (c Users) Image(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+//Image ..
+func (c Users) Image(a helpers.RouterArgs) {
 	b, err := models.GetImageByID(a.Params.ByName("imageID"))
 	if err != nil {
 		helpers.Logger.Println(err)

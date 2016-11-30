@@ -1,70 +1,89 @@
 package helpers
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os/exec"
+	"html/template"
+	"log"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/Joker/jade"
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/html"
 	"github.com/xDarkicex/PortfolioGo/config"
-	"github.com/xDarkicex/PortfolioGo/db"
 )
+
+// var pugEngine *html.Engine
+var t *template.Template
 
 // Render renders views blaim pug Not Secure
 func Render(a RouterArgs, view string, object map[string]interface{}) {
-	startedFunc := time.Now()
-	session, err := Store().Get(a.Request, "user-session")
-	if err != nil {
-		// helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
-	user := &User{}
-	if session.Values["UserID"] != nil {
-		err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(session.Values["UserID"].(string))).One(&user)
-		object["current_user"] = user
-	}
-	if session.Values["flash"] != nil {
-		object["flash"] = session.Values["flash"].(string)
-	}
-	object["view"] = view
-	object["flashes"] = session.Flashes()
-	// Turn object into a json
-	buf := new(bytes.Buffer)
-	json.NewEncoder(buf).Encode(object)
+	times := make(map[string]interface{})
+	times["total"] = time.Now()
 
-	if config.Verbose == 1 {
-		start := time.Now()
-		command := exec.Command("bash", "render.sh", view, buf.String())
-		finish := float64(time.Since(start))
-		finishedFunc := float64(time.Since(startedFunc))
-		funcTime := (finishedFunc * 0.0001)
-		renderTime := (finish * 0.0001)
-		compiled, err := command.CombinedOutput()
-		_ = command.Wait()
-		if err != nil {
-			fmt.Fprintf(a.Response, "Error: %s\n%s", err, compiled)
-			Logger.Println(err)
-		} else {
-			session.Save(a.Request, a.Response)
-			fmt.Fprintf(a.Response, "%s", compiled)
-			fmt.Printf("Rendering => %s (200) OK in (%.02fms) funcTime => (%.02fms)\n", view, renderTime, funcTime)
-		}
-	} else {
-		command := exec.Command("bash", "render.sh", view, buf.String())
-		compiled, err := command.CombinedOutput()
-		_ = command.Wait()
-		if err != nil {
-			fmt.Fprintf(a.Response, "Error: %s\n%s", err, compiled)
-			Logger.Println(err)
-		} else {
-			session.Save(a.Request, a.Response)
-			fmt.Fprintf(a.Response, "%s", compiled)
+	object["current_user"] = a.User
+	object["view"] = view
+	object["flashes"] = a.Session.Flashes()
+
+	times["gorilla-save"] = time.Now()
+	a.Session.Save(a.Request, a.Response)
+	times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
+
+	times["jade"] = time.Now()
+	layout, err := jade.ParseFile("./app/views/layouts/application.pug")
+	if err != nil {
+		Logger.Printf("\nParseFile error: %v", err)
+	}
+	m := minify.New()
+	m.AddFunc("text/html", html.Minify)
+	layoutMin, err := m.String("text/html", layout)
+	if err != nil {
+		panic(err)
+	}
+	currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
+	if err != nil {
+		Logger.Printf("\nParseFile error: %v", err)
+	}
+	currentViewMin, err := m.String("text/html", currentView)
+	if err != nil {
+		panic(err)
+	}
+	times["jade"] = time.Since(times["jade"].(time.Time))
+
+	////////////////////////////////////////////
+	// FUNCMAPS ARE LIFE!!! THIS IS LIFE NOW
+	////////////////////////////////////////////
+
+	fmap := make(template.FuncMap)
+	fmap["Split"] = func(s string, d string) []string {
+		return strings.Split(s, d)
+	}
+	fmap["Join"] = func(a []string, b string) string {
+		return strings.Join(a, b)
+	}
+	times["render-page"] = time.Now()
+	gotpl, err := template.New("layout").Parse(layoutMin)
+	if err != nil {
+		Logger.Printf("\nTemplate parse error: %v", err)
+	}
+	_, err = gotpl.New(view).Funcs(fmap).Parse(currentViewMin)
+	if err != nil {
+		Logger.Printf("\nIndex parse error: %v", err)
+	}
+	err = gotpl.Execute(a.Response, object)
+	if err != nil {
+		log.Printf("\nExecute error: %v", err)
+	}
+	times["render-page"] = time.Since(times["render-page"].(time.Time))
+
+	times["total"] = time.Since(times["total"].(time.Time))
+	if config.Verbose {
+		fmt.Println("Render Start ==>")
+		defer fmt.Println("Render Complete ==> ", times["total"])
+		for k, v := range times {
+			fmt.Printf("Time %s: %s\n", k, v)
 		}
 	}
 }
@@ -76,39 +95,4 @@ type User struct {
 	Admin    bool          `bson:"admin"`
 	Email    string        `bson:"email"`
 	Password string        `bson:"password"`
-}
-
-//RenderDynamic THIS IS NOW A DEPRECATED FUNC!!, Left for now for backwards protection
-func RenderDynamic(req *http.Request, res http.ResponseWriter, view string, object map[string]interface{}) {
-	fmt.Println("RENDER DYNAMIC IS DEPRECATED!")
-	if config.ENV == "development" {
-		session, err := Store().Get(req, "user-session")
-		if err != nil {
-			// helpers.Logger.Println(err)
-			http.Redirect(res, req, "/", 302)
-			return
-		}
-		user := &User{}
-		if session.Values["UserID"] != nil {
-			err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(session.Values["UserID"].(string))).One(&user)
-			object["user"] = user
-		}
-		if session.Values["flash"] != nil {
-			object["flash"] = session.Values["flash"].(string)
-		}
-		object["view"] = view
-		// Turn object into a json
-		buf := new(bytes.Buffer)
-		json.NewEncoder(buf).Encode(object)
-		compiled, err := exec.Command("bash", "render.sh", view, buf.String()).CombinedOutput()
-		if err != nil {
-			fmt.Fprintf(res, "Error: %s\n%s", err, compiled)
-			Logger.Println(err)
-		} else {
-			fmt.Fprintf(res, "%s", compiled)
-			fmt.Printf("Rendering %s\n", view)
-		}
-	} else {
-		ioutil.ReadFile(view)
-	}
 }

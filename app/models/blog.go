@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"html/template"
 	"time"
 
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -30,7 +31,7 @@ type Blog struct {
 	BlogImage string
 	Title     string
 	Summary   string
-	Body      string
+	Body      template.HTML
 	URL       string
 	Tags      []string
 	Time      time.Time
@@ -61,7 +62,7 @@ func blogify(e dbBlog) (blog Blog) {
 		ID:        e.ID,
 		Title:     e.Title,
 		BlogImage: e.BlogImage,
-		Body:      e.Body,
+		Body:      template.HTML(e.Body),
 		Summary:   e.Summary,
 		Tags:      e.Tags,
 		Time:      e.Time,
@@ -105,7 +106,7 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
-	defer helpers.Close(gridFile)
+	defer helpers.Close(gridFile.Close)
 	_, err = gridFile.Write(blogImage)
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -170,7 +171,7 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 			helpers.Logger.Println(err)
 			return err
 		}
-		defer helpers.Close(gridFile)
+		defer helpers.Close(gridFile.Close)
 		_, err = gridFile.Write(updated["blogImage"].([]byte))
 		if err != nil {
 			helpers.Logger.Println(err)

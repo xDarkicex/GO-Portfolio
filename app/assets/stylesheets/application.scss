@@ -1,10 +1,11 @@
+$breakpoint-tablet: 767px;
 * { margin:0; padding: 0; box-sizing: border-box;}
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     main{
-        padding-top: 60px;
+        padding-top: 50px;
         flex-grow: 1;
         .jumbotron{
             min-height: 95vh;
@@ -115,6 +116,7 @@ span {
             transition: $transition;
             -moz-transition: $transition;
             -webkit-transition: $transition;
+            box-shadow: none!important;
         }
     }
 }
@@ -126,7 +128,7 @@ span {
        margin-left: 1em;
    }
    .card-block{
-    .truncate{
+    p{
         width: 12em;
         white-space: nowrap;
         overflow: hidden;
@@ -143,4 +145,32 @@ span {
 .shrinking{
     padding:0!important;
     width: 0!important;
+}
+ul{
+    li{
+        form{
+            display: flex;
+            }
+        }
+    }
+
+
+@media (max-width: $breakpoint-tablet) {
+ul{
+    padding-left: 0!important;
+    padding-top: 15px;
+    li{
+        form{
+            flex-direction: row-reverse;
+        }
+    }
+}
+
+  #searching{
+    width: 100%;
+  }
+  .shrinking{
+    padding:initial!important;
+    width: 100%!important;
+}
 }

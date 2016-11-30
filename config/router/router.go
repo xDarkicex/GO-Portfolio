@@ -5,8 +5,15 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/controllers"
+	"github.com/xDarkicex/PortfolioGo/config/auth"
 	"github.com/xDarkicex/PortfolioGo/config/gzip"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 )
+
+// type routesHandler func(a RouterArgs, user interface{})
+func route(controller helpers.RoutesHandler, authRequired bool) httprouter.Handle {
+	return gzip.Middleware(auth.Auth(controller, authRequired))
+}
 
 // GetRoutes func to setup all routes
 func GetRoutes() *httprouter.Router {
@@ -16,62 +23,62 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 
 	application := controllers.Application{}
-	router.GET("/", gzip.Middleware(application.Index, false))
-	router.GET("/about", gzip.Middleware(application.About, false))
-	router.POST("/contact", gzip.Middleware(application.Contact, false))
+	router.GET("/", route(application.Index, false))
+	router.GET("/about", route(application.About, false))
+	router.POST("/contact", route(application.Contact, false))
 
 	///////////////////////////////////////////////////////////
 	// users routes
 	///////////////////////////////////////////////////////////
 
 	users := controllers.Users{}
-	router.GET("/users", gzip.Middleware(users.Index, false))
-	router.GET("/users/:name", gzip.Middleware(users.Show, false))
-	router.GET("/register", gzip.Middleware(users.New, false))
-	router.POST("/users/:name", gzip.Middleware(users.Update, false))
-	router.GET("/users/:name/edit/", gzip.Middleware(users.Edit, false))
-	router.POST("/register", gzip.Middleware(users.Create, false))
-	router.GET("/users/:name/images/:imageID", gzip.Middleware(users.Image, false))
+	router.GET("/users", route(users.Index, false))
+	router.GET("/users/:name", route(users.Show, false))
+	router.GET("/register", route(users.New, false))
+	router.POST("/users/:name", route(users.Update, false))
+	router.GET("/users/:name/edit/", route(users.Edit, true))
+	router.POST("/register", route(users.Create, false))
+	router.GET("/users/:name/images/:imageID", route(users.Image, false))
 
 	///////////////////////////////////////////////////////////
 	// Session Management
 	///////////////////////////////////////////////////////////
 
 	sessions := controllers.Sessions{}
-	router.GET("/signin", gzip.Middleware(sessions.New, false))
-	router.POST("/signin", gzip.Middleware(sessions.Create, false))
-	router.GET("/signout", gzip.Middleware(sessions.Destroy, false))
+	router.GET("/signin", route(sessions.New, false))
+	router.POST("/signin", route(sessions.Create, false))
+	router.GET("/signout", route(sessions.Destroy, false))
 
 	///////////////////////////////////////////////////////////
 	// Blog routes
 	///////////////////////////////////////////////////////////
 
 	blog := controllers.Blog{}
-	router.GET("/posts", gzip.Middleware(blog.Index, false))          // index
-	router.GET("/posts/new", gzip.Middleware(blog.New, false))        // new 		To make a new Post
-	router.POST("/posts", gzip.Middleware(blog.Create, false))        // create	To actually throw it in the database
-	router.GET("/post/:url", gzip.Middleware(blog.Show, false))       // show		Show a specific post
-	router.POST("/post/:url", gzip.Middleware(blog.Update, false))    // update Update a specific post
-	router.GET("/post/:url/edit/", gzip.Middleware(blog.Edit, false)) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
-	router.GET("/post/:url/images/:imageID", gzip.Middleware(blog.Image, false))
+	router.GET("/posts", route(blog.Index, false))         // index
+	router.GET("/posts/new", route(blog.New, true))        // new 		To make a new Post
+	router.POST("/posts", route(blog.Create, true))        // create	To actually throw it in the database
+	router.GET("/post/:url", route(blog.Show, false))      // show		Show a specific post
+	router.POST("/post/:url", route(blog.Update, true))    // update Update a specific post
+	router.GET("/post/:url/edit/", route(blog.Edit, true)) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
+	router.GET("/post/:url/images/:imageID", route(blog.Image, false))
 
 	///////////////////////////////////////////////////////////
 	// Examples routes
 	///////////////////////////////////////////////////////////
 
-	examples := controllers.Examples{}
-	router.GET("/examples", gzip.Middleware(examples.Index, false))
+	projects := controllers.Projects{}
+	router.GET("/projects", route(projects.Index, false))
 
 	///////////////////////////////////////////////////////////
 	// Static routes
 	// Caching Static files
 	///////////////////////////////////////////////////////////
 	fileServer := http.FileServer(http.Dir("public"))
-	router.GET("/static/*filepath", func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
+	router.GET("/static/*filepath", gzip.Middleware(func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
 		res.Header().Set("Vary", "Accept-Encoding")
 		res.Header().Set("Cache-Control", "public, max-age=7776000")
 		req.URL.Path = pm.ByName("filepath")
 		fileServer.ServeHTTP(res, req)
-	})
+	}))
 	return router
 }

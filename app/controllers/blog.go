@@ -5,11 +5,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
@@ -18,15 +18,8 @@ import (
 type Blog helpers.Controller
 
 //Index New index function
-func (c Blog) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) Index(a helpers.RouterArgs) {
+	var err error
 	var blogs []models.Blog
 	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
 		blogs, err = models.GetBlogsByTags(strings.ToLower(a.Request.FormValue("search")))
@@ -38,29 +31,17 @@ func (c Blog) Index(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 		return
 	}
 	users, _ := models.AllUsers()
-	// blog, err := models.FindBlogByURL(params.ByName("url"))
-	// author, err := models.FindUserByID(blog.UserID)
 	view := "blog/index"
 	helpers.Render(a, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"blog":   blogs,
-		"users":  users,
-		"count":  c.Globals.Count,
-		// "author": author,
+		"blog":  blogs,
+		"users": users,
+		"count": c.Globals.Count,
 	})
 }
 
 //New ....
-func (c Blog) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) New(a helpers.RouterArgs) {
 	helpers.Render(a, "blog/new", map[string]interface{}{
-		"UserID": session.Values["UserID"],
 		"blog": &models.Blog{
 			Title:   "",
 			Body:    "",
@@ -72,18 +53,11 @@ func (c Blog) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 }
 
 // Create ...
-func (c Blog) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) Create(a helpers.RouterArgs) {
+	session := a.Session
 	User := session.Values["UserID"]
 
 	// File processing ...
-	// Note to self, this needs to be made optional...
 	file, _, _ := a.Request.FormFile("file")
 	fileBytes, _ := ioutil.ReadAll(file)
 	tags := strings.Split(strings.ToLower(a.Request.FormValue("tags")), ",")
@@ -93,7 +67,7 @@ func (c Blog) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	// URL Processing
 	rawURL := a.Request.FormValue("title")
 	URL := strings.Replace(rawURL, " ", "-", -1)
-	_, err = models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes)
+	_, err := models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes)
 	if err != nil {
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
@@ -102,14 +76,7 @@ func (c Blog) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 }
 
 // Update ...
-func (c Blog) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	_, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) Update(a helpers.RouterArgs) {
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
 		blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 		if err != nil {
@@ -132,6 +99,16 @@ func (c Blog) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	for k, v := range tags {
 		tags[k] = strings.TrimSpace(v)
 	}
+	hasScript, err := regexp.MatchString("(?:<script.*?>|on(?:click|load|blur|focus|mouse(?:in|out)|hover)\\s*=\\s*['\"]|href\\s*=\\s*['\"]javascript\\:)", a.Request.FormValue("body"))
+	if err != nil {
+		helpers.Logger.Printf("There is an error in %s", err)
+		return
+	}
+	if hasScript {
+		helpers.Logger.Printf("Body form has script tag")
+		http.Redirect(a.Response, a.Request, "/post/"+a.Params.ByName("url")+"/edit", 302)
+		return
+	}
 	newPost := map[string]interface{}{}
 	for _, key := range []string{"title", "body", "url"} {
 		value := a.Request.FormValue(key)
@@ -139,6 +116,7 @@ func (c Blog) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 			newPost[key] = value
 		}
 	}
+
 	if tags != nil {
 		newPost["tags"] = tags
 	}
@@ -162,14 +140,7 @@ func (c Blog) Update(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 }
 
 // Show shows selected blog
-func (c Blog) Show(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) Show(a helpers.RouterArgs) {
 	blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -177,38 +148,26 @@ func (c Blog) Show(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		return
 
 	}
-	view := "blog/show"
-	helpers.Render(a, view, map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"post":   blog,
+	helpers.Render(a, "blog/show", map[string]interface{}{
+		"post": blog,
 	})
 }
 
 // Edit shows selected blog
-func (c Blog) Edit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Blog) Edit(a helpers.RouterArgs) {
 	blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
-
 	}
 	helpers.Render(a, "blog/edit", map[string]interface{}{
-		"UserID": session.Values["UserID"],
-		"blog":   blog,
+		"blog": blog,
 	})
 }
 
 // Image shows selected blog
-func (c Blog) Image(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+func (c Blog) Image(a helpers.RouterArgs) {
 	b, err := models.GetImageByID(a.Params.ByName("imageID"))
 	if err != nil {
 		helpers.Logger.Println(err)

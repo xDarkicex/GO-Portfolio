@@ -17,7 +17,24 @@ type errorLog struct {
 
 func (e errorLog) Write(p []byte) (n int, err error) {
 	fmt.Println("Error: " + string(p))
-	if config.Verbose == 0 {
+	if !config.Verbose {
+		file, _ := os.OpenFile(config.ErrorFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		file.WriteString(string(p))
+		sendMSG(string(p))
+		sendSMS(string(p))
+		// Close the file when the surrounding function exists
+		defer file.Close()
+	}
+
+	return n, err
+}
+
+type shutDownLog struct {
+}
+
+func (e shutDownLog) Write(p []byte) (n int, err error) {
+	fmt.Println("Server: " + string(p))
+	if !config.Verbose {
 		file, _ := os.OpenFile(config.ErrorFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 		file.WriteString(string(p))
 		sendMSG(string(p))
@@ -31,6 +48,9 @@ func (e errorLog) Write(p []byte) (n int, err error) {
 
 // Logger is a helpper method to print out a more useful error message
 var Logger = log.New(errorLog{}, "", log.Lmicroseconds|log.Lshortfile)
+
+// ShutDown log of server shutdown
+var ShutDown = log.New(shutDownLog{}, "", log.Ltime)
 
 func sendMSG(msg string) {
 	ircobj := irc.IRC("PortfolioGo", "golang") //Create new ircobj

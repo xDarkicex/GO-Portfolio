@@ -5,6 +5,7 @@ import (
 
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"regexp"
 	"strings"
@@ -51,7 +52,7 @@ type User struct {
 	FullName     string
 	Skills       string
 	Experience   string
-	Bio          string
+	Bio          template.HTML
 	Admin        bool
 	Email        string
 	Password     string
@@ -72,7 +73,7 @@ func userify(e dbUser) (user User) {
 		FullName:     e.FullName,
 		Skills:       e.Skills,
 		Experience:   e.Experience,
-		Bio:          e.Bio,
+		Bio:          template.HTML(e.Bio),
 		Admin:        e.Admin,
 		Email:        e.Email,
 		Password:     e.Password,
@@ -230,7 +231,7 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 			helpers.Logger.Println(err)
 			return err
 		}
-		defer helpers.Close(gridFile)
+		defer helpers.Close(gridFile.Close)
 		_, err = gridFile.Write(updated["Avatar"].([]byte))
 		if err != nil {
 			helpers.Logger.Println(err)

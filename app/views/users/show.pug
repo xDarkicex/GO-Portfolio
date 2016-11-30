@@ -1,15 +1,16 @@
 extends ../layouts/application.pug
-block main
+
+block main-content
     div.container-fluid
-        h1= user.FullName
-        div.Avatar(style="height: 150px; width: 150px; border-radius: 50%; background: url(/users/"+user.Name+"/images/"+user.Avatar+")center center no-repeat;background-size: cover;")
-        p= user.Name
-        if user.Admin == true
+        h1= .user.FullName
+        div.Avatar(style="height: 150px; width: 150px; border-radius: 50%; background: url(/users/{{.user.Name}}/images/{{.user.Avatar}})center center no-repeat;background-size: cover;")
+        p= .user.Name
+        if .user.Admin
             h1.badge Admin
         else
             h1.badge User
         hr
-        p= user.Skills
-        p= user.Experience
-        p!= user.Bio
-        h2= user.Email
+        p= .user.Skills
+        p= .user.Experience
+        p= .user.Bio
+        h2= .user.Email

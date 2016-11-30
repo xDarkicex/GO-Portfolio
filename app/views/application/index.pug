@@ -1,18 +1,20 @@
-extends ../layouts/application.pug
-block main
-    //- script(src='/static/assets/scripts/home.js')
+extends ./app/views/layouts/application
+
+block main-content
     link(href='//cdn.jsdelivr.net/devicons/1.8.0/css/devicons.min.css', rel='stylesheet',type="text/css")
     div.jumbotron
-        h1.display-1: b.lang
+        h1.display-1
+            b.lang
         span.devicons
         i.fa.fa-wa.fa-angle-double-down.fa-4x.animated.bounce#arrows
     div.container-fluid
         h1 Gentry Rolofson
         div#scrolled
-            P console.log("Backend Powered by: Go version 1.7.1");
+            P console.log("Backend Powered by: Go version 1.7.3");
             p console.log("Javascript Preprocessor: TypeScript");
             p console.log("serverMux: httprouter");
             p console.log("session: gorilla sessions");
+            p console.log("Template engine by: Joker/jade")
             p console.log("Frontend by: Bootstrap");
             P console.log("Templated by: Pug.Js");
             P console.log("Styled by: SCSS");
@@ -22,11 +24,10 @@ block main
                 p.h3 Newest Blog Posts
                 hr
             div#cards
-                if blog
-                    each post in blog
-                        div.card
-                            div.card-img-top(style="height: 150px; background: url(/post/"+post.URL+"/images/"+post.BlogImage+")center center no-repeat;background-size: cover;")
-                            div.card-block
-                                h4.card-title= post.Title
-                                p.card-text!= post.Body
-                                a.btn.btn-primary(href=("/post/"+post.URL)) Read More
+                range .blog
+                    div.card
+                        div.card-img-top(style="height: 150px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                             h4.card-title= .Title
+                        div.card-block {{.Body}}
+                        div.end
+                            a(href=/post/{{.URL}}) Read More

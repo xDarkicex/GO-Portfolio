@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	"github.com/julienschmidt/httprouter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
@@ -14,20 +13,13 @@ import (
 type Sessions helpers.Controller
 
 // New ...
-func (c Sessions) New(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
+func (c Sessions) New(a helpers.RouterArgs) {
 	helpers.Render(a, "sessions/new", map[string]interface{}{})
 }
 
 // Create ..
-func (c Sessions) Create(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Sessions) Create(a helpers.RouterArgs) {
+	session := a.Session
 	user, err := models.Login(a.Request.FormValue("name"), a.Request.FormValue("password"))
 	if err != nil {
 		fmt.Println(err)
@@ -47,14 +39,8 @@ func (c Sessions) Create(w http.ResponseWriter, r *http.Request, ps httprouter.P
 }
 
 // Destroy ...
-func (c Sessions) Destroy(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
-	session, err := helpers.Store().Get(a.Request, "user-session")
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
+func (c Sessions) Destroy(a helpers.RouterArgs) {
+	session := a.Session
 	session.Options = &sessions.Options{
 		MaxAge: -1,
 		Path:   "/",
