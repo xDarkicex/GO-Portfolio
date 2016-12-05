@@ -7,17 +7,6 @@ import (
 )
 
 func init() {
-	Load()
-	Version = Configed.Version
-	Port = Configed.Port
-	Host = Configed.Host
-	ENV = Configed.Env
-	EMAIL = Configed.Email
-	SMTPHOST = Configed.Stmp.Host
-	SMTPPORT = Configed.Stmp.Port
-	SMTPPASSWORD = Configed.Stmp.Password
-	ErrorFile = Configed.Errorfile
-	Verbose = Configed.Verbose
 
 }
 
@@ -51,6 +40,16 @@ func Load() {
 	}
 
 	fmt.Println(Configed)
+	Version = Configed.Version
+	Port = Configed.Port
+	Host = Configed.Host
+	ENV = Configed.Env
+	EMAIL = Configed.Email
+	SMTPHOST = Configed.Stmp.Host
+	SMTPPORT = Configed.Stmp.Port
+	SMTPPASSWORD = Configed.Stmp.Password
+	ErrorFile = Configed.Errorfile
+	Verbose = Configed.Verbose
 }
 
 // Version number

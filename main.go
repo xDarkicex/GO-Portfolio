@@ -35,7 +35,7 @@ var (
 )
 
 func init() {
-
+	config.Load()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	if config.ENV != "production" {
 		compileAssets()
