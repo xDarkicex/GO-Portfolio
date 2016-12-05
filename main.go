@@ -37,7 +37,9 @@ var (
 func init() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	compileAssets()
+	if config.ENV != "production" {
+		compileAssets()
+	}
 	// mem, err := memcache.New("127.0.0.1:11211")
 	// if err != nil {
 	// 	helpers.Logger.Fatalln(err)
@@ -78,10 +80,13 @@ func main() {
 		// Accually Close DB session, maintain DATA integrity
 		session.Close()
 
-		// Removes Temp, compiled JS files
-		os.RemoveAll("./public/assets/scripts/")
-		// // Remove Temp, comipled stylesheets
-		os.RemoveAll("./public/assets/stylesheets/")
+		if config.ENV != "production" {
+			// Removes Temp, compiled JS files
+			os.RemoveAll("./public/assets/scripts/")
+			// // Remove Temp, comipled stylesheets
+			os.RemoveAll("./public/assets/stylesheets/")
+		}
+
 		helpers.ShutDown.Printf("Server Shutdown by User.")
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
