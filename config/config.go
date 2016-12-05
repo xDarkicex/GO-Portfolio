@@ -3,10 +3,10 @@ package config
 import "os"
 
 // Version number
-var Version = "1.8.1"
+var Version = "1.9.5"
 
 // Port is the hole we should use.
-var Port = "3000"
+var Port = "80"
 
 // Host is the ip we use to listen on.
 var Host = "0.0.0.0"

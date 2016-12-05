@@ -17,7 +17,6 @@ import (
 	"sync"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/rainycape/memcache"
 	"github.com/weidewang/go-strftime"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/config/router"
@@ -39,19 +38,19 @@ func init() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	compileAssets()
-	mem, err := memcache.New("127.0.0.1:11211")
-	if err != nil {
-		helpers.Logger.Fatalln(err)
-	}
+	// mem, err := memcache.New("127.0.0.1:11211")
+	// if err != nil {
+	// 	helpers.Logger.Fatalln(err)
+	// }
 	fmt.Println("Getting routes")
-	mem.Add(&memcache.Item{Key: "foo", Value: []byte("testmemcache setup")})
-	mc1, err := mem.Get("foo")
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	fmt.Println(string(mc1.Value))
+	// mem.Add(&memcache.Item{Key: "foo", Value: []byte("testmemcache setup")})
+	// mc1, err := mem.Get("foo")
+	// if err != nil {
+	// 	helpers.Logger.Println(err)
+	// }
+	// fmt.Println(string(mc1.Value))
 	routes = router.GetRoutes()
-	err = db.Dial()
+	err := db.Dial()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,7 +100,7 @@ func compileAssets() {
 	compiled := make(chan bool)
 
 	go func() {
-
+		fmt.Println("Sass Assets")
 		err := exec.Command(
 			"sass",
 			"--watch",
@@ -116,7 +115,7 @@ func compileAssets() {
 	}()
 
 	go func() {
-
+		fmt.Println("Typscripts Assets")
 		applicationFiles, _ := filepath.Glob("./app/assets/typescripts/application/*.ts")
 		err := exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/application/", "--watch"}, applicationFiles...)...).Start()
 		if err != nil {
@@ -127,7 +126,7 @@ func compileAssets() {
 		close(compiled)
 	}()
 	go func() {
-
+		fmt.Println("Typscripts Assets")
 		blogFiles, _ := filepath.Glob("./app/assets/typescripts/blog/*.ts")
 		err := exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/blog/", "--watch"}, blogFiles...)...).Start()
 		if err != nil {
@@ -139,7 +138,7 @@ func compileAssets() {
 		close(compiled)
 	}()
 	go func() {
-
+		fmt.Println("Typscripts Assets")
 		exampleFiles, _ := filepath.Glob("./app/assets/typescripts/examples/*.ts")
 		err := exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/examples/", "--watch"}, exampleFiles...)...).Start()
 		if err != nil {
@@ -151,7 +150,7 @@ func compileAssets() {
 		close(compiled)
 	}()
 	go func() {
-
+		fmt.Println("Typscripts Assets")
 		userFiles, _ := filepath.Glob("./app/assets/typescripts/users/*.ts")
 		err := exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/users/", "--watch"}, userFiles...)...).Start()
 		if err != nil {
@@ -163,7 +162,7 @@ func compileAssets() {
 		close(compiled)
 	}()
 	go func() {
-
+		fmt.Println("Typscripts Assets")
 		files, _ := filepath.Glob("./app/assets/typescripts/*.ts")
 		err := exec.Command("tsc", append([]string{"--outDir", "./public/assets/scripts/", "--watch"}, files...)...).Start()
 		if err != nil {
