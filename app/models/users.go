@@ -231,7 +231,7 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 			helpers.Logger.Println(err)
 			return err
 		}
-		defer helpers.Close(gridFile.Close)
+		defer helpers.Close(gridFile)
 		_, err = gridFile.Write(updated["Avatar"].([]byte))
 		if err != nil {
 			helpers.Logger.Println(err)

@@ -12,9 +12,12 @@ import (
 	"syscall"
 	"time"
 
+	mgo "gopkg.in/mgo.v2"
+
 	"sync"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/rainycape/memcache"
 	"github.com/weidewang/go-strftime"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/config/router"
@@ -29,15 +32,26 @@ import (
 var (
 	routes    *httprouter.Router
 	waitGroup sync.WaitGroup
+	session   *mgo.Session
 )
 
 func init() {
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	compileAssets()
-
+	mem, err := memcache.New("127.0.0.1:11211")
+	if err != nil {
+		helpers.Logger.Fatalln(err)
+	}
 	fmt.Println("Getting routes")
+	mem.Add(&memcache.Item{Key: "foo", Value: []byte("testmemcache setup")})
+	mc1, err := mem.Get("foo")
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
+	fmt.Println(string(mc1.Value))
 	routes = router.GetRoutes()
-	err := db.Dial()
+	err = db.Dial()
 	if err != nil {
 		log.Fatal(err)
 	}

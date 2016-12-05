@@ -106,7 +106,7 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
-	defer helpers.Close(gridFile.Close)
+	defer helpers.Close(gridFile)
 	_, err = gridFile.Write(blogImage)
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -171,7 +171,7 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 			helpers.Logger.Println(err)
 			return err
 		}
-		defer helpers.Close(gridFile.Close)
+		defer helpers.Close(gridFile)
 		_, err = gridFile.Write(updated["blogImage"].([]byte))
 		if err != nil {
 			helpers.Logger.Println(err)

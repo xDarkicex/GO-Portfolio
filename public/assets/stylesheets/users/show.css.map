@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,oBAAqB,CACnB,gBAAgB,CAAE,IAAI,CACtB,MAAM,CAAE,cAAc,CACtB,UAAU,CAAE,iCAAoC,CAChD,OAAO,CAAE,YAAY,CACrB,OAAO,CAAE,OAAO,CAChB,KAAK,CAAE,IAAI,CACX,cAAc,CAAE,MAAM,CACtB,aAAa,CAAE,GAAG,CAClB,SAAS,CAAE,IAAI,CACf,WAAW,CAAE,IAAI,CACjB,MAAM,CAAE,IAAI",
-"sources": ["../../../../app/assets/stylesheets/users/show.scss"],
-"names": [],
-"file": "show.css"
-}
