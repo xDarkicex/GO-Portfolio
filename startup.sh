@@ -11,7 +11,7 @@ kill $PID
 
 /usr/local/bin/tsc --outDir ./public/assets/scripts/application/ ./app/assets/typescripts/application/*.ts
 /usr/local/bin/tsc --outDir ./public/assets/scripts/users/ ./app/assets/typescripts/users/*.ts
-/usr/local/bin/tsc--outDir ./public/assets/scripts/blog/ ./app/assets/typescripts/blog/*.ts
+/usr/local/bin/tsc --outDir ./public/assets/scripts/blog/ ./app/assets/typescripts/blog/*.ts
 /usr/local/bin/tsc --outDir ./public/assets/scripts/examples/ ./app/assets/typescripts/examples/*.ts
 /usr/local/bin/tsc --outDir ./public/assets/scripts/ ./app/assets/typescripts/*.ts
 
