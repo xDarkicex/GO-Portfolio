@@ -54,7 +54,7 @@ func (c Application) Contact(a helpers.RouterArgs) {
 	m.From = mail.Address{Name: "From", Address: config.EMAIL}
 	m.To = []string{"grolofson@bitdev.io"}
 	auth := smtp.PlainAuth("", config.EMAIL, config.SMTPPASSWORD, config.SMTPHOST)
-	gmailSMTP := config.SMTPHOST + ":" + config.SMTPPORT
+	gmailSMTP := config.SMTPHOST + ":" + string(config.SMTPPORT)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
 		log.Fatal(err)
 	}

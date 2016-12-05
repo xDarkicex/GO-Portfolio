@@ -1,0 +1,14 @@
+{
+    "version": "1.9.8",
+    "port": 80,
+    "host": "0.0.0.0",
+    "errorfile": "error.log",
+    "verbose": true,
+    "email": "xDarkicex@gmail.com",
+    "smtp" : {
+        "host": "smtp.gmail.com",
+        "port": 587,
+        "password": "Vh402152Go!"
+    },
+    "env": "production"
+}

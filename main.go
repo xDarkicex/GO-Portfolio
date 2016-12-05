@@ -91,7 +91,7 @@ func main() {
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
-	listen := fmt.Sprintf("%s:%s", config.Host, config.Port)
+	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	fmt.Printf("Listening on %s\n", listen)
 	go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 

@@ -70,7 +70,7 @@ func sendSMS(msg string) {
 	m.From = mail.Address{Name: name, Address: address}
 	m.To = []string{"5596760527@txt.att.net"}
 	auth := smtp.PlainAuth("", config.EMAIL, config.SMTPPASSWORD, config.SMTPHOST)
-	gmailSMTP := config.SMTPHOST + ":" + config.SMTPPORT
+	gmailSMTP := config.SMTPHOST + ":" + string(config.SMTPPORT)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
 		log.Fatal(err)
 	}

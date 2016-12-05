@@ -1,9 +1,4 @@
 #!/usr/bin/bash
-export EMAIL=xDarkicex@gmail.com
-export SMTPHOST=smtp.gmail.com
-export SMTPPORT=587
-export SMTPPASSWORD='Vh402152Go!'
-export ENV=production
 /home/ubuntu/.rvm/gems/ruby-2.3.0/bin/sass --watch ./app/assets/stylesheets/:./public/assets/stylesheets/ --style compressed &
 PID=$!
 sleep 5
@@ -15,4 +10,4 @@ kill $PID
 /usr/local/bin/tsc --outDir ./public/assets/scripts/examples/ ./app/assets/typescripts/examples/*.ts
 /usr/local/bin/tsc --outDir ./public/assets/scripts/ ./app/assets/typescripts/*.ts
 
-/home/ubuntu/bin/PortfolioGo
+sudo /home/ubuntu/bin/PortfolioGo
