@@ -110,6 +110,7 @@ func compileAssets() {
 			return
 		}
 
+		fmt.Println("Sass Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
@@ -122,6 +123,7 @@ func compileAssets() {
 			helpers.Logger.Println(err)
 			return
 		}
+		fmt.Println("Typescript Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
@@ -134,6 +136,7 @@ func compileAssets() {
 			return
 		}
 
+		fmt.Println("Typescript Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
@@ -146,6 +149,7 @@ func compileAssets() {
 			return
 		}
 
+		fmt.Println("Typescript Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
@@ -158,6 +162,7 @@ func compileAssets() {
 			return
 		}
 
+		fmt.Println("Typescript Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
@@ -170,6 +175,7 @@ func compileAssets() {
 			return
 		}
 
+		fmt.Println("Typescript Assets Compiled")
 		compiled <- true
 		close(compiled)
 	}()
