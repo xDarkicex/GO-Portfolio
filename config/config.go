@@ -26,8 +26,6 @@ var SMTPPORT = os.Getenv("SMTPPORT")
 // SMTPPASSWORD ...
 var SMTPPASSWORD = os.Getenv("SMTPPASSWORD")
 
-// var SMTPPASSWORD = "Vh402152Go!"
-
 //ErrorFile error files
 var ErrorFile = "error.log"
 
