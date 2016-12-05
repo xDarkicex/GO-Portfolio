@@ -8,6 +8,17 @@ import (
 
 func init() {
 	Load()
+	Version = Configed.Version
+	Port = Configed.Port
+	Host = Configed.Host
+	ENV = Configed.Env
+	EMAIL = Configed.Email
+	SMTPHOST = Configed.Stmp.Host
+	SMTPPORT = Configed.Stmp.Port
+	SMTPPASSWORD = Configed.Stmp.Password
+	ErrorFile = Configed.Errorfile
+	Verbose = Configed.Verbose
+
 }
 
 type Config struct {
@@ -25,7 +36,7 @@ type Config struct {
 	}
 }
 
-var configed Config
+var Configed Config
 
 //Load loads config file
 func Load() {
@@ -34,40 +45,40 @@ func Load() {
 		fmt.Println(err, config)
 	}
 	// fmt.Println(config)
-	err = json.Unmarshal(config, &configed)
+	err = json.Unmarshal(config, &Configed)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(configed)
+	fmt.Println(Configed)
 }
 
 // Version number
-var Version = configed.Version
+var Version string
 
-// // Port is the hole we should use.
-var Port = configed.Port
+// Port is the hole we should use.
+var Port int
 
-// // Host is the ip we use to listen on.
-var Host = configed.Host
+// Host is the ip we use to listen on.
+var Host string
 
-// //ENV is the enviroment for server
-var ENV = configed.Env
+// ENV is the enviroment for server
+var ENV string
 
-// // EMAIL address ..
-var EMAIL = configed.Email
+// EMAIL address ..
+var EMAIL string
 
-// // SMTPHOST smtp ...
-var SMTPHOST = configed.Stmp.Host
+// SMTPHOST smtp ...
+var SMTPHOST string
 
-// // SMTPPORT ..
-var SMTPPORT = configed.Stmp.Port
+// SMTPPORT ...
+var SMTPPORT int
 
-// // SMTPPASSWORD ...
-var SMTPPASSWORD = configed.Stmp.Password
+// SMTPPASSWORD ...
+var SMTPPASSWORD string
 
-// //ErrorFile error files
-var ErrorFile = configed.Errorfile
+// ErrorFile error files
+var ErrorFile string
 
 //Verbose is for turning error logs of and on.
-var Verbose = configed.Verbose
+var Verbose bool
