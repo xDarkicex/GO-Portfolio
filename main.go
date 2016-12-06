@@ -64,6 +64,7 @@ func main() {
 	t := time.Now()
 	s := strftime.Strftime(&t, "%H:%M:%S")
 	fmt.Printf("[%s] \n", s)
+	fmt.Printf("configed: %s = Version: %s\n", config.Configed.Version, config.Version)
 	fmt.Printf("Number Of Cores on server: %d\n", runtime.GOMAXPROCS(runtime.NumCPU()))
 
 	// create self calling go routine

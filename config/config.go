@@ -50,6 +50,7 @@ func Load() {
 	SMTPPASSWORD = Configed.Stmp.Password
 	ErrorFile = Configed.Errorfile
 	Verbose = Configed.Verbose
+	fmt.Printf("configed: %s = Version: %s\n", Configed.Version, Version)
 }
 
 // Version number
