@@ -23,4 +23,5 @@ func AddFlash(a RouterArgs, f Flash) {
 	json.NewEncoder(buf).Encode(f)
 	session, _ := _store.Get(a.Request, "user-session")
 	session.AddFlash(buf.String())
+	// Flashes are a fucking array of strings.
 }

@@ -1,4 +1,11 @@
 $breakpoint-tablet: 767px;
+
+.flash {
+     position: relative;
+     z-index: 9999;
+     top: 0!important;
+     left: 0!important;
+ }
 * { margin:0; padding: 0; box-sizing: border-box;}
 body {
     display: flex;

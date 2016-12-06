@@ -27,6 +27,11 @@ html(lang="en")
               form.navbar-form.navbar-right(role="search", method="get", action="/posts/")
                 div.form-group.shrinking#searching: input.form-control(type="text", name="search",autocomplete="off", placeholder="Search...")
                 div.btn.btn-default(onclick="shrinker()"): i.fa-search.fa
+    range ParseFlashes .flashes
+      div(class="flash alert alert-dismissible alert-{{.Type}}" style="display: none;")
+        button(type="button" class="close" data-dismiss="alert") &times;
+        strong {{.Message}}
+    script $(function(){ $(".flash").slideToggle().delay(400+5000).slideToggle() }); console.log('Hiding Flash')
       //- p Header
     main
       block main-content

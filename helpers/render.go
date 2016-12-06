@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -25,11 +26,11 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 
 	object["current_user"] = a.User
 	object["view"] = view
-	object["flashes"] = a.Session.Flashes()
 
-	times["gorilla-save"] = time.Now()
+	// times["gorilla-save"] = time.Now()
+	object["flashes"] = a.Session.Flashes()
 	a.Session.Save(a.Request, a.Response)
-	times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
+	// times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
 
 	times["jade"] = time.Now()
 	layout, err := jade.ParseFile("./app/views/layouts/application.pug")
@@ -63,12 +64,25 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	fmap["Join"] = func(a []string, b string) string {
 		return strings.Join(a, b)
 	}
+	fmap["ParseFlashes"] = func(fucks []interface{}) []Flash {
+		var flashes []Flash
+		// fmt.Println("Parsin dem Flashes")
+		// fmt.Println(fucks)
+		for _, k := range fucks {
+			var flash Flash
+			json.Unmarshal([]byte(k.(string)), &flash)
+			flashes = append(flashes, flash)
+		}
+		// fmt.Println(flashes)
+		return flashes
+
+	}
 	times["render-page"] = time.Now()
-	gotpl, err := template.New("layout").Parse(layoutMin)
+	gotpl, err := template.New("layout").Funcs(fmap).Parse(layoutMin)
 	if err != nil {
 		Logger.Printf("\nTemplate parse error: %v", err)
 	}
-	_, err = gotpl.New(view).Funcs(fmap).Parse(currentViewMin)
+	_, err = gotpl.New(view).Parse(currentViewMin)
 	if err != nil {
 		Logger.Printf("\nIndex parse error: %v", err)
 	}
