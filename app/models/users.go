@@ -135,7 +135,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		Password: string(hashedPass),
 	})
 	if err != nil {
-		fmt.Println("Can not Insert User")
+		fmt.Println(err)
 		return false, "Can't tell if in yet"
 	}
 	return true, "User created"
