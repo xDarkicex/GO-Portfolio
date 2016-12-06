@@ -8,7 +8,7 @@ var _session *mgo.Session
 // Dial dials for dialing mongo server
 func Dial() error {
 	var err error
-	_session, err = mgo.Dial("0.0.0.0")
+	_session, err = mgo.Dial("localhost")
 	if err != nil {
 		return err
 	}
