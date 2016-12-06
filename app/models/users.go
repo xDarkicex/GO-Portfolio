@@ -108,6 +108,8 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	defer session.Close()
 	admin := false
 	c := session.DB(config.ENV).C("User")
+	fmt.Println("Inside models")
+	fmt.Println(config.ENV, c)
 	amount, _ := c.Count()
 	if amount == 0 {
 		admin = true
@@ -125,6 +127,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		return false, "Not vaild Github username!"
 	}
 	// Insert Datas
+	//yabrokeit I think its mongo....
 	err = c.Insert(&User{
 		Email:    email,
 		Name:     name,
