@@ -128,7 +128,7 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	}
 	// Insert Datas
 	//yabrokeit I think its mongo....
-	err = c.Insert(&User{
+	err = c.Insert(&dbUser{
 		Email:    email,
 		Name:     name,
 		Admin:    admin,
