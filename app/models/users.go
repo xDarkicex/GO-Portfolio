@@ -107,9 +107,9 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	session := db.Session()
 	defer session.Close()
 	admin := false
-	c := session.DB(config.ENV).C("User")
+	c := session.DB(config.Data.Env).C("User")
 	fmt.Println("Inside models")
-	fmt.Println(config.ENV, c)
+	fmt.Println(config.Data.Env, c)
 	amount, _ := c.Count()
 	if amount == 0 {
 		admin = true
@@ -127,7 +127,6 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		return false, "Not vaild Github username!"
 	}
 	// Insert Datas
-	//yabrokeit I think its mongo....
 	err = c.Insert(&dbUser{
 		Email:    email,
 		Name:     name,
@@ -146,7 +145,7 @@ func Login(name string, password string) (user User, err error) {
 	s := db.Session()
 	defer s.Close()
 	var rawUser dbUser
-	err = s.DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	err = s.DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	user = userify(rawUser)
 	if err != nil {
 		return user, errors.New("There is no user with this username/password combination")
@@ -161,7 +160,7 @@ func Login(name string, password string) (user User, err error) {
 //FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
 	var rawUser dbUser
-	err = db.Session().DB(config.ENV).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	user = userify(rawUser)
 	return user, err
 }
@@ -169,7 +168,7 @@ func FindUserByName(name string) (user User, err error) {
 // FindUserByID ...
 func FindUserByID(userID bson.ObjectId) (user User, err error) {
 	var rawUser dbUser
-	err = db.Session().DB(config.ENV).C("User").FindId(userID).One(&rawUser)
+	err = db.Session().DB(config.Data.Env).C("User").FindId(userID).One(&rawUser)
 	if err != nil {
 		helpers.Logger.Println(err)
 	}
@@ -179,14 +178,14 @@ func FindUserByID(userID bson.ObjectId) (user User, err error) {
 
 // FinddbUserByID ...
 func finddbUserByID(id string) (user dbUser, err error) {
-	err = db.Session().DB(config.ENV).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
+	err = db.Session().DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
 	return user, err
 }
 
 //AllUsers finds all the users
 func AllUsers() (users []User, err error) {
 	var rawUsers []dbUser
-	err = db.Session().DB(config.ENV).C("User").Find(bson.M{}).All(&rawUsers)
+	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
 	for _, e := range rawUsers {
 		users = append(users, userify(e))
 	}
@@ -197,14 +196,14 @@ func AllUsers() (users []User, err error) {
 func UserDestroy(id bson.ObjectId) error {
 	session := db.Session()
 	defer session.Close()
-	return session.DB(config.ENV).C("User").RemoveId(id)
+	return session.DB(config.Data.Env).C("User").RemoveId(id)
 }
 
 // UserUpdate Update!
 func UserUpdate(id string, updated map[string]interface{}) error {
 	session := db.Session()
 	defer session.Close()
-	c := session.DB(config.ENV).C("User")
+	c := session.DB(config.Data.Env).C("User")
 	// Update Data currently is making new posts not updating, Also
 	// Want to make each field optional how?
 	newUser, err := finddbUserByID(id)
@@ -228,7 +227,7 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 		}
 	}
 	if updated["Avatar"] != nil {
-		gridFS := session.DB(config.ENV).GridFS("fs")
+		gridFS := session.DB(config.Data.Env).GridFS("fs")
 		gridFile, err := gridFS.Create("")
 		if err != nil {
 			helpers.Logger.Println(err)
@@ -248,4 +247,11 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func FirstUser() (user User, err error) {
+	var rawUser dbUser
+	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).One(&rawUser)
+	user = userify(rawUser)
+	return user, err
 }

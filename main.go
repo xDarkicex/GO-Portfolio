@@ -37,7 +37,7 @@ var (
 func init() {
 	config.Load()
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	if config.ENV != "production" {
+	if config.Data.Env != "production" {
 		compileAssets()
 	}
 	// mem, err := memcache.New("127.0.0.1:11211")
@@ -64,7 +64,6 @@ func main() {
 	t := time.Now()
 	s := strftime.Strftime(&t, "%H:%M:%S")
 	fmt.Printf("[%s] \n", s)
-	fmt.Printf("configed: %s = Version: %s\n", config.Configed.Version, config.Version)
 	fmt.Printf("Number Of Cores on server: %d\n", runtime.GOMAXPROCS(runtime.NumCPU()))
 
 	// create self calling go routine
@@ -81,7 +80,7 @@ func main() {
 		// Accually Close DB session, maintain DATA integrity
 		session.Close()
 
-		if config.ENV != "production" {
+		if config.Data.Env != "production" {
 			// Removes Temp, compiled JS files
 			os.RemoveAll("./public/assets/scripts/")
 			// // Remove Temp, comipled stylesheets
@@ -92,7 +91,7 @@ func main() {
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
-	listen := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
 	fmt.Printf("Listening on %s\n", listen)
 	go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 

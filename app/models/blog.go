@@ -40,7 +40,7 @@ type Blog struct {
 //AllBlogs finds all blog posts
 func AllBlogs() (blogs []Blog, err error) {
 	var rawblogs []dbBlog
-	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{}).All(&rawblogs)
+	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
 	for _, e := range rawblogs {
 		blogs = append(blogs, blogify(e))
 	}
@@ -74,7 +74,7 @@ func blogify(e dbBlog) (blog Blog) {
 // FindBlogByURL Returns blog by Title
 func FindBlogByURL(url string) (blog Blog, err error) {
 	var rawblog dbBlog
-	err = db.Session().DB(config.ENV).C("Blog").Find(bson.M{"url": url}).One(&rawblog)
+	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{"url": url}).One(&rawblog)
 	blog = blogify(rawblog)
 	return blog, err
 }
@@ -82,7 +82,7 @@ func FindBlogByURL(url string) (blog Blog, err error) {
 // FindBlogByID ...
 func FindBlogByID(id string) (blog Blog, err error) {
 	var rawblog dbBlog
-	err = db.Session().DB(config.ENV).C("Blog").FindId(bson.ObjectIdHex(id)).One(&rawblog)
+	err = db.Session().DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&rawblog)
 	blog = blogify(rawblog)
 	return blog, err
 }
@@ -90,7 +90,7 @@ func FindBlogByID(id string) (blog Blog, err error) {
 // FindBlogByID ...
 func findDbBlogByID(id string) (blog dbBlog, err error) {
 	// var rawblog dbBlog
-	err = db.Session().DB(config.ENV).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
+	err = db.Session().DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
 	// blog = blogify(rawblog)
 	return blog, err
 }
@@ -99,7 +99,7 @@ func findDbBlogByID(id string) (blog dbBlog, err error) {
 func BlogCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, blogImage []byte) (string, error) {
 	session := db.Session()
 	defer session.Close()
-	gridFS := session.DB(config.ENV).GridFS("fs")
+	gridFS := session.DB(config.Data.Env).GridFS("fs")
 	gridFile, err := gridFS.Create("")
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -113,7 +113,7 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
-	c := session.DB(config.ENV).C("Blog")
+	c := session.DB(config.Data.Env).C("Blog")
 	// Insert Datas
 	err = c.Insert(&dbBlog{
 		Title:     title,
@@ -137,14 +137,14 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 func BlogDestroy(id bson.ObjectId) error {
 	session := db.Session()
 	defer session.Close()
-	return session.DB(config.ENV).C("Blog").RemoveId(id)
+	return session.DB(config.Data.Env).C("Blog").RemoveId(id)
 }
 
 // BlogUpdate Blog Update!
 func BlogUpdate(id string, updated map[string]interface{}) error {
 	session := db.Session()
 	defer session.Close()
-	c := session.DB(config.ENV).C("Blog")
+	c := session.DB(config.Data.Env).C("Blog")
 	// Update Data currently is making new posts not updating, Also
 	// Want to make each field optional how?
 	newPost, err := findDbBlogByID(id)
@@ -165,7 +165,7 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 		newPost.Tags = updated["tags"].([]string)
 	}
 	if updated["blogImage"] != nil {
-		gridFS := session.DB(config.ENV).GridFS("fs")
+		gridFS := session.DB(config.Data.Env).GridFS("fs")
 		gridFile, err := gridFS.Create("")
 		if err != nil {
 			helpers.Logger.Println(err)
@@ -189,7 +189,7 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 
 // GetImageByID ...
 func GetImageByID(imageID string) ([]byte, error) {
-	gridFS := db.Session().DB(config.ENV).GridFS("fs")
+	gridFS := db.Session().DB(config.Data.Env).GridFS("fs")
 	gridFile, err := gridFS.OpenId(bson.ObjectIdHex(imageID))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -211,7 +211,7 @@ func GetImageByID(imageID string) ([]byte, error) {
 // GetBlogsByTags ...
 func GetBlogsByTags(searchTerm string) ([]Blog, error) {
 	var blogs []Blog
-	err := db.Session().DB(config.ENV).C("Blog").Find(bson.M{
+	err := db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
 		"tags": searchTerm,
 	}).All(&blogs)
 	if err != nil {

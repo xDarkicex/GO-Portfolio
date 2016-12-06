@@ -17,8 +17,8 @@ type errorLog struct {
 
 func (e errorLog) Write(p []byte) (n int, err error) {
 	fmt.Println("Error: " + string(p))
-	if !config.Verbose {
-		file, _ := os.OpenFile(config.ErrorFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	if !config.Data.Verbose {
+		file, _ := os.OpenFile(config.Data.Errorfile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 		file.WriteString(string(p))
 		sendMSG(string(p))
 		sendSMS(string(p))
@@ -34,8 +34,8 @@ type shutDownLog struct {
 
 func (e shutDownLog) Write(p []byte) (n int, err error) {
 	fmt.Println("Server: " + string(p))
-	if !config.Verbose {
-		file, _ := os.OpenFile(config.ErrorFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	if !config.Data.Verbose {
+		file, _ := os.OpenFile(config.Data.Errorfile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 		file.WriteString(string(p))
 		sendMSG(string(p))
 		sendSMS(string(p))
@@ -69,8 +69,8 @@ func sendSMS(msg string) {
 	m := email.NewMessage(subject, body)
 	m.From = mail.Address{Name: name, Address: address}
 	m.To = []string{"5596760527@txt.att.net"}
-	auth := smtp.PlainAuth("", config.EMAIL, config.SMTPPASSWORD, config.SMTPHOST)
-	gmailSMTP := config.SMTPHOST + ":" + string(config.SMTPPORT)
+	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
+	gmailSMTP := config.Data.SMTP.Host + ":" + string(config.Data.SMTP.Port)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
 		log.Fatal(err)
 	}

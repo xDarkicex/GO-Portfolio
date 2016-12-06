@@ -36,7 +36,7 @@ type Project struct {
 // AllProjects Find all projects in mongoDB
 func AllProjects() (projects []Project, err error) {
 	var rawprojects []dbProject
-	err = db.Session().DB(config.ENV).C("Project").Find(bson.M{}).All(&rawprojects)
+	err = db.Session().DB(config.Data.Env).C("Project").Find(bson.M{}).All(&rawprojects)
 	for _, e := range rawprojects {
 		projects = append(projects, projectify(e))
 	}

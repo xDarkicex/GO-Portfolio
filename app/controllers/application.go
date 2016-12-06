@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/mail"
 	"net/smtp"
@@ -33,9 +32,9 @@ func (c Application) Index(a helpers.RouterArgs) {
 
 //About About me Pages
 func (c Application) About(a helpers.RouterArgs) {
-	user, err := models.FindUserByName("xDarkicex")
+	user, err := models.FirstUser()
 	if err != nil {
-		fmt.Println("There was an error")
+		fmt.Println(err)
 	}
 	helpers.Render(a, "application/about", map[string]interface{}{
 		"user": user,
@@ -49,12 +48,13 @@ func (c Application) Contact(a helpers.RouterArgs) {
 	body := (a.Request.FormValue("contactBody"))
 	subject := "Message From " + name + " - " + address
 	m := email.NewMessage(subject, body)
-	m.From = mail.Address{Name: "From", Address: config.EMAIL}
+	m.From = mail.Address{Name: "From", Address: config.Data.Email}
 	m.To = []string{"grolofson@bitdev.io"}
-	auth := smtp.PlainAuth("", config.EMAIL, config.SMTPPASSWORD, config.SMTPHOST)
-	gmailSMTP := config.SMTPHOST + ":" + string(config.SMTPPORT)
+	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
+	gmailSMTP := config.Data.SMTP.Host + ":" + string(config.Data.SMTP.Port)
+	fmt.Println(gmailSMTP)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	http.Redirect(a.Response, a.Request, "/", 302)
 }
