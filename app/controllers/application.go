@@ -7,8 +7,6 @@ import (
 	"net/mail"
 	"net/smtp"
 
-	"gopkg.in/mgo.v2/bson"
-
 	"github.com/scorredoira/email"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -35,7 +33,7 @@ func (c Application) Index(a helpers.RouterArgs) {
 
 //About About me Pages
 func (c Application) About(a helpers.RouterArgs) {
-	user, err := models.FindUserByID(bson.ObjectIdHex("580c1a8e0d89b87abd33df91"))
+	user, err := models.FindUserByName("xDarkicex")
 	if err != nil {
 		fmt.Println("There was an error")
 	}
