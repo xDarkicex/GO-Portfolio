@@ -6,6 +6,8 @@ import (
 	"net/mail"
 	"net/smtp"
 
+	"strconv"
+
 	"github.com/scorredoira/email"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -51,7 +53,8 @@ func (c Application) Contact(a helpers.RouterArgs) {
 	m.From = mail.Address{Name: "From", Address: config.Data.Email}
 	m.To = []string{"grolofson@bitdev.io"}
 	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
-	gmailSMTP := config.Data.SMTP.Host + ":" + string(config.Data.SMTP.Port)
+	gmailSMTP := config.Data.SMTP.Host + ":" + strconv.Itoa(config.Data.SMTP.Port)
+	fmt.Println(config.Data.SMTP.Port)
 	fmt.Println(gmailSMTP)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
 		fmt.Println(err)
