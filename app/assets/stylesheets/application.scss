@@ -1,183 +1,196 @@
 $breakpoint-tablet: 767px;
+$white: #fff;
+$blue: #2780e3;
+$red: #F44336;
 
 .flash {
-     position: relative;
-     z-index: 9999;
-     top: 0!important;
-     left: 0!important;
- }
-* { margin:0; padding: 0; box-sizing: border-box;}
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    main{
-        padding-top: 50px;
-        flex-grow: 1;
-        .jumbotron{
-            min-height: 95vh;
-            background: #F44336;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-direction: column;
-            .lang{
-                text-transform: uppercase;
-            } 
-        }
-    }
-    .well{
-    margin-bottom: 0!important;
-        }
-}
-button{
-    > i{
-        color: white;
-    }
-}
-.space{
-    margin-left: 15px;
-}
-.col-centered{
-    float: none!important;
-    margin: 0 auto;
+  left: 0;
+  position: relative;
+  top: 0;
+  z-index: 9999;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
+  padding-top: 50px;
+}
+
+.jumbotron {
+  align-items: center;
+  background: $red;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 95vh;
+
+  h1 {
+    text-align: center;
+
+    .lang {
+      text-transform: uppercase;
+    }
+  }
+}
+
+.well {
+  bottom: 0;
+}
+
+button {
+  > i {
+    color: $white;
+  }
+}
+
+.space {
+  margin-left: 15px;
+}
+
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}
 
 .animated {
-    -webkit-animation-duration: 2s;
-    animation-duration: 2s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-    animation-iteration-count: infinite;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
 }
 
 
 /*
  * Animation for webkit
 */
-@-webkit-keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);}
-    40% {-webkit-transform: translateY(-30px);}
-    60% {-webkit-transform: translateY(-15px);}
-} 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-30px);}
-    60% {transform: translateY(-15px);}
-} 
-
-body > main > div > h1 > ul > div > div{
-    cursor: inherit!important;
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {transform: translateY(0);}
+  40% {transform: translateY(-30px);}
+  60% {transform: translateY(-15px);}
 }
 
-/*
- * Adding the animation to our element
-*/
+
+// Adding the animation to our element
+
 .bounce {
-    -webkit-animation-name: bounce;
-    animation-name: bounce;
+  animation-name: bounce;
 }
 // Resister stuff
 
 .form-control-feedback {
-    position: relative!important;
-    top: 0;
-    right: 0;
-    z-index: 2;
-    display: block;
-    width: auto!important; 
-    height: auto!important;
-    line-height: inherit!important;
-    text-align: initial!important;
-    pointer-events: none;
+  display: block;
+  height: auto!important;
+  line-height: inherit!important;
+  pointer-events: none;
+  position: relative!important;
+  right: 0;
+  text-align: initial!important;
+  top: 0;
+  width: auto!important; 
+  z-index: 2;
 }
 
 span {
-    .devicons{
-        font-size: 10em;
-    }
+  .devicons {
+    font-size: 10em;
+  }
 }
-#searching{
+
+#searching {
+  border: 0;
+  color: $white;
+  outline: 0;
+  overflow: hidden;
+  $transition: linear all .25s;
+  transition: $transition;
+  width: 12em;
+
+  > input {
+    background: transparent;
     border: 0;
+    border-bottom: 2px solid white;
+    color: $white;
     outline: 0;
-    overflow: hidden;
-    color: white;
-    width:12em;
-    $transition: linear all 0.25s;
     transition: $transition;
-    -moz-transition: $transition;
-    -webkit-transition: $transition;
-    > input {
-        border: 0;
-        border-bottom: 2px solid white;
-        outline: 0;
-        color: white;
-        background: transparent;
-        transition: $transition;
-        -moz-transition: $transition;
-        -webkit-transition: $transition;
-        &:focus{
-            border-bottom-color:#2780e3;
-            transition: $transition;
-            -moz-transition: $transition;
-            -webkit-transition: $transition;
-            box-shadow: none!important;
-        }
+
+    &:focus {
+      border-bottom-color: $blue;
+      box-shadow: none;
+      transition: $transition;
+      }
     }
 }
-.card{
-   max-width: 14em;
-   min-width: 14em;
-   min-height: 20em;
-   &:not(:first-of-type){
-       margin-left: 1em;
-   }
-   .card-block{
-    p{
-        width: 12em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+
+.card {
+  max-width: 14em;
+  min-height: 20em;
+  min-width: 14em;
+
+  &:not(:first-of-type){
+    margin-left: 1em;
     }
-   }
+
+  .card-block {
+    p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 12em;
+    }
+    }
 }
 
-#cards{
-    display: flex;
-    flex-wrap: wrap;
+#cards {
+  display: flex;
+  flex-wrap: wrap;
 
 }
+
 .shrinking{
-    padding:0!important;
-    width: 0!important;
+  padding: 0;
+  width: 0;
 }
-ul{
-    li{
-        form{
-            display: flex;
-            }
+
+ul {
+  li {
+    form {
+      display: flex;
         }
+      }
     }
-
-
 @media (max-width: $breakpoint-tablet) {
-ul{
+  ul {
     padding-left: 0!important;
     padding-top: 15px;
-    li{
-        form{
-            flex-direction: row-reverse;
-        }
-    }
+
+    li {
+      form {
+        flex-direction: row-reverse;
+      }
+  }
 }
 
   #searching{
     width: 100%;
   }
-  .shrinking{
-    padding:initial!important;
-    width: 100%!important;
-}
+
+  .shrinking {
+    padding: initial;
+    width: 100%;
+    }
 }
