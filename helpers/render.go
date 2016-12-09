@@ -93,7 +93,7 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	times["render-page"] = time.Since(times["render-page"].(time.Time))
 
 	times["total"] = time.Since(times["total"].(time.Time))
-	if config.Data.Verbose == true {
+	if config.Data.Env != "production" {
 		fmt.Println(config.Data.Verbose)
 		fmt.Println("Render Start ==>")
 		defer fmt.Println("Render Complete ==> ", times["total"])
