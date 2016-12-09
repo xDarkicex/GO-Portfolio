@@ -39,12 +39,16 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	if config.Data.Env != "production" {
 		compileAssets()
+		fmt.Println("Getting routes")
+		t := time.Now()
+		s := strftime.Strftime(&t, "%H:%M:%S")
+		fmt.Printf("[%s] \n", s)
+		fmt.Printf("Number Of Cores on server: %d\n", runtime.GOMAXPROCS(runtime.NumCPU()))
 	}
 	// mem, err := memcache.New("127.0.0.1:11211")
 	// if err != nil {
 	// 	helpers.Logger.Fatalln(err)
 	// }
-	fmt.Println("Getting routes")
 	// mem.Add(&memcache.Item{Key: "foo", Value: []byte("testmemcache setup")})
 	// mc1, err := mem.Get("foo")
 	// if err != nil {
@@ -61,10 +65,6 @@ func init() {
 }
 
 func main() {
-	t := time.Now()
-	s := strftime.Strftime(&t, "%H:%M:%S")
-	fmt.Printf("[%s] \n", s)
-	fmt.Printf("Number Of Cores on server: %d\n", runtime.GOMAXPROCS(runtime.NumCPU()))
 
 	// create self calling go routine
 	go func() {
