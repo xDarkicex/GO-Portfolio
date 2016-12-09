@@ -4,9 +4,10 @@ block main-content
 
     div.container-fluid
         div.row(style="padding-top:20px;margin-left:0.1em;margin-right:5em;")
-            if .current_user.Admin
-                div.pull-right
-                    a.btn.btn-primary(href="/posts/new") New Post
+            if .current_user
+                if .current_user.Admin
+                    div.pull-right
+                        a.btn.btn-primary(href="/posts/new") New Post
             h1 Blog Index
         if .blog
              range .blog
