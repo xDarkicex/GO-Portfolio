@@ -1,9 +1,10 @@
-*DS_Store
-*.vscode
-*node_modules
-*.sass-cache
+.DS_Store
+.vscode
+node_modules
+.sass-cache
 config/config.json
 public/assets/stylesheets
 public/assets/scripts
 log/*
+
 pid.txt
