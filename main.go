@@ -65,7 +65,13 @@ func init() {
 }
 
 func main() {
-
+	go func() {
+		for true {
+			time.Sleep(5 * time.Second)
+			helpers.FlushLog()
+		}
+	}()
+	helpers.Logger.Println("Server Started")
 	// create self calling go routine
 	go func() {
 		interruptChannel := make(chan os.Signal, 0)
@@ -87,13 +93,13 @@ func main() {
 			os.RemoveAll("./public/assets/stylesheets/")
 		}
 
-		helpers.ShutDown.Printf("Server Shutdown by User.")
+		helpers.Logger.Printf("Server Shutdown.")
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
 
 	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
-	fmt.Printf("Listening on %s\n", listen)
+	helpers.Logger.Printf("Listening on %s\n", listen)
 	pidder()
 	go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 }

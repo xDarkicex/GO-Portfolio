@@ -3,7 +3,6 @@ package models
 import (
 	// "github.com/xDarkicex/Portfolienfig"
 
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -101,30 +100,46 @@ func CreateUser(email string, name string, password string) (bool, string) {
 	}
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("Hashing Password incomplete")
-		return false, "Encryption Failure"
+		code := helpers.RandStringRunes(5)
+		err := fmt.Sprintf("Error Hashing Password incomplete: %s\nHash Code: %s", err, code)
+		helpers.Logger.Println(err)
+		return false, fmt.Sprintf("Contact Site webmaster internal server error %s", code)
 	}
 	session := db.Session()
 	defer session.Close()
 	admin := false
 	c := session.DB(config.Data.Env).C("User")
-	fmt.Println("Inside models")
-	fmt.Println(config.Data.Env, c)
-	amount, _ := c.Count()
+	amount, err := c.Count()
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
 	if amount == 0 {
 		admin = true
 	}
-	amount, _ = c.Find(bson.M{"name": name}).Count()
-	if amount > 0 {
-		return false, "Username already exists."
+	amount, err = c.Find(bson.M{"name": name}).Count()
+	if err != nil {
+		// Hash CODE for internal server errors are for things I need to refrence later cant show users.
+		code := helpers.RandStringRunes(5)
+		err := fmt.Sprintf("Error: %s\nHash Code: %s", err, code)
+		helpers.Logger.Println(err)
+		return false, fmt.Sprintf("Contact Site webmaster internal server error %s", code)
 	}
-	expression, _ := regexp.Compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
+	if amount > 0 {
+		err := fmt.Errorf("Username taken: %s", err)
+		helpers.Logger.Println(err)
+		return false, err.Error()
+	}
+	expression, err := regexp.Compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$")
 	if !expression.MatchString(email) {
-		return false, "Email not valid."
+		err := fmt.Errorf("Not vaild Email: %s", err)
+		helpers.Logger.Println(err)
+		return false, err.Error()
 	}
 	github, err := http.Get("http://github.com/" + name)
 	if github.StatusCode == 404 {
-		return false, "Not vaild Github username!"
+		err := fmt.Errorf("Not vaild Github username: %s", err)
+		helpers.Logger.Println(err)
+		return false, err.Error()
 	}
 	// Insert Datas
 	err = c.Insert(&dbUser{
@@ -134,8 +149,9 @@ func CreateUser(email string, name string, password string) (bool, string) {
 		Password: string(hashedPass),
 	})
 	if err != nil {
-		fmt.Println(err)
-		return false, "Can't tell if in yet"
+		err := fmt.Errorf("Error inserting new User into User collection: %s", err)
+		helpers.Logger.Println(err)
+		return false, err.Error()
 	}
 	return true, "User created"
 }
@@ -148,11 +164,15 @@ func Login(name string, password string) (user User, err error) {
 	err = s.DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	user = userify(rawUser)
 	if err != nil {
-		return user, errors.New("There is no user with this username/password combination")
+		helpers.Logger.Println(err)
+		err := fmt.Errorf("There is no user with this username/password combination %s", err)
+		return user, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return user, errors.New("There is no user with this Username/password combination")
+		helpers.Logger.Println(err)
+		err := fmt.Errorf("There is no user with this Username/password combination %s", err)
+		return user, err
 	}
 	return user, nil
 }
@@ -161,6 +181,7 @@ func Login(name string, password string) (user User, err error) {
 func FindUserByName(name string) (user User, err error) {
 	var rawUser dbUser
 	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	helpers.Logger.Println(err)
 	user = userify(rawUser)
 	return user, err
 }
@@ -179,6 +200,9 @@ func FindUserByID(userID bson.ObjectId) (user User, err error) {
 // FinddbUserByID ...
 func finddbUserByID(id string) (user dbUser, err error) {
 	err = db.Session().DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
 	return user, err
 }
 
@@ -186,6 +210,9 @@ func finddbUserByID(id string) (user dbUser, err error) {
 func AllUsers() (users []User, err error) {
 	var rawUsers []dbUser
 	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
 	for _, e := range rawUsers {
 		users = append(users, userify(e))
 	}
@@ -204,11 +231,10 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 	session := db.Session()
 	defer session.Close()
 	c := session.DB(config.Data.Env).C("User")
-	// Update Data currently is making new posts not updating, Also
-	// Want to make each field optional how?
+	// Update Data
 	newUser, err := finddbUserByID(id)
-	fmt.Println(newUser)
 	if err != nil {
+		helpers.Logger.Println(err)
 		return err
 	}
 	for key, actual := range map[string]*string{
@@ -249,9 +275,13 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 	return nil
 }
 
+// FirstUser This returns the first user created
 func FirstUser() (user User, err error) {
 	var rawUser dbUser
 	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).One(&rawUser)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
 	user = userify(rawUser)
 	return user, err
 }

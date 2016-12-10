@@ -18,6 +18,7 @@ type config struct {
 	Version string
 	Port    int
 	Host    string
+	Secret  string
 	Verbose bool
 	Env     string
 	Email   string

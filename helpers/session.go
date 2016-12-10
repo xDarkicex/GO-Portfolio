@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/sessions"
+	"github.com/xDarkicex/PortfolioGo/config"
 )
 
 var _store *sessions.CookieStore
@@ -12,7 +13,7 @@ var _store *sessions.CookieStore
 // Store Get the mongo store
 func Store() *sessions.CookieStore {
 	if _store == nil {
-		_store = sessions.NewCookieStore([]byte("something-very-secret"))
+		_store = sessions.NewCookieStore([]byte(config.Data.Secret))
 	}
 	return _store
 }

@@ -7,6 +7,12 @@ import (
 	"net/smtp"
 	"os"
 
+	"bytes"
+
+	"strings"
+
+	"time"
+
 	"github.com/scorredoira/email"
 	irc "github.com/thoj/go-ircevent"
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -15,49 +21,47 @@ import (
 type errorLog struct {
 }
 
+var errBuf = bytes.NewBuffer([]byte{})
+
+// FlushLog Flush queue to file, sms and msg.
+func FlushLog() {
+	length := errBuf.Len()
+	if length > 0 {
+		fmt.Printf("Got length of %d\n", length)
+		file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		buffed := errBuf.String()
+		file.WriteString(buffed)
+		sendMSG(buffed)
+		sendSMS(buffed)
+		errBuf.Reset()
+		defer file.Close()
+	}
+}
+
 func (e errorLog) Write(p []byte) (n int, err error) {
 	if config.Data.Verbose {
-		fmt.Println("Error: " + string(p))
+		fmt.Print("Error: " + string(p))
 	}
-	file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-	file.WriteString(string(p))
-	sendMSG(string(p))
-	sendSMS(string(p))
-	// Close the file when the surrounding function exists
-	defer file.Close()
-
-	return n, err
-}
-
-type shutDownLog struct {
-}
-
-func (e shutDownLog) Write(p []byte) (n int, err error) {
-	if config.Data.Verbose {
-		fmt.Println("Server: " + string(p))
-	}
-	file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-	file.WriteString(string(p))
-	sendMSG(string(p))
-	sendSMS(string(p))
-	// Close the file when the surrounding function exists
-	defer file.Close()
-
+	errBuf.Write(p)
 	return n, err
 }
 
 // Logger is a helpper method to print out a more useful error message
 var Logger = log.New(errorLog{}, "", log.Lmicroseconds|log.Lshortfile)
 
-// ShutDown log of server shutdown
-var ShutDown = log.New(shutDownLog{}, "", log.Ltime)
-
 func sendMSG(msg string) {
 	ircobj := irc.IRC("PortfolioGo", "golang") //Create new ircobj
 	ircobj.Connect("irc.bitdev.io:6667")       //Connect to server
+	errors := strings.Split(msg, "\n")
 	ircobj.AddCallback("001", func(e *irc.Event) {
 		ircobj.Join("#notifier")
-		ircobj.Privmsg("#notifier", msg)
+		time.Sleep(1 * time.Second)
+		for k, v := range errors {
+			if len(v) > 0 {
+				ircobj.Privmsg("#notifier", fmt.Sprintf("Error %d: %s", k+1, v))
+			}
+		}
+		time.Sleep(1 * time.Second)
 		ircobj.Disconnect()
 	})
 }
@@ -70,7 +74,7 @@ func sendSMS(msg string) {
 	m.From = mail.Address{Name: name, Address: address}
 	m.To = []string{"5596760527@txt.att.net"}
 	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
-	gmailSMTP := config.Data.SMTP.Host + ":" + string(config.Data.SMTP.Port)
+	gmailSMTP := config.Data.SMTP.Host + ":" + fmt.Sprintf("%d", config.Data.SMTP.Port)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
 		log.Fatal(err)
 	}

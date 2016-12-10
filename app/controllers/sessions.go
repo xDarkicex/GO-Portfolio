@@ -27,7 +27,7 @@ func (c Sessions) Create(a helpers.RouterArgs) {
 		err = session.Save(a.Request, a.Response)
 		http.Redirect(a.Response, a.Request, "/signin", 302)
 	} else {
-		helpers.Logger.Println("Logging in as " + user.Name)
+		// helpers.Logger.Println("Logging in as " + user.Name)
 		session.Values["UserID"] = user.ID.Hex()
 		helpers.AddFlash(a, helpers.Flash{Type: "success", Message: "Sucessully logged in!"})
 		err := session.Save(a.Request, a.Response)
