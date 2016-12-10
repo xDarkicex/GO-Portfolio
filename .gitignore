@@ -5,3 +5,5 @@
 config/config.json
 public/assets/stylesheets
 public/assets/scripts
+log/*
+pid.txt
