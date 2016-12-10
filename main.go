@@ -91,10 +91,17 @@ func main() {
 		// Explicitly call for system exit this is more graceful
 		os.Exit(0)
 	}()
+
 	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
 	fmt.Printf("Listening on %s\n", listen)
+	pidder()
 	go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+}
 
+func pidder() {
+	SPID := syscall.Getpid()
+	file, _ := os.OpenFile("pid.txt", os.O_RDWR|os.O_CREATE, 0666)
+	file.WriteString(fmt.Sprintf("%d", SPID))
 }
 
 /////////////////////////////////////////////////////////////

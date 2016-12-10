@@ -16,15 +16,15 @@ type errorLog struct {
 }
 
 func (e errorLog) Write(p []byte) (n int, err error) {
-	fmt.Println("Error: " + string(p))
-	if !config.Data.Verbose {
-		file, _ := os.OpenFile(config.Data.Errorfile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-		file.WriteString(string(p))
-		sendMSG(string(p))
-		sendSMS(string(p))
-		// Close the file when the surrounding function exists
-		defer file.Close()
+	if config.Data.Verbose {
+		fmt.Println("Error: " + string(p))
 	}
+	file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	file.WriteString(string(p))
+	sendMSG(string(p))
+	sendSMS(string(p))
+	// Close the file when the surrounding function exists
+	defer file.Close()
 
 	return n, err
 }
@@ -33,15 +33,15 @@ type shutDownLog struct {
 }
 
 func (e shutDownLog) Write(p []byte) (n int, err error) {
-	fmt.Println("Server: " + string(p))
-	if !config.Data.Verbose {
-		file, _ := os.OpenFile(config.Data.Errorfile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
-		file.WriteString(string(p))
-		sendMSG(string(p))
-		sendSMS(string(p))
-		// Close the file when the surrounding function exists
-		defer file.Close()
+	if config.Data.Verbose {
+		fmt.Println("Server: " + string(p))
 	}
+	file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	file.WriteString(string(p))
+	sendMSG(string(p))
+	sendSMS(string(p))
+	// Close the file when the surrounding function exists
+	defer file.Close()
 
 	return n, err
 }

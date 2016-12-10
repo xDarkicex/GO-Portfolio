@@ -15,14 +15,13 @@ var Data config
 
 // config is for config.Data
 type config struct {
-	Version   string
-	Port      int
-	Host      string
-	Errorfile string
-	Verbose   bool
-	Env       string
-	Email     string
-	SMTP      smtp
+	Version string
+	Port    int
+	Host    string
+	Verbose bool
+	Env     string
+	Email   string
+	SMTP    smtp
 }
 
 // SMTP for smtp settings
@@ -43,8 +42,10 @@ func Load() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("\n")
-	fmt.Println(Data)
-	fmt.Printf("\n")
+	if Data.Env != "production" {
+		fmt.Printf("\n")
+		fmt.Println(Data)
+		fmt.Printf("\n")
+	}
 
 }
