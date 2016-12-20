@@ -18,6 +18,9 @@ type config struct {
 	Version string
 	Port    int
 	Host    string
+	SSL     bool
+	Cert    string
+	Key     string
 	Secret  string
 	Verbose bool
 	Env     string

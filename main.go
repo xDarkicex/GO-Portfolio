@@ -101,7 +101,11 @@ func main() {
 	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
 	helpers.Logger.Printf("Listening on %s\n", listen)
 	pidder()
-	go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+	if config.Data.SSL {
+		go helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	} else {
+		go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+	}
 }
 
 func pidder() {

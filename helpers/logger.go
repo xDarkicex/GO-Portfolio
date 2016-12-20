@@ -27,7 +27,6 @@ var errBuf = bytes.NewBuffer([]byte{})
 func FlushLog() {
 	length := errBuf.Len()
 	if length > 0 {
-		fmt.Printf("Got length of %d\n", length)
 		file, _ := os.OpenFile("log/"+config.Data.Env+".log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 		buffed := errBuf.String()
 		file.WriteString(buffed)
