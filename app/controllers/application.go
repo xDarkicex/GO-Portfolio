@@ -19,6 +19,7 @@ type Application helpers.Controller
 
 //Index New index function
 func (c Application) Index(a helpers.RouterArgs) {
+	fmt.Println(a.Request.Host)
 	blogs, err := models.AllBlogs()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -45,6 +46,7 @@ func (c Application) About(a helpers.RouterArgs) {
 
 //Contact form function
 func (c Application) Contact(a helpers.RouterArgs) {
+
 	name := (a.Request.FormValue("contactName"))
 	address := (a.Request.FormValue("contactAddress"))
 	body := (a.Request.FormValue("contactBody"))

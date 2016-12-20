@@ -64,6 +64,11 @@ func init() {
 
 }
 
+//redirectHTTPS will redirect https traffic too http
+func redirectHTTPS(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
+}
+
 func main() {
 	go func() {
 		for true {
@@ -101,8 +106,10 @@ func main() {
 	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
 	helpers.Logger.Printf("Listening on %s\n", listen)
 	pidder()
+
 	if config.Data.SSL {
 		go helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+		helpers.Logger.Fatal(http.ListenAndServe(listen, http.HandlerFunc(redirectHTTPS)))
 	} else {
 		go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 	}
