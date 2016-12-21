@@ -110,7 +110,7 @@ func main() {
 
 	if config.Data.SSL {
 		go helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
-		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
+		helpers.Logger.Fatal(http.ListenAndServe("/", http.HandlerFunc(redirectHTTPS)))
 	} else {
 		go helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 	}
