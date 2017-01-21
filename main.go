@@ -114,7 +114,9 @@ func main() {
 		}()
 		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
 	} else {
-		go func() { helpers.Logger.Fatal(http.ListenAndServe(listen, routes)) }()
+		func() {
+			helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+		}()
 	}
 }
 
