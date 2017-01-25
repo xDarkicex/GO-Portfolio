@@ -19,9 +19,7 @@ block main-content
                         p.card-text= .Summary
                         div.controls
                             a.btn.btn-primary(href=/post/{{.URL}}) Read More
-                            if .current_user
-                                if .current_user.Admin
-                                    if .Author
-                                        if .Author.Admin
-                                            a.btn.btn-primary(href=/post/{{.URL}}/edit) EDIT
-                                            a.btn.btn-primary(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+                                if .Author
+                                    if .Author.Admin
+                                        a.btn.btn-primary(href=/post/{{.URL}}/edit) EDIT
+                                        a.btn.btn-primary(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?") DELETE
