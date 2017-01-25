@@ -14,11 +14,12 @@ block main-content
             p Github #[a(href='https://github.com/{{.post.Author.Name}}') {{.post.Author.Name}}]
             
         div.col-sm-9.lead
-            if .current_user && .current_user.Admin
-                div.container-fluid.adminControls
-                    div.pull-right.btn-group
-                        a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
-                        a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
+            if .current_user 
+                if .current_user.Admin
+                    div.container-fluid.adminControls
+                        div.pull-right.btn-group
+                            a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+                            a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
             p.h1= .post.Title
             p.h3= .post.Summary
             p.h5: script document.write(new Date("{{formatTime .post.Time}}").toLocaleDateString())
