@@ -2,11 +2,29 @@ extends ../layouts/application.pug
 
 block main-content
     div.container-fluid
-        h1 blog post
-        p= .post.Author.Name
-        div.card-img-top(style="height: 150px; background: url(/post/{{.post.URL}}/images/{{.post.BlogImage}})center center no-repeat; background-size: cover;")
-        p= .post.Title
-        hr
-        p {{.post.Body}}
-        if .current_user.Admin
-            a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+        div.col-sm-12
+             div#cards
+                range .posts
+                    a(href=/post/{{.URL}}): div.card
+                        div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                        h4.card-title= .Title
+        div.col-sm-3.lead(style='text-align:center;')
+            div.Avatar(style="margin: 0 auto; height: 100px; width: 100px; border-radius: 50%; background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
+            p= .post.Author.FullName
+            p Github #[a(href='https://github.com/{{.post.Author.Name}}') {{.post.Author.Name}}]
+            
+        div.col-sm-9.lead
+                if .current_user.Admin
+                    div.container-fluid.adminControls
+                        div.pull-right.btn-group
+                            a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+                            a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
+            p.h1= .post.Title
+            p.h3= .post.Summary
+            p.h5: script document.write(new Date("{{formatTime .post.Time}}").toLocaleDateString())
+            hr
+            div.card-img-top(style="background: url(/post/{{.post.URL}}/images/{{.post.BlogImage}})center center no-repeat; background-size: cover;")
+            
+            
+            {{.post.Body}}
+        

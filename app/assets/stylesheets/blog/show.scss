@@ -1,1 +1,73 @@
 // code
+$transblack: rgba( 0, 0, 0, .4);
+main {
+  padding-top: 35px; 
+}
+.card-img-top{
+    display: flex;
+    align-items: flex-end;
+}
+
+.adminControls {
+  padding: 5px;
+  border-top: 1px solid $transblack;
+  border-bottom: 1px solid $transblack;
+}
+.highlighted {
+  &::after {
+    content: '';
+    background: transparent;
+    transition: all .1s ease-in;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  &:hover {
+    position: relative;
+      &::after {
+        background-color: rgba(255, 255, 255, .3);
+      }
+    }
+  }
+
+#cards {
+  padding-bottom: 20px;
+    a{
+      
+     &:hover {
+        text-decoration: none;
+      }
+    }
+}
+.card{
+    // min-height: 15em!important;
+    display: flex!important;
+    flex-direction: column;
+    border: none;
+}
+
+
+.card-block{
+    flex-grow: 1;
+}
+
+.card-title {
+  margin-bottom: 0; 
+}
+
+.card-img-top{
+  height: 300px;
+}
+
+.card-title{
+    color: Black;
+    font-weight: 600;
+    font-size: 1.4em;
+    // background: rgba(0,0,0,0.5);
+    // background: linear-gradient(to top, rgba(0,0,0,0.9),rgba(0,0,0,0.0));
+    padding-left: 0.5em;
+    width: 100%;
+}

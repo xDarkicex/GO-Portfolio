@@ -3,18 +3,26 @@ extends ../layouts/application.pug
 block main-content
 
     div.container-fluid
-        h1 ABOUT ME
-        p Hello I am @
-            a(href= /users/{{.user.Name}} )= .user.Name
-        p.small I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]
-        P.small Bitdev.io utilize Google's Golang, Dart, and Ruby on Rails as backend technologies.
-        p.small Bitdev.io Builds on top of Amazon's web services and Google's AppEngine for a complete custom FullStack web Application.
-        P #[a(href= /posts?search=ruby&ruby%20on%20rails&rails) Ruby on Rails] | #[a(href= /posts?search=node&nodejs) NodeJs] | #[a(href= /posts?search=angular&angularJS) Angular] | #[a(href= /posts?search=bash) Bash] | #[a(href= /posts?search=go&golang) Golang] 
-        hr
-        p.lead I am a web developer specialized in backend development. This is my first full fledged Golang website, It has been a challenge getting to this point, I would not be here without the support from my friend, coworkers and mentors who have all helped me learn this fasinating new language. I hope to spread this knowlegde to everyone I can.
-        P.lead No one takes data more seriously then I do, I have an extensive knowledge of more traditional database technologies such as mySQL, SQlite and PostgreSQL. I'm also very interested in NoSQL databases this website's database is MongoDB which has an amazing driver for golang, mGO.
-        br
-        div.panel.panel-default 
-            div.panel-heading
-                h3.panel-title Google Golang
-        p.lead Golang is the future of the web.
+        div.col-sm-3.lead(style='text-align:center;')
+            div.Avatar(style="margin: 0 auto; height: 100px; width: 100px; border-radius: 50%; background: url(/users/{{.user.Name}}/images/{{.user.Avatar}})center center no-repeat;background-size: cover;")
+            p Gentry Rolofson
+            p Github #[a(href='https://github.com/{{.user.Name}}') {{.user.Name}}]
+        .col-sm-9
+            .btn-group.btn-group-justified
+                a.btn(href='/posts?search=go&golang') Golang 
+                a.btn(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
+                a.btn(href='/posts?search=node&nodejs') Node JS
+                a.btn(href='/posts?search=angular&angularJS') Angular 2 
+                a.btn(href='/posts?search=typescript') Typescript 
+                a.btn(href='/posts?search=bash') Bash Scripting
+            p.lead Hello My Name is Gentry, I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]
+                | Bitdev.io utilize Google's Golang, Dart, and Ruby on Rails as backend technologies.  
+                | Bitdev.io Builds on top of Amazon's web services and Google's AppEngine for a complete custom FullStack web Application.
+            
+            p.lead I am a web developer specialized in backend development. This is my first full fledged Golang website, It has been a challenge getting to this point, I would not be here without the support from my friend, coworkers and mentors who have all helped me learn this fasinating new language. I hope to spread this knowlegde to everyone I can.
+            P.lead No one takes data more seriously then I do, I have an extensive knowledge of more traditional database technologies such as mySQL, SQlite and PostgreSQL. I'm also very interested in NoSQL databases this website's database is MongoDB which has an amazing driver for golang, mGO.
+            br
+            div.panel.panel-default 
+                div.panel-heading
+                    h3.panel-title Google Golang
+            p.lead Golang is the future of the web.

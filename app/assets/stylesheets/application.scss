@@ -3,6 +3,7 @@ $white: #fff;
 $blue: #2780e3;
 $red: #f44336;
 
+
 .flash {
   left: 0;
   position: relative;
@@ -25,6 +26,10 @@ body {
 main {
   flex-grow: 1;
   padding-top: 50px;
+}
+
+header{
+  margin-bottom: 40px;
 }
 
 .jumbotron {
@@ -138,7 +143,7 @@ span {
 
 .card {
   max-width: 14em;
-  min-height: 20em;
+  // min-height: 20em;
   min-width: 14em;
 
   &:not(:first-of-type){

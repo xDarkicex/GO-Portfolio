@@ -1,1 +1,28 @@
 // code
+.list-inline {  
+  li{
+    position:relative;
+    &:not(:last-child) {
+      border-right:1px solid black;
+      // content:'';
+      // width:.8em;
+      // height:.8em;
+      // border-radius:50%;
+      // background-color:red;
+      // display:block;
+      // top:0;
+      // right:-10px;
+      // position:absolute;
+    }
+  }
+}
+.btn-group {
+  // border-top: 1px solid black;
+  // border-bottom: 1px solid black;
+  a:not(:last-child) {
+    // border-right:1px solid gray!important;
+  }
+  a:hover {
+    color:gray;
+  }
+}

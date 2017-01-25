@@ -146,10 +146,18 @@ func (c Blog) Show(a helpers.RouterArgs) {
 		helpers.Logger.Println(err)
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
-
+	}
+	blogs, err := models.AllBlogs()
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return
+	}
+	if len(blogs) >= 5 {
+		blogs = blogs[0:5]
 	}
 	helpers.Render(a, "blog/show", map[string]interface{}{
-		"post": blog,
+		"post":  blog,
+		"posts": blogs,
 	})
 }
 

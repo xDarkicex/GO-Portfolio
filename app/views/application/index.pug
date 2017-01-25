@@ -27,7 +27,9 @@ block main-content
                 range .blog
                     div.card
                         div.card-img-top(style="height: 150px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
-                             h4.card-title= .Title
-                        div.card-block {{.Body}}
-                        div.end
-                            a(href=/post/{{.URL}}) Read More
+                             h4.card-title= .Title 
+                        div.card-block 
+                            p.body {{.Summary}}
+                            p.small By: {{.Author.FullName}}
+                            div.end
+                                a.btn.btn-primary(href=/post/{{.URL}}) Read More

@@ -77,6 +77,10 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 		return flashes
 
 	}
+	fmap["formatTime"] = func(t time.Time) string {
+		return t.Format(time.UnixDate)
+	}
+
 	times["render-page"] = time.Now()
 	gotpl, err := template.New("layout").Funcs(fmap).Parse(layoutMin)
 	if err != nil {

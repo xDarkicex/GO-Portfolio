@@ -7,37 +7,37 @@ block main-content
     link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
     div.container-fluid
         form(method="POST", action=/users/{{.user.Name}}, id="blogForm", enctype="multipart/form-data")
-            div.form-group
+            div.form-group.col-xs-12
                 label.custom-file(for="file")
                     input.form-control.custom-file-input(type="file" id="file" name="file")
                     span.custom-file-control
-            div.form-group
+            div.form-group.col-xs-12
                 label(for="title") Full Name
                 input.form-control(id="fullname" name="fullname" placeholder="Enter Full Name" autocomplete="off")
-            div.form-group
+            div.form-group.col-xs-12
                 label(for="experience") Experience
                 textarea(id="experience" name="experience" rows="10" cols="80")
-            div.form-group
+            div.form-group.col-xs-12
                 label(for="bio") Bio
                 textarea(name="bio" id="bioArea" rows="10" cols="80")
-            div.form-group
+            div.form-group.col-xs-12
                 label(for="skills") 
                 input.form-control(id="skills" name="skills" placeholder="skills" data-role="tagsinput" autocomplete="off")
-            div.form-group
+            div.form-group.col-xs-12
                 select(class="input-medium bfh-countries" name="country" data-country="US")
-            div.form-group
+            div.form-group.col-xs-12
                 select(class="input-medium bfh-states" name="state" data-country="US" data-state="CA")
-            div.form-group
-                div.col-xs-4
-                    label(for="city") City
-                    input(class="form-control" name="city")
-                div.col-xs-4
-                    label(for="street") Street
-                    input(class="form-control" name="street")
-                div.col-xs-4
-                    label(for="city") Zip
-                    input(class="form-control" name="zip")
-            input.btn.btn-primary(type="submit")
+            div.col-xs-4: .form-group
+
+                    input(class="form-control" name="city" placeholder="City")
+            div.col-xs-4: .form-group
+
+                input(class="form-control" name="street" placeholder="Street")
+            div.col-xs-4: .form-group
+
+                input(class="form-control" name="zip" placeholder="Zip")
+            div.col-xs-4: .form-group
+                input.btn.btn-primary(type="submit")
         script.
             CKEDITOR.replace('bio')
             CKEDITOR.replace('experience')

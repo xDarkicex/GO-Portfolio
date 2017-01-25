@@ -29,6 +29,7 @@ block main-content
                 {{ $arr := Join .blog.Tags "," }}
                 label(for="tags")
                 input.form-control(id="tags" name="tags" placeholder="categories" data-role="tagsinput" autocomplete="off"  value={{$arr}})
-            input.btn.btn-primary(type="submit")
+            div.form-group
+                input.btn.btn-primary(type="submit")
         script.
             CKEDITOR.replace('body')
