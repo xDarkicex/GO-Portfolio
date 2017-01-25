@@ -4,8 +4,13 @@ main {
   padding-top: 35px; 
 }
 .card-img-top{
-    display: flex;
-    align-items: flex-end;
+    display: block;
+    
+  img {
+    width: 100%;
+    height: auto !important;
+    
+  }
 }
 
 .adminControls {
@@ -58,9 +63,6 @@ main {
   margin-bottom: 0; 
 }
 
-.card-img-top{
-  height: 300px;
-}
 
 .card-title{
     color: Black;
@@ -70,4 +72,10 @@ main {
     // background: linear-gradient(to top, rgba(0,0,0,0.9),rgba(0,0,0,0.0));
     padding-left: 0.5em;
     width: 100%;
+}
+
+@media (max-width: 800px) {
+  .sugestions{
+    display: none;
+  }
 }

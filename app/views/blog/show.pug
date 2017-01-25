@@ -2,7 +2,7 @@ extends ../layouts/application.pug
 
 block main-content
     div.container-fluid
-        div.col-sm-12
+        div.col-sm-12.sugestions
              div#cards
                 range .posts
                     a(href=/post/{{.URL}}): div.card
@@ -24,7 +24,8 @@ block main-content
             p.h3= .post.Summary
             p.h5: script document.write(new Date("{{formatTime .post.Time}}").toLocaleDateString())
             hr
-            div.card-img-top(style="background: url(/post/{{.post.URL}}/images/{{.post.BlogImage}})center center no-repeat; background-size: cover;")
+            div.card-img-top
+                img(src="/post/{{.post.URL}}/images/{{.post.BlogImage}}")
             
             
             {{.post.Body}}
