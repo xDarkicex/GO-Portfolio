@@ -13,9 +13,10 @@ block main-content
              range .blog
                 div.card
                     div.card-block
-                        h4.card-title: time= .Time
+                        h4.card-title
+                            time.h5: script document.write(new Date("{{formatTime .Time}}").toLocaleDateString())
                         p.Card-text: p= printf "Post Created by:  %s" .Author.Name
-                        p.card-text= .Body
+                        p.card-text= .Summary
                         div.controls
                             a.btn.btn-primary(href=/post/{{.URL}}) Read More
                             if .Author
