@@ -11,14 +11,15 @@ block main-content
                     p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
                     p.small.lead Software Engineer
                     p Github #[a(href='https://github.com/{{.user.Name}}') {{.user.Name}}]
-            p.small.lead.pull-right Favorite language's
-                .btn-group.btn-group-vertical.pull-right
-                    a.btn(href='/posts?search=go&golang') Golang 
-                    a.btn(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
-                    a.btn(href='/posts?search=node&nodejs') Node JS
-                    a.btn(href='/posts?search=angular&angularJS') Angular 2 
-                    a.btn(href='/posts?search=typescript') Typescript 
-                    a.btn(href='/posts?search=bash') Bash Scripting
+            div.box-vertical
+                p.small.lead Favorite language's
+                    div.box-vertical
+                        a.btn.btn-primary(href='/posts?search=go&golang') Golang 
+                        a.btn.btn-primary(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
+                        a.btn.btn-primary(href='/posts?search=node&nodejs') Node JS
+                        a.btn.btn-primary(href='/posts?search=angular&angularJS') Angular 2 
+                        a.btn.btn-primary(href='/posts?search=typescript') Typescript 
+                        a.btn.btn-primary(href='/posts?search=bash') Bash Scripting
         .col-sm-9
            
             p.lead Hello My Name is Gentry, I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]

@@ -33,3 +33,19 @@
     margin: 0;
   }
 }
+
+.box-vertical{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  p{
+    text-align: left;
+    margin: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .box-vertical{
+    flex-direction: row;
+  }
+}
