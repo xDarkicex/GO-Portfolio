@@ -9,11 +9,13 @@ block main-content
                         div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
                         h4.card-title= .Title
         div.col-sm-3.lead(style='text-align:center;')
-            div.Avatar(style="margin: 0 auto; height: 100px; width: 100px; border-radius: 50%; background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
-            p= .post.Author.FullName
-            p Github #[a(href='https://github.com/{{.post.Author.Name}}') {{.post.Author.Name}}]
-            
-            
+            div.box
+                div.Avatar(style="height: 100px; min-width: 100px; align-self: center; border-radius: 50%; background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
+                div  
+                    strong= .post.Author.FullName
+                    p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
+                    p.small.lead Software Engineer
+                    p Github #[a(href='https://github.com/{{.post.Author.Name}}') {{.post.Author.Name}}]
         div.col-sm-9.lead
             if .current_user 
                 if .current_user.Admin
@@ -31,10 +33,7 @@ block main-content
             hr
             div.card-img-top
                 img(src="/post/{{.post.URL}}/images/{{.post.BlogImage}}")
-            
-            
             {{.post.Body}}
-
             hr
             div(id="fb-root")
             div(id="disqus_thread")

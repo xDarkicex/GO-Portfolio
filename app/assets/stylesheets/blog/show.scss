@@ -14,6 +14,14 @@ main {
   }
 }
 
+.box{
+  display: flex;
+  p{
+    text-align: right;
+    margin: 0;
+  }
+}
+
 .adminControls {
   padding: 5px;
   border-top: 1px solid $transblack;
@@ -84,5 +92,13 @@ main {
 @media (max-width: 800px) {
   .sugestions{
     display: none;
+  }
+
+  .box{
+    flex-direction: column;
+    align-items: center;
+    p {
+      font-size: 22.33px;
+    }
   }
 }
