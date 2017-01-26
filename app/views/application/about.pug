@@ -5,20 +5,20 @@ block main-content
     div.container-fluid
         div.col-sm-3.lead(style='text-align:center;')
             div.box
-                div.Avatar(style="height: 100px; min-width: 100px; align-self: center; border-radius: 50%; background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
+                div.Avatar(style="height: 100px; min-width: 100px; align-self: center; border-radius: 50%; background: url(/users/{{.user.Name}}/images/{{.user.Avatar}})center center no-repeat;background-size: cover;")
                 div  
-                    strong= .post.Author.FullName
+                    strong= .user.FullName
                     p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
                     p.small.lead Software Engineer
-                    p.small.lead Favorite language's
-                    .btn-group.btn-group-justified
-                        a.btn(href='/posts?search=go&golang') Golang 
-                        a.btn(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
-                        a.btn(href='/posts?search=node&nodejs') Node JS
-                        a.btn(href='/posts?search=angular&angularJS') Angular 2 
-                        a.btn(href='/posts?search=typescript') Typescript 
-                        a.btn(href='/posts?search=bash') Bash Scripting
-                    p Github #[a(href='https://github.com/{{.post.Author.Name}}') {{.post.Author.Name}}]
+                    p Github #[a(href='https://github.com/{{.user.Name}}') {{.user.Name}}]
+            p.small.lead.pull-right Favorite language's
+                .btn-group.btn-group-vertical.pull-right
+                    a.btn(href='/posts?search=go&golang') Golang 
+                    a.btn(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
+                    a.btn(href='/posts?search=node&nodejs') Node JS
+                    a.btn(href='/posts?search=angular&angularJS') Angular 2 
+                    a.btn(href='/posts?search=typescript') Typescript 
+                    a.btn(href='/posts?search=bash') Bash Scripting
         .col-sm-9
            
             p.lead Hello My Name is Gentry, I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]
