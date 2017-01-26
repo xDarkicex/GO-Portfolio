@@ -19,6 +19,12 @@ main {
   border-top: 1px solid $transblack;
   border-bottom: 1px solid $transblack;
 }
+.btn-social{
+  padding: 5px;
+  border-top: 1px solid $transblack;
+  border-bottom: 1px solid $transblack;
+
+}
 .highlighted {
   &::after {
     content: '';
