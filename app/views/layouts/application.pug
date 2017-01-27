@@ -2,7 +2,14 @@ doctype html
 html(lang="en")
   head
     block title
-      title= .post.Title
+      if .post
+        title rolofson.me | {{.post.Title}}
+      if .view
+        title rolofson.me | {{.view}}
+      else
+        title rolofson.me
+      
+
       
     meta(name="viewport" content="width=device-width, initial-scale=1")
     meta(property='og:url', content='https://rolofson.me/post/{{.post.URL}}')
