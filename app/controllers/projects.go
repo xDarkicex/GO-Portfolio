@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
@@ -14,7 +12,7 @@ type Projects helpers.Controller
 func (c Projects) Index(a helpers.RouterArgs) {
 	projects, err := models.AllProjects()
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
 	if len(projects) >= 5 {
@@ -22,5 +20,6 @@ func (c Projects) Index(a helpers.RouterArgs) {
 	}
 	helpers.Render(a, "projects/index", map[string]interface{}{
 		"project": projects,
+		"title":   "Pet Projects",
 	})
 }

@@ -14,7 +14,7 @@ block main-content
                 div.card
                     div.card-block
                         h4.card-title
-                            time.h5: script document.write(new Date("{{formatTime .Time}}").toLocaleDateString())
+                            time.h5: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
                         p.Card-text: p= printf "Post Created by:  %s" .Author.Name
                         p.card-text= .Summary
                         div.controls

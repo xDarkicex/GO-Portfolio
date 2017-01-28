@@ -3,11 +3,13 @@ html(lang="en")
   head
     block title
       if .post
-        title rolofson.me | {{.post.Title}}
+        title Rolofson.me | {{.post.Title}}
+      if .title
+        title Rolofson.me | {{.title}}
       if .view
-        title rolofson.me | {{.view}}
+        title Rolofson.me | {{formatTitle .view}}
       else
-        title rolofson.me
+        title Rolofson.me
       
 
       

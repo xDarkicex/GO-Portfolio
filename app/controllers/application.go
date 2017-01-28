@@ -40,7 +40,8 @@ func (c Application) About(a helpers.RouterArgs) {
 		fmt.Println(err)
 	}
 	helpers.Render(a, "application/about", map[string]interface{}{
-		"user": user,
+		"user":  user,
+		"title": "About Me",
 	})
 }
 

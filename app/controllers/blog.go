@@ -27,15 +27,17 @@ func (c Blog) Index(a helpers.RouterArgs) {
 		blogs, err = models.AllBlogs()
 	}
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
-	users, _ := models.AllUsers()
-	view := "blog/index"
-	helpers.Render(a, view, map[string]interface{}{
+	users, err := models.AllUsers()
+	if err != nil {
+		helpers.Logger.Printf("Error: %s", err)
+	}
+	helpers.Render(a, "blog/index", map[string]interface{}{
 		"blog":  blogs,
 		"users": users,
-		"count": c.Globals.Count,
+		"title": "Blog",
 	})
 }
 

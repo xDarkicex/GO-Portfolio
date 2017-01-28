@@ -57,32 +57,33 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	// FUNCMAPS ARE LIFE!!! THIS IS LIFE NOW
 	////////////////////////////////////////////
 
-	fmap := make(template.FuncMap)
-	fmap["Split"] = func(s string, d string) []string {
+	funcMap := make(template.FuncMap)
+	funcMap["Split"] = func(s string, d string) []string {
 		return strings.Split(s, d)
 	}
-	fmap["Join"] = func(a []string, b string) string {
+	funcMap["Join"] = func(a []string, b string) string {
 		return strings.Join(a, b)
 	}
-	fmap["ParseFlashes"] = func(fucks []interface{}) []Flash {
+	funcMap["ParseFlashes"] = func(fucks []interface{}) []Flash {
 		var flashes []Flash
-		// fmt.Println("Parsin dem Flashes")
-		// fmt.Println(fucks)
 		for _, k := range fucks {
 			var flash Flash
 			json.Unmarshal([]byte(k.(string)), &flash)
 			flashes = append(flashes, flash)
 		}
-		// fmt.Println(flashes)
 		return flashes
-
 	}
-	fmap["formatTime"] = func(t time.Time) string {
+	funcMap["formatPostTime"] = func(t time.Time) string {
 		return t.Format(time.UnixDate)
 	}
 
+	funcMap["formatTitle"] = func(s string) string {
+		title := strings.SplitAfter(s, "/")
+		return strings.Title(title[1])
+	}
+
 	times["render-page"] = time.Now()
-	gotpl, err := template.New("layout").Funcs(fmap).Parse(layoutMin)
+	gotpl, err := template.New("layout").Funcs(funcMap).Parse(layoutMin)
 	if err != nil {
 		Logger.Printf("\nTemplate parse error: %v", err)
 	}
