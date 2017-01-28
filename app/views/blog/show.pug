@@ -29,7 +29,7 @@ block main-content
                 div.pull-right.btn-group
                     div: a(href='https://twitter.com/share' data-text='Check out this blog post: ' class='twitter-share-button' data-related='xDarkicex' data-show-count='false') 
                     div(class="fb-share-button" data-href="https://rolofson.me/post/{{.post.URL}}" data-layout="button" data-size="small" data-mobile-iframe="false"): a(class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse") Share
-            p.h5: script document.write(new Date("{{formatTime .post.Time}}").toLocaleDateString())
+            p.h5: script document.write(new Date("{{formatPostTime .post.Time}}").toLocaleDateString())
             hr
             div.card-img-top
                 img(src="/post/{{.post.URL}}/images/{{.post.BlogImage}}")
