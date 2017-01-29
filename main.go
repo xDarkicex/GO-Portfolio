@@ -66,7 +66,6 @@ func init() {
 
 //redirectHTTPS will redirect https traffic too http
 func redirectHTTPS(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("got here")
 	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
 }
 
