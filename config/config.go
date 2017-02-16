@@ -33,6 +33,7 @@ type smtp struct {
 	Host     string
 	Port     int
 	Password string
+	Number   string
 }
 
 //Load loads config file
