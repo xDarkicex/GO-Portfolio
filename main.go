@@ -118,7 +118,9 @@ func main() {
 	// 	}()
 	// }
 
-	go helpers.Logger.Fatal(http.ListenAndServe(listen, http.HandlerFunc(redirectHTTPS)))
+	go func() {
+		helpers.Logger.Fatal(http.ListenAndServe(listen, http.HandlerFunc(redirectHTTPS)))
+	}()
 	helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
 }
 
