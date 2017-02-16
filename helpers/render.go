@@ -18,6 +18,16 @@ import (
 
 // var pugEngine *html.Engine
 var t *template.Template
+var cachedLayoutMap = make(map[int]string)
+
+func cacheLayout() error {
+	layout, err := jade.ParseFile("./app/views/layouts/application.pug")
+	if err != nil {
+		return err
+	}
+	cachedLayoutMap[1] = layout
+	return nil
+}
 
 //Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
@@ -33,13 +43,13 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	// times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
 
 	times["jade"] = time.Now()
-	layout, err := jade.ParseFile("./app/views/layouts/application.pug")
+	err := cacheLayout()
 	if err != nil {
-		Logger.Printf("\nParseFile error: %v", err)
+		panic(err)
 	}
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
-	layoutMin, err := m.String("text/html", layout)
+	layoutMin, err := m.String("text/html", cachedLayoutMap[1])
 	if err != nil {
 		panic(err)
 	}

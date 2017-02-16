@@ -10,6 +10,7 @@
 /usr/local/bin/tsc --outDir ./public/assets/scripts/examples/ ./app/assets/typescripts/examples/*.ts
 /usr/local/bin/tsc --outDir ./public/assets/scripts/ ./app/assets/typescripts/*.ts
 
+
 sleep 1
 killall ruby
 sudo /home/ubuntu/bin/PortfolioGo
