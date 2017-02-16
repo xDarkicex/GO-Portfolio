@@ -19,7 +19,7 @@ import (
 // var pugEngine *html.Engine
 var t *template.Template
 
-// Render renders views blaim pug Not Secure
+//Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
 	times := make(map[string]interface{})
 	times["total"] = time.Now()
