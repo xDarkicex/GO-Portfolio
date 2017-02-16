@@ -107,21 +107,21 @@ func main() {
 	helpers.Logger.Printf("Listening on %s\n", listen)
 	pidder()
 
-	if config.Data.SSL {
-		go func() {
-			helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
-		}()
-		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
-	} else {
-		func() {
-			helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
-		}()
-	}
-
-	// go func() {
+	// if config.Data.SSL {
+	// 	go func() {
+	// 		helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	// 	}()
 	// 	helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
-	// }()
-	// helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	// } else {
+	// 	func() {
+	// 		helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+	// 	}()
+	// }
+
+	go func() {
+		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
+	}()
+	helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
 }
 
 func pidder() {
