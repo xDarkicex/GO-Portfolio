@@ -13,8 +13,9 @@ block main-content
              range .blog
                 div.card
                     div.card-block
-                        h4.card-title
-                            time.h5: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
+                        div.card-img-top(style="height: 150px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                            h4.card-title= .Title
+                                time.h5: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
                         p.Card-text: p= printf "Post Created by:  %s" .Author.Name
                         p.card-text= .Summary
                         div.controls
