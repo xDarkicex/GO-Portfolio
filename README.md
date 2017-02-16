@@ -5,24 +5,23 @@
 ##dependencies 
 - [x] Go-lang https://golang.org/
 - [x] JulienSchmidt HTTP Mux https://github.com/julienschmidt/httprouter
-- [x] Pugjs https://github.com/pugjs
 - [x] SCSS http://sass-lang.com/
 - [x] CKeditor http://ckeditor.com/
 - [x] Typescript https://www.typescriptlang.org/
 - [x] mgo https://labix.org/mgo
 - [x] mongoDB https://www.mongodb.com/
-- [x] bash (pug.js)
+
 
 ----
 
 ##TODOS
 - [x] Get Mongo DB working
-- [ ] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
+- [x] SSL ListenAndServerTLS() https://gist.github.com/denji/12b3a568f092ab951456
 - [x] Authentication Done manually through standard lib
 - [x] Build image uploader GridFS
 - [x] Build Profile Pages template
-- [ ] Build Blog half done
-    - [ ] comments need work.
+- [x] Build Blog half done
+    - [x] comments need work.
 - [x] Blog tags for relational 
 - [ ] Examples Pages
 - [ ] Contact Page

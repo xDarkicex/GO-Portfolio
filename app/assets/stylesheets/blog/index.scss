@@ -3,7 +3,80 @@
    &:not(:first-of-type){
        margin-left: 0px;
    }
+   .card-block{
+        padding: 0rem;
+   }
 }
+
+#cards {
+  padding-bottom: 20px;
+    a{
+      
+     &:hover {
+        text-decoration: none;
+      }
+    }
+}
+.sugestions{
+    margin-top: -30px;
+}
+.highlighted {
+  &::after {
+    content: '';
+    background: transparent;
+    transition: all .1s ease-in;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  &:hover {
+    position: relative;
+      &::after {
+        background-color: rgba(255, 255, 255, .3);
+      }
+    }
+  }
+.cards{
+    // min-height: 15em!important;
+
+    min-width: 14em;
+    max-width: 14em;
+    position: relative;
+    display: block;
+    border: none;
+    color: black;
+
+}
+
 .controls{
     display: flex;
+}
+
+.card-img-top{
+    color:white;
+    text-align: center;
+    font-size: 1.8em;
+    .card-block{
+        background: linear-gradient(to bottom, rgba(0,0,0,0.9),rgba(0,0,0,0.0));
+       
+        .card-title{
+            font-weight: 700;
+            font-size: 1.8em;
+            margin-bottom: 0rem;
+            margin-top: 0rem;
+        }
+    }
+}
+
+a{
+    text-decoration: none;
+    &:hover{
+        text-decoration: none;
+    }
+    &:focus{
+        text-decoration: none;
+    }
 }

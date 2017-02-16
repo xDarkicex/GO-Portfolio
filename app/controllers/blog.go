@@ -21,21 +21,32 @@ type Blog helpers.Controller
 func (c Blog) Index(a helpers.RouterArgs) {
 	var err error
 	var blogs []models.Blog
+	var blogsTop []models.Blog
 	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
 		blogs, err = models.GetBlogsByTags(strings.ToLower(a.Request.FormValue("search")))
 	} else {
 		blogs, err = models.AllBlogs()
+		blogsTop, err = models.AllBlogs()
+		if err != nil {
+			helpers.Logger.Printf("Error: %s", err)
+			return
+		}
+		if len(blogsTop) >= 5 {
+			blogsTop = blogsTop[0:5]
+		}
 	}
 	if err != nil {
 		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
+
 	users, err := models.AllUsers()
 	if err != nil {
 		helpers.Logger.Printf("Error: %s", err)
 	}
 	helpers.Render(a, "blog/index", map[string]interface{}{
 		"blog":  blogs,
+		"top":   blogsTop,
 		"users": users,
 		"title": "Blog",
 	})

@@ -3,24 +3,31 @@ extends ./app/views/layouts/application
 block main-content
     {{$user := .current_user}}
     div.container-fluid
+        div.col-sm-12.sugestions
+            div#cards    
+                range .top 
+                    a(href=/post/{{.URL}}): div.cards
+                        div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                        h4.card-title= .Title
         div.row(style="padding-top:20px;margin-left:0.1em;margin-right:5em;")
             if $user
                 if $user.Admin
                     div.pull-right
                         a.btn.btn-primary(href="/posts/new") New Post
-            h1 Blog Index
+            
         if .blog
              range .blog
-                div.card
-                    div.card-block
-                        div.card-img-top(style="height: 150px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
-                            h4.card-title= .Title
-                                time.h5: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
-                        p.Card-text: p= printf "Post Created by:  %s" .Author.Name
-                        p.card-text= .Summary
-                        div.controls
-                            a.btn.btn-primary(href=/post/{{.URL}}) Read More
-                            if $user
-                                if $user.Admin
-                                    a.btn.btn-primary(href=/post/{{.URL}}/edit) EDIT
-                                    a.btn.btn-primary(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+                a(href=/post/{{.URL}})
+                    div.card
+                        div.card-block
+                            div.card-img-top(style="height: 350px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                                div.card-block
+                                    h4.card-title= .Title
+                                        time.h4: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
+                                    p.card-text= .Summary
+                                    div.controls
+                                        //- a.btn.btn-primary(href=/post/{{.URL}}) Read More
+                                        if $user
+                                            if $user.Admin
+                                                a.btn.btn-primary(href=/post/{{.URL}}/edit) EDIT
+                                                a.btn.btn-primary(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?") DELETE
