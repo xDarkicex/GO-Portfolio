@@ -22,6 +22,7 @@ import (
 	"github.com/xDarkicex/PortfolioGo/config/router"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"github.com/xDarkicex/PortfolioGo/helpers"
+	"github.com/xDarkicex/PortfolioGo/redirect"
 )
 
 /////////////////////////////////////////////////////////////
@@ -62,11 +63,6 @@ func init() {
 	}
 	session = db.Session()
 
-}
-
-//redirectHTTPS will redirect https traffic too http
-func redirectHTTPS(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
 }
 
 func main() {
@@ -111,15 +107,16 @@ func main() {
 	// 	go func() {
 	// 		helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
 	// 	}()
-	// 	helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
+	// 	helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirect.HTTPS)))
 	// } else {
 	// 	func() {
 	// 		helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
 	// 	}()
 	// }
+	// }
 
 	go func() {
-		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirectHTTPS)))
+		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirect.HTTPS)))
 	}()
 	helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
 }

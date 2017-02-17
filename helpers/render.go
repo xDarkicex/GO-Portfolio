@@ -18,16 +18,9 @@ import (
 
 // var pugEngine *html.Engine
 var t *template.Template
-var cachedLayoutMap = make(map[int]string)
 
-func cacheLayout() error {
-	layout, err := jade.ParseFile("./app/views/layouts/application.pug")
-	if err != nil {
-		return err
-	}
-	cachedLayoutMap[1] = layout
-	return nil
-}
+// Cache is generic Cache for speeding up application * may switch to memcache in production
+var Cache = make(map[string]string)
 
 //Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
@@ -39,19 +32,29 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 
 	// times["gorilla-save"] = time.Now()
 	object["flashes"] = a.Session.Flashes()
-	a.Session.Save(a.Request, a.Response)
-	// times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
-
-	times["jade"] = time.Now()
-	err := cacheLayout()
+	err := a.Session.Save(a.Request, a.Response)
 	if err != nil {
 		panic(err)
 	}
+	// times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
+
+	times["jade"] = time.Now()
+
+	if len(Cache["layout"]) == 0 {
+		fmt.Println("I got here")
+		Cache["layout"], err = jade.ParseFile("./app/views/layouts/application.pug")
+		if err != nil {
+			panic(err)
+		}
+	}
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
-	layoutMin, err := m.String("text/html", cachedLayoutMap[1])
-	if err != nil {
-		panic(err)
+	if len(Cache["minifiedLayout"]) == 0 {
+		fmt.Println("got too be mini bro")
+		Cache["minifiedLayout"], err = m.String("text/html", Cache["layout"])
+		if err != nil {
+			panic(err)
+		}
 	}
 	currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
 	if err != nil {
@@ -93,7 +96,7 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	}
 
 	times["render-page"] = time.Now()
-	gotpl, err := template.New("layout").Funcs(funcMap).Parse(layoutMin)
+	gotpl, err := template.New("layout").Funcs(funcMap).Parse(Cache["minifiedLayout"])
 	if err != nil {
 		Logger.Printf("\nTemplate parse error: %v", err)
 	}
