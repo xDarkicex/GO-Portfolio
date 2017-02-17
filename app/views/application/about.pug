@@ -2,35 +2,45 @@ extends ../layouts/application.pug
 
 block main-content
 
-    div.container-fluid
-        div.col-sm-3.lead(style='text-align:center;')
-            div.box
-                div.Avatar(style="height: 100px; min-width: 100px; align-self: center; border-radius: 50%; background: url(/users/{{.user.Name}}/images/{{.user.Avatar}})center center no-repeat;background-size: cover;")
-                div  
-                    strong= .user.FullName
-                    p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
-                    p.small.lead Software Engineer
-                    p Github #[a(href='https://github.com/{{.user.Name}}') {{.user.Name}}]
-            div.box-vertical
+    .container-fluid
+        .col-sm-3.lead(style='text-align:center;')
+            .box
+                .Avatar(style="background: url(/users/{{.user.Name}}/images/{{.user.Avatar}})center center no-repeat;background-size: cover;")
                 
-                    div.box-vertical
-                        p.small.lead(style='color: black; text-align: center; padding-bottom: 5px;') Technologies
-                        a.btn.btn-primary(href='/posts?search=go&golang') Golang 
-                        a.btn.btn-primary(href='/posts?search=ruby&ruby%20on%20rails&rails') Ruby on Rails 
-                        a.btn.btn-primary(href='/posts?search=node&nodejs') Node JS
-                        a.btn.btn-primary(href='/posts?search=angular&angularJS') Angular 2 
-                        a.btn.btn-primary(href='/posts?search=typescript') Typescript 
-                        a.btn.btn-primary(href='/posts?search=bash') Bash Scripting
+                div   
+                    p.Name Gentry Rolofson
+                    p.small.lead Software Engineer
+                    p: a(href='https://github.com/{{.user.Name}}')
+                        i.fa.fa-github-alt(aria-hidden="true")
+            .box-vertical
+                p.small.lead(style='color: black; text-align: center; padding-bottom: 5px;') Technologies
+                    .skills
+                        a(href='/posts?search=go&golang')
+                            .skill Golang 
+                        a(href='/posts?search=C%2B%2B') 
+                            .skill C++
+                        a(href='/posts?search=ruby&ruby%20on%20rails&rails')
+                            .skill Ruby on Rails 
+                        a(href='/posts?search=node&nodejs')
+                            .skill Node JS
+                        a(href='/posts?search=angular&angularJS') 
+                            .skill Angular 2 
+                        a(href='/posts?search=react') 
+                            .skill ReactJS
+                        a(href='/posts?search=Mongo') 
+                            .skill MongoDB
+                        a(href='/posts?search=typescript') 
+                            .skill Typescript
+                        a(href='/posts?search=bash') 
+                            .skill Bash Scripting
+                        a(href='/posts?search=aws') 
+                            .skill AWS Cloud
         .col-sm-9
-           
-            p.lead Hello My Name is Gentry, I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]
+            p.lead Hello, I am the founder of #[a(href="https://bitdev.io") Bitdev.io ]
                 | Bitdev.io utilize Google's Golang, Dart, and Ruby on Rails as backend technologies.  
                 | Bitdev.io Builds on top of Amazon's web services and Google's AppEngine for a complete custom FullStack web Application.
             
             p.lead I am a web developer specialized in backend development, and work in frontend Development when necessary. My favorite language's are golang and Typescript, I hope to spread these technologies to everyone.
             P.lead No one takes data more seriously then I do, I have an extensive knowledge of more traditional database technologies such as mySQL, SQlite and PostgreSQL. I'm also very interested in NoSQL databases this, website's database is MongoDB which has an amazing driver for golang, mGO.
             br
-            div.panel.panel-default 
-                div.panel-heading
-                    h3.panel-title Google Golang
-            p.lead Golang is the future of the web.
+            
