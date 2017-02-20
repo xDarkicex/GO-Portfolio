@@ -114,11 +114,14 @@ func main() {
 	// 		}()
 	// 	}
 	// }
-
-	go func() {
-		helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirect.HTTPS)))
-	}()
-	helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	if config.Data.SSL {
+		go func() {
+			helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirect.HTTPS)))
+		}()
+		helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	} else {
+		helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+	}
 }
 
 func pidder() {

@@ -54,12 +54,13 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 
 	blog := controllers.Blog{}
-	router.GET("/posts", route(blog.Index, false))         // index
-	router.GET("/posts/new", route(blog.New, true))        // new 		To make a new Post
-	router.POST("/posts", route(blog.Create, true))        // create	To actually throw it in the database
-	router.GET("/post/:url", route(blog.Show, false))      // show		Show a specific post
-	router.POST("/post/:url", route(blog.Update, true))    // update Update a specific post
-	router.GET("/post/:url/edit/", route(blog.Edit, true)) // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
+	router.GET("/posts", route(blog.Index, false))          // index
+	router.POST("/posts/search", route(blog.Search, false)) // Route for searching
+	router.GET("/posts/new", route(blog.New, true))         // new 		To make a new Post
+	router.POST("/posts", route(blog.Create, true))         // create	To actually throw it in the database
+	router.GET("/post/:url", route(blog.Show, false))       // show		Show a specific post
+	router.POST("/post/:url", route(blog.Update, true))     // update Update a specific post
+	router.GET("/post/:url/edit/", route(blog.Edit, true))  // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
 	router.GET("/post/:url/images/:imageID", route(blog.Image, false))
 
 	///////////////////////////////////////////////////////////

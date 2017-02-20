@@ -90,7 +90,9 @@ func FindBlogByID(id string) (blog Blog, err error) {
 // FindBlogByID ...
 func findDbBlogByID(id string) (blog dbBlog, err error) {
 	// var rawblog dbBlog
-	err = db.Session().DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
+	session := db.Session()
+	defer session.Close()
+	err = session.DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
 	// blog = blogify(rawblog)
 	return blog, err
 }
@@ -209,15 +211,21 @@ func GetImageByID(imageID string) ([]byte, error) {
 }
 
 // GetBlogsByTags ...
-func GetBlogsByTags(searchTerm string) ([]Blog, error) {
-	var blogs []Blog
-	err := db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
+func GetBlogsByTags(searchTerm string) (blogs []Blog, err error) {
+	var rawBlogs []dbBlog
+	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
 		"tags": searchTerm,
-	}).All(&blogs)
+	}).All(&rawBlogs)
 	if err != nil {
 		helpers.Logger.Println(err)
 		fmt.Println("Error locating blog by tag, no tag found")
 		return nil, err
 	}
-	return blogs, err
+	for _, e := range rawBlogs {
+		blogs = append(blogs, blogify(e))
+	}
+	if err != nil {
+		fmt.Println("Error searching blogs")
+	}
+	return blogs, nil
 }
