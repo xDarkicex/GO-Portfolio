@@ -6,7 +6,8 @@ $red: #f44336;
 
 .flash {
   left: 0;
-  position: relative;
+  right: 0;
+  position: absolute;
   top: 0;
   z-index: 9999;
 }

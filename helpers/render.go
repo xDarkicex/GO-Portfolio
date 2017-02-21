@@ -41,16 +41,15 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	times["jade"] = time.Now()
 
 	if len(Cache["layout"]) == 0 {
-		fmt.Println("I got here")
 		Cache["layout"], err = jade.ParseFile("./app/views/layouts/application.pug")
 		if err != nil {
 			panic(err)
 		}
 	}
+
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
 	if len(Cache["minifiedLayout"]) == 0 {
-		fmt.Println("got too be mini bro")
 		Cache["minifiedLayout"], err = m.String("text/html", Cache["layout"])
 		if err != nil {
 			panic(err)

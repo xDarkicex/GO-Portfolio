@@ -205,11 +205,15 @@ func (c Blog) Edit(a helpers.RouterArgs) {
 
 // Image shows selected blog
 func (c Blog) Image(a helpers.RouterArgs) {
-	b, err := models.GetImageByID(a.Params.ByName("imageID"))
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
+	var imageID = a.Params.ByName("imageID")
+	if len(helpers.Cache[imageID]) == 0 {
+		b, err := models.GetImageByID(imageID)
+		if err != nil {
+			helpers.Logger.Println(err)
+			http.Redirect(a.Response, a.Request, "/", 302)
+			return
+		}
+		helpers.Cache[imageID] = string(b)
 	}
-	a.Response.Write(b)
+	a.Response.Write([]byte(helpers.Cache[imageID]))
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/mail"
@@ -35,10 +36,20 @@ func (c Application) Index(a helpers.RouterArgs) {
 
 //About About me Pages
 func (c Application) About(a helpers.RouterArgs) {
-	user, err := models.FirstUser()
-	if err != nil {
-		fmt.Println(err)
+	var user models.User
+	if len(helpers.Cache["firstUser"]) == 0 {
+		user, err := models.FirstUser()
+		if err != nil {
+			panic(err)
+		}
+		userify, err := json.Marshal(user)
+		if err != nil {
+			panic(err)
+		}
+		helpers.Cache["firstUser"] = string(userify)
 	}
+	byteUser := []byte(helpers.Cache["firstUser"])
+	json.Unmarshal(byteUser, &user)
 	helpers.Render(a, "application/about", map[string]interface{}{
 		"user":  user,
 		"title": "About Me",

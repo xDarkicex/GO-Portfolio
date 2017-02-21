@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"regexp"
-	"runtime/debug"
 	"strings"
 
 	"github.com/xDarkicex/PortfolioGo/config"
@@ -182,7 +181,7 @@ func FindUserByName(name string) (user User, err error) {
 	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	if err != nil {
 		helpers.Logger.Println(err)
-		helpers.Logger.Println(string(debug.Stack()))
+		// helpers.Logger.Println(string(debug.Stack()))
 	}
 	user = userify(rawUser)
 	return user, err
