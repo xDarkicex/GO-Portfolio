@@ -41,6 +41,8 @@ main {
 .box{
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: top 100ms linear;
   p{
     text-align: left;
     margin: 0;

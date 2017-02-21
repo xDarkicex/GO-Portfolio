@@ -2,63 +2,65 @@ extends ../layouts/application.pug
 
 block main-content
     div.container-fluid
-        div.col-sm-12.sugestions
-             div#cards
-                range .posts
-                    a(href=/post/{{.URL}}): div.card
-                        div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
-                        h4.card-title= .Title
-        div.col-sm-3.lead(style='text-align:center;')
-            .box
-                .Avatar(style="background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
-                div  
-                    p.Name= .post.Author.FullName
-                    p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
-                    p.small.lead Software Engineer
-                    p: a(href='https://github.com/{{.user.Name}}')
-                        i.fa.fa-github-alt(aria-hidden="true")
-        div.col-sm-9.lead
-            if .current_user 
-                if .current_user.Admin
-                    div.container-fluid.adminControls
-                        div.pull-right.btn-group
-                            a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
-                            a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
-            p.h1= .post.Title
-            p.h3= .post.Summary
-            div.container-fluid.btn-social
-                div.pull-right.btn-group
-                    div: a(href='https://twitter.com/share' data-text='Check out this blog post: ' class='twitter-share-button' data-related='xDarkicex' data-show-count='false') 
-                    div(class="fb-share-button" data-href="https://rolofson.me/post/{{.post.URL}}" data-layout="button" data-size="small" data-mobile-iframe="false"): a(class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse") Share
-            p.h5: script document.write(new Date("{{formatPostTime .post.Time}}").toLocaleDateString())
-            hr
-            div.card-img-top
-                img(src="/post/{{.post.URL}}/images/{{.post.BlogImage}}")
-            {{.post.Body}}
-            hr
-            div(id="fb-root")
-            div(id="disqus_thread")
+        .row
+            div.col-sm-12.sugestions
+                div#cards
+                    range .posts
+                        a(href=/post/{{.URL}}): div.card
+                            div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
+                            h4.card-title= .Title
+        .row
+            div.col-sm-3.lead
+                .box
+                    .Avatar(style="background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
+                    div  
+                        p.Name= .post.Author.FullName
+                        p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
+                        p.small.lead Software Engineer
+                        p: a(href='https://github.com/{{.user.Name}}')
+                            i.fa.fa-github-alt(aria-hidden="true")
+            div.col-sm-9.lead
+                if .current_user 
+                    if .current_user.Admin
+                        div.container-fluid.adminControls
+                            div.pull-right.btn-group
+                                a.btn.btn-primary(data-method="DELETE" href= /post/{{.post.URL}} confirmable="Are you sure you want to delete this post?") DELETE
+                                a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
+                p.h1= .post.Title
+                p.h3= .post.Summary
+                div.container-fluid.btn-social
+                    div.pull-right.btn-group
+                        div: a(href='https://twitter.com/share' data-text='Check out this blog post: ' class='twitter-share-button' data-related='xDarkicex' data-show-count='false') 
+                        div(class="fb-share-button" data-href="https://rolofson.me/post/{{.post.URL}}" data-layout="button" data-size="small" data-mobile-iframe="false"): a(class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse") Share
+                p.h5: script document.write(new Date("{{formatPostTime .post.Time}}").toLocaleDateString())
+                hr
+                div.card-img-top
+                    img(src="/post/{{.post.URL}}/images/{{.post.BlogImage}}")
+                {{.post.Body}}
+                hr
+                div(id="fb-root")
+                div(id="disqus_thread")
 
-            noscript:
-                | Please enable JavaScript to view the #[a(href="https://disqus.com/?ref_noscript") comments powered by Disqus ].
-            script(async='', src='//platform.twitter.com/widgets.js', charset='utf-8')
-            script(async='', src='/static/assets/javascripts/prism.js')
-            link(rel='stylesheet' type="text/css" href='/static/assets/CSS/prism.css')
-            script.
-                var disqus_config = function () {
-                    this.page.url = 'https://rolofson.me/post/{{.post.URL}}';  // Replace PAGE_URL with your page's canonical URL variable
-                    this.page.identifier = {{.post.URL}} // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-                };
-                (function() { // DON'T EDIT BELOW THIS LINE
-                    var d = document, s = d.createElement('script');
-                    s.src = '//https-rolofson-me.disqus.com/embed.js';
-                    s.setAttribute('data-timestamp', +new Date());
-                    (d.head || d.body).appendChild(s);
-                })();
-                (function(d, s, id) {
-                    var js, fjs = d.getElementsByTagName(s)[0];
-                    if (d.getElementById(id)) return;
-                    js = d.createElement(s); js.id = id;
-                    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1138223786197044";
-                    fjs.parentNode.insertBefore(js, fjs);
-                }(document, 'script', 'facebook-jssdk'));
+                noscript:
+                    | Please enable JavaScript to view the #[a(href="https://disqus.com/?ref_noscript") comments powered by Disqus ].
+                script(async='', src='//platform.twitter.com/widgets.js', charset='utf-8')
+                script(async='', src='/static/assets/javascripts/prism.js')
+                link(rel='stylesheet' type="text/css" href='/static/assets/CSS/prism.css')
+                script.
+                    var disqus_config = function () {
+                        this.page.url = 'https://rolofson.me/post/{{.post.URL}}';  // Replace PAGE_URL with your page's canonical URL variable
+                        this.page.identifier = {{.post.URL}} // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                    };
+                    (function() { // DON'T EDIT BELOW THIS LINE
+                        var d = document, s = d.createElement('script');
+                        s.src = '//https-rolofson-me.disqus.com/embed.js';
+                        s.setAttribute('data-timestamp', +new Date());
+                        (d.head || d.body).appendChild(s);
+                    })();
+                    (function(d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) return;
+                        js = d.createElement(s); js.id = id;
+                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1138223786197044";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }(document, 'script', 'facebook-jssdk'));
