@@ -3,6 +3,30 @@ $transblack: rgba( 0, 0, 0, .4);
 main {
   padding-top: 35px; 
 }
+
+.Avatar{
+  display: block;
+  width: 120px;
+  padding: 30px 20px 50px 20px;
+  height: 120px;
+  border-top-right-radius: 90px;
+  border-bottom-left-radius: 90px;
+  border-bottom-right-radius: 90px;
+  position: relative;
+  // box-shadow: 1px 2px 12px gray;
+  border: 1px solid rgba(0,0,0,0.3);
+  cursor: pointer;
+  .Name{
+    width: 100%;
+    display: block;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 600;
+    color: violet;
+    margin-top: 6px;
+  }
+}
+
 .card-img-top{
     display: block;
     
@@ -16,8 +40,9 @@ main {
 
 .box{
   display: flex;
+  flex-direction: column;
   p{
-    text-align: right;
+    text-align: left;
     margin: 0;
   }
 }
