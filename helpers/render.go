@@ -21,7 +21,7 @@ var t *template.Template
 
 //Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
-	// a.Response.Header().Set("Connection", "Keep-Alive")
+	a.Response.Header().Set("Connection", "upgrade")
 	// a.Response.Header().Set("Vary", "Accept-Encoding")
 	a.Response.Header().Set("Cache-Control", "private, max-age=7776000")
 	a.Response.Header().Set("Transfer-Encoding", "gzip, chunked")
