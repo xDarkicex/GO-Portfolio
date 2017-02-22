@@ -160,6 +160,7 @@ func BlogDestroy(id bson.ObjectId) error {
 
 // BlogUpdate Blog Update!
 func BlogUpdate(id string, updated map[string]interface{}) error {
+	helpers.DeleteCache(id)
 	session := db.Session()
 	defer session.Close()
 	c := session.DB(config.Data.Env).C("Blog")
