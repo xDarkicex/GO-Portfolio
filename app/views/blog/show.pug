@@ -3,7 +3,7 @@ extends ../layouts/application.pug
 block main-content
     div.container-fluid
         .row
-            div.col-sm-12.sugestions
+            div.col-sm-12.suggestions
                 div#cards
                     range .posts
                         a(href=/post/{{.URL}}): div.card
@@ -13,11 +13,15 @@ block main-content
             div.col-sm-3.lead.col-xs-12
                 .box.container-fluid
                     .Avatar(style="background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
-                    span= .post.Author.FullName
-                    span Founder #[a(href='https://bitdev.io') BitDev.io]
-                    span Software Engineer
-                    span: a(href='https://github.com/{{.user.Name}}')
-                        i.fa.fa-github-alt(aria-hidden="true")
+                    .Information
+                        span Author {{.post.Author.FullName}}
+                        span Founder #[a(href='https://bitdev.io') BitDev.io]
+                        span Software Engineer
+                        span: a(href='https://github.com/{{.user.Name}}')
+                            i.fa.fa-github-alt(aria-hidden="true")
+                    div
+                        div: a(href='https://twitter.com/share' data-text='Check out this blog post: ' class='twitter-share-button' data-related='xDarkicex' data-show-count='false') 
+                        div(class="fb-share-button" data-href="https://rolofson.me/post/{{.post.URL}}" data-layout="button" data-size="small" data-mobile-iframe="false"): a(class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse") Share
             div.col-sm-9.lead
                 if .current_user 
                     if .current_user.Admin
@@ -27,10 +31,6 @@ block main-content
                                 a.btn.btn-primary(href= /post/{{.post.URL}}/edit) EDIT
                 p.h1= .post.Title
                 p.h3= .post.Summary
-                div.container-fluid.btn-social
-                    div.pull-right.btn-group
-                        div: a(href='https://twitter.com/share' data-text='Check out this blog post: ' class='twitter-share-button' data-related='xDarkicex' data-show-count='false') 
-                        div(class="fb-share-button" data-href="https://rolofson.me/post/{{.post.URL}}" data-layout="button" data-size="small" data-mobile-iframe="false"): a(class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse") Share
                 p.h5: script document.write(new Date("{{formatPostTime .post.Time}}").toLocaleDateString())
                 hr
                 div.card-img-top

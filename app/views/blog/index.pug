@@ -3,7 +3,7 @@ extends ./app/views/layouts/application
 block main-content
     {{$user := .current_user}}
     div.container-fluid
-        div.col-sm-12.sugestions
+        div.col-sm-12.suggestions
             div#cards    
                 range .top 
                     a(href=/post/{{.URL}}): div.cards

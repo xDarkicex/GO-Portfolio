@@ -17,9 +17,10 @@
       }
     }
 }
-.sugestions{
+.suggestions{
     margin-top: -30px;
 }
+
 .highlighted {
   &::after {
     content: '';
@@ -79,4 +80,10 @@ a{
     &:focus{
         text-decoration: none;
     }
+}
+
+@media (max-width: 800px) {
+  .suggestions{
+    display: none;
+  }
 }
