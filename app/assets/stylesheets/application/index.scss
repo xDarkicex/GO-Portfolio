@@ -25,11 +25,43 @@
 main{
       padding-top: 0px;
 }
+.end {
+    padding-top: 20px;
+    margin-top: 20px;
+}
 
-.card-block{
-
-    .end {
-        padding-top: 20px;
-        margin-top: 20px;
+.jumbotron {
+  align-items: center;
+  background: linear-gradient(to left, #02AAB0 , #00CDAC);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 95vh;
+  h1 {
+    text-align: center;
+    .lang {
+      text-transform: uppercase;
     }
+  }
+}
+
+/*
+ * Animation for webkit
+*/
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {transform: translateY(0);}
+  40% {transform: translateY(-30px);}
+  60% {transform: translateY(-15px);}
+}
+
+
+// Adding the animation to our element
+
+.bounce {
+  animation-name: bounce;
 }
