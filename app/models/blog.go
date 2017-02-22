@@ -39,15 +39,20 @@ type Blog struct {
 
 //AllBlogs finds all blog posts
 func AllBlogs() (blogs []Blog, err error) {
-	var rawblogs []dbBlog
-	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
-	for _, e := range rawblogs {
-		blogs = append(blogs, blogify(e))
-	}
-	if err != nil {
-		fmt.Println("error in all blogs")
-	}
-	return blogs, err
+	allBlogs := helpers.Get("blogIndex", func() *helpers.CacheObject {
+		var rawblogs []dbBlog
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
+		for _, e := range rawblogs {
+			blogs = append(blogs, blogify(e))
+		}
+		if err != nil {
+			fmt.Println("error in all blogs")
+		}
+		return helpers.NewCacheObject(blogs)
+	})
+	return allBlogs.Object.([]Blog), err
 }
 
 // So blogify will turn a database blog structure into the more code friendly Blog structure with relationships resolved to actual objects.
@@ -73,28 +78,39 @@ func blogify(e dbBlog) (blog Blog) {
 
 // FindBlogByURL Returns blog by Title
 func FindBlogByURL(url string) (blog Blog, err error) {
-	var rawblog dbBlog
-	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{"url": url}).One(&rawblog)
-	blog = blogify(rawblog)
-	return blog, err
+	blogURL := helpers.Get(url, func() *helpers.CacheObject {
+		var rawblog dbBlog
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("Blog").Find(bson.M{"url": url}).One(&rawblog)
+		blog = blogify(rawblog)
+		return helpers.NewCacheObject(blog)
+	})
+	return blogURL.Object.(Blog), err
 }
 
 // FindBlogByID ...
 func FindBlogByID(id string) (blog Blog, err error) {
-	var rawblog dbBlog
-	err = db.Session().DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&rawblog)
-	blog = blogify(rawblog)
-	return blog, err
+	blogID := helpers.Get(id, func() *helpers.CacheObject {
+		var rawblog dbBlog
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&rawblog)
+		blog = blogify(rawblog)
+		return helpers.NewCacheObject(blog)
+	})
+	return blogID.Object.(Blog), err
 }
 
 // FindBlogByID ...
 func findDbBlogByID(id string) (blog dbBlog, err error) {
-	// var rawblog dbBlog
-	session := db.Session()
-	defer session.Close()
-	err = session.DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
-	// blog = blogify(rawblog)
-	return blog, err
+	Blogdb := helpers.Get(id, func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("Blog").FindId(bson.ObjectIdHex(id)).One(&blog)
+		return helpers.NewCacheObject(blog)
+	})
+	return Blogdb.Object.(dbBlog), err
 }
 
 // BlogCreate creates a new blog post
@@ -190,42 +206,44 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 }
 
 // GetImageByID ...
-func GetImageByID(imageID string) ([]byte, error) {
-	gridFS := db.Session().DB(config.Data.Env).GridFS("fs")
-	gridFile, err := gridFS.OpenId(bson.ObjectIdHex(imageID))
-	if err != nil {
-		helpers.Logger.Println(err)
-		fmt.Println("Can't find image")
-		return nil, err
-	}
-	defer gridFile.Close()
+func GetImageByID(imageID string) (file []byte, err error) {
+	imagebyID := helpers.Get(imageID, func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		gridFS := session.DB(config.Data.Env).GridFS("fs")
+		gridFile, err := gridFS.OpenId(bson.ObjectIdHex(imageID))
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		defer gridFile.Close()
 
-	b := make([]byte, gridFile.Size())
-	_, err = gridFile.Read(b)
-	if err != nil {
-		helpers.Logger.Println(err)
-		fmt.Println("Error encoding image")
-		return nil, err
-	}
-	return b, nil
+		b := make([]byte, gridFile.Size())
+		_, err = gridFile.Read(b)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		return helpers.NewCacheObject(b)
+	})
+	return imagebyID.Object.([]byte), err
 }
 
 // GetBlogsByTags ...
 func GetBlogsByTags(searchTerm string) (blogs []Blog, err error) {
-	var rawBlogs []dbBlog
-	err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
-		"tags": searchTerm,
-	}).All(&rawBlogs)
-	if err != nil {
-		helpers.Logger.Println(err)
-		fmt.Println("Error locating blog by tag, no tag found")
-		return nil, err
-	}
-	for _, e := range rawBlogs {
-		blogs = append(blogs, blogify(e))
-	}
-	if err != nil {
-		fmt.Println("Error searching blogs")
-	}
-	return blogs, nil
+	blogTags := helpers.Get(searchTerm, func() *helpers.CacheObject {
+		var rawBlogs []dbBlog
+		err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
+			"tags": searchTerm,
+		}).All(&rawBlogs)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		for _, e := range rawBlogs {
+			blogs = append(blogs, blogify(e))
+		}
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		return helpers.NewCacheObject(blogs)
+	})
+	return blogTags.Object.([]Blog), err
 }

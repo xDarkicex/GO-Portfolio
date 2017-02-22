@@ -17,6 +17,7 @@ import (
 // Blog Controller
 type Blog helpers.Controller
 
+// Search ...
 func (c Blog) Search(a helpers.RouterArgs) {
 	searchValue := strings.ToLower(a.Request.FormValue("search"))
 	blogs, err := models.GetBlogsByTags(searchValue)
@@ -205,15 +206,11 @@ func (c Blog) Edit(a helpers.RouterArgs) {
 
 // Image shows selected blog
 func (c Blog) Image(a helpers.RouterArgs) {
-	var imageID = a.Params.ByName("imageID")
-	if len(helpers.Cache[imageID]) == 0 {
-		b, err := models.GetImageByID(imageID)
-		if err != nil {
-			helpers.Logger.Println(err)
-			http.Redirect(a.Response, a.Request, "/", 302)
-			return
-		}
-		helpers.Cache[imageID] = string(b)
+	b, err := models.GetImageByID(a.Params.ByName("imageID"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
 	}
-	a.Response.Write([]byte(helpers.Cache[imageID]))
+	a.Response.Write(b)
 }

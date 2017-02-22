@@ -19,9 +19,6 @@ import (
 // var pugEngine *html.Engine
 var t *template.Template
 
-// Cache is generic Cache for speeding up application * may switch to memcache in production
-var Cache = make(map[string]string)
-
 //Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
 	times := make(map[string]interface{})
@@ -42,25 +39,30 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
-	if len(Cache["minifiedLayout"]) == 0 {
+	layout := Get("layout", func() *CacheObject {
 		layout, err := jade.ParseFile("./app/views/layouts/application.pug")
 		if err != nil {
 			panic(err)
 		}
-
-		Cache["minifiedLayout"], err = m.String("text/html", layout)
+		minified, err := m.String("text/html", layout)
 		if err != nil {
 			panic(err)
 		}
-	}
-	currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
-	if err != nil {
-		Logger.Printf("\nParseFile error: %v", err)
-	}
-	currentViewMin, err := m.String("text/html", currentView)
-	if err != nil {
-		panic(err)
-	}
+		return NewCacheObject(minified)
+	})
+
+	currentView := Get(view, func() *CacheObject {
+		currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
+		if err != nil {
+			Logger.Printf("\nParseFile error: %v", err)
+		}
+		minifiedView, err := m.String("text/html", currentView)
+		if err != nil {
+			panic(err)
+		}
+		return NewCacheObject(minifiedView)
+	})
+
 	times["jade"] = time.Since(times["jade"].(time.Time))
 
 	////////////////////////////////////////////
@@ -93,11 +95,11 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	}
 
 	times["render-page"] = time.Now()
-	gotpl, err := template.New("layout").Funcs(funcMap).Parse(Cache["minifiedLayout"])
+	gotpl, err := template.New("layout").Funcs(funcMap).Parse(layout.Object.(string))
 	if err != nil {
 		Logger.Printf("\nTemplate parse error: %v", err)
 	}
-	_, err = gotpl.New(view).Parse(currentViewMin)
+	_, err = gotpl.New(view).Parse(currentView.Object.(string))
 	if err != nil {
 		Logger.Printf("\nIndex parse error: %v", err)
 	}

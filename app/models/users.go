@@ -178,10 +178,10 @@ func Login(name string, password string) (user User, err error) {
 //FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
 	var rawUser dbUser
+
 	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	if err != nil {
 		helpers.Logger.Println(err)
-		// helpers.Logger.Println(string(debug.Stack()))
 	}
 	user = userify(rawUser)
 	return user, err

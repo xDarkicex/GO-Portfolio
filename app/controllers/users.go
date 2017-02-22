@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -57,35 +56,19 @@ func (c Users) Create(a helpers.RouterArgs) {
 
 // Show Show page for users
 func (c Users) Show(a helpers.RouterArgs) {
-	var user models.User
-	currentUser := a.Params.ByName("name")
-	if len(helpers.Cache[currentUser]) == 0 {
-		user, err := models.FindUserByName(currentUser)
-		if err != nil {
-			session := a.Session
-			helpers.AddFlash(a, helpers.Flash{Type: "danger", Message: "User Not Found"})
-			err = session.Save(a.Request, a.Response)
-			if err != nil {
-				helpers.Logger.Println(err)
-			}
-			http.Redirect(a.Response, a.Request, "/", 302)
-		}
-		userify, err := json.Marshal(user)
-		if err != nil {
-			panic(err)
-		}
-		helpers.Cache[currentUser] = string(userify)
-	}
-	responseUser := []byte(helpers.Cache[currentUser])
-	err := json.Unmarshal(responseUser, &user)
+	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
-		panic(err)
+		session := a.Session
+		helpers.AddFlash(a, helpers.Flash{Type: "danger", Message: "User Not Found"})
+		err = session.Save(a.Request, a.Response)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		http.Redirect(a.Response, a.Request, "/", 302)
 	}
 	helpers.Render(a, "users/show", map[string]interface{}{
-
 		"user": user,
 	})
-
 }
 
 // New ...
@@ -166,15 +149,11 @@ func (c Users) Edit(a helpers.RouterArgs) {
 
 //Image ..
 func (c Users) Image(a helpers.RouterArgs) {
-	var imageID = a.Params.ByName("imageID")
-	if len(helpers.Cache[imageID]) == 0 {
-		b, err := models.GetImageByID(imageID)
-		if err != nil {
-			helpers.Logger.Println(err)
-			http.Redirect(a.Response, a.Request, "/", 302)
-			return
-		}
-		helpers.Cache[imageID] = string(b)
+	b, err := models.GetImageByID(a.Params.ByName("imageID"))
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
 	}
-	a.Response.Write([]byte(helpers.Cache[imageID]))
+	a.Response.Write(b)
 }
