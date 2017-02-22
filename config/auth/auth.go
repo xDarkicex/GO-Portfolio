@@ -10,7 +10,7 @@ import (
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
-// Auth does some stuff.
+// Auth wraps Route in authenticates for userID
 func Auth(fn helpers.RoutesHandler, requireAuth bool) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		a := helpers.RouterArgs{Request: r, Response: w, Params: ps}
@@ -22,8 +22,6 @@ func Auth(fn helpers.RoutesHandler, requireAuth bool) httprouter.Handle {
 		a.Session = session
 		userID := session.Values["UserID"]
 		if userID != nil {
-			// Not logged in
-			// helpers.Logger.Println(userID)
 			user, err := models.FindUserByID(bson.ObjectIdHex(userID.(string)))
 			if err != nil {
 				helpers.Logger.Println(err)
@@ -33,6 +31,7 @@ func Auth(fn helpers.RoutesHandler, requireAuth bool) httprouter.Handle {
 			}
 		} else if requireAuth {
 			http.Redirect(a.Response, a.Request, "/", 302)
+
 			return
 		} else {
 			// Auth not required, userID not found.
@@ -40,20 +39,3 @@ func Auth(fn helpers.RoutesHandler, requireAuth bool) httprouter.Handle {
 		}
 	}
 }
-
-// // Middleware force - bool, whether or not to force Gzip regardless of the sent headers.
-// func Middleware(fn httprouter.Handle) httprouter.Handle {
-// 	return func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
-// 		res.Header().Set("Server", "Golang")
-// 		if !strings.Contains(req.Header.Get("Accept-Encoding"), "gzip")  {
-// 			fn(res, req, pm)
-// 			return
-// 		}
-// 		res.Header().Set("Vary", "Accept-Encoding")
-// 		res.Header().Set("Content-Encoding", "gzip")
-// 		gz := gzip.NewWriter(res)
-// 		defer gz.Close()
-// 		gzr := GzipResponseWriter{Writer: gz, ResponseWriter: res}
-// 		fn(gzr, req, pm)
-// 	}
-// }

@@ -156,10 +156,10 @@ func CreateUser(email string, name string, password string) (bool, string) {
 
 // Login as a user
 func Login(name string, password string) (user User, err error) {
-	s := db.Session()
-	defer s.Close()
+	session := db.Session()
+	defer session.Close()
 	var rawUser dbUser
-	err = s.DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
+	err = session.DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
 	user = userify(rawUser)
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -177,51 +177,71 @@ func Login(name string, password string) (user User, err error) {
 
 //FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
-	var rawUser dbUser
-
-	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	user = userify(rawUser)
-	return user, err
+	findByName := helpers.Get(name, func() *helpers.CacheObject {
+		var rawUser dbUser
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("User").Find(bson.M{"name": name}).One(&rawUser)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		user = userify(rawUser)
+		return helpers.NewCacheObject(user)
+	})
+	return findByName.Object.(User), err
 }
 
 // FindUserByID ...
 func FindUserByID(userID bson.ObjectId) (user User, err error) {
 	var rawUser dbUser
-	err = db.Session().DB(config.Data.Env).C("User").FindId(userID).One(&rawUser)
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	user = userify(rawUser)
-	return user, err
+	findByID := helpers.Get(string(userID), func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("User").FindId(userID).One(&rawUser)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		user = userify(rawUser)
+		return helpers.NewCacheObject(user)
+	})
+	return findByID.Object.(User), err
 }
 
 // FinddbUserByID ...
 func finddbUserByID(id string) (user dbUser, err error) {
-	err = db.Session().DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	return user, err
+	dbfindByID := helpers.Get(id, func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		return helpers.NewCacheObject(user)
+	})
+	return dbfindByID.Object.(dbUser), err
 }
 
 //AllUsers finds all the users
 func AllUsers() (users []User, err error) {
-	var rawUsers []dbUser
-	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	for _, e := range rawUsers {
-		users = append(users, userify(e))
-	}
-	return users, err
+	allUsers := helpers.Get("IndexUsers", func() *helpers.CacheObject {
+		var rawUsers []dbUser
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		for _, e := range rawUsers {
+			users = append(users, userify(e))
+		}
+		return helpers.NewCacheObject(users)
+	})
+	return allUsers.Object.([]User), err
 }
 
 // UserDestroy Blog Destroy
 func UserDestroy(id bson.ObjectId) error {
+	helpers.DeleteCache(string(id))
 	session := db.Session()
 	defer session.Close()
 	return session.DB(config.Data.Env).C("User").RemoveId(id)
@@ -229,6 +249,7 @@ func UserDestroy(id bson.ObjectId) error {
 
 // UserUpdate Update!
 func UserUpdate(id string, updated map[string]interface{}) error {
+	helpers.DeleteCache(id)
 	session := db.Session()
 	defer session.Close()
 	c := session.DB(config.Data.Env).C("User")
@@ -278,11 +299,14 @@ func UserUpdate(id string, updated map[string]interface{}) error {
 
 // FirstUser This returns the first user created
 func FirstUser() (user User, err error) {
-	var rawUser dbUser
-	err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).One(&rawUser)
-	if err != nil {
-		helpers.Logger.Println(err)
-	}
-	user = userify(rawUser)
-	return user, err
+	firstUser := helpers.Get("firstUser", func() *helpers.CacheObject {
+		var rawUser dbUser
+		err = db.Session().DB(config.Data.Env).C("User").Find(bson.M{}).One(&rawUser)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		user = userify(rawUser)
+		return helpers.NewCacheObject(user)
+	})
+	return firstUser.Object.(User), err
 }
