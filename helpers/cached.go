@@ -11,7 +11,7 @@ type CacheObject struct {
 // Cache Actual cache in memory
 var cache = make(map[string]*CacheObject)
 
-const defaultExpiration = time.Second * time.Duration(1)
+const defaultExpiration = time.Hour * time.Duration(1)
 
 // Get cached Object
 // key: the key our cached object.
