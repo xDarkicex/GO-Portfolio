@@ -10,15 +10,14 @@ block main-content
                             div.card-img-top.highlighted(style="height: 100px; background: url(/post/{{.URL}}/images/{{.BlogImage}})center center no-repeat; background-size: cover;")
                             h4.card-title= .Title
         .row
-            div.col-sm-3.lead
-                .box
+            div.col-sm-3.lead.col-xs-12
+                .box.container-fluid
                     .Avatar(style="background: url(/users/{{.post.Author.Name}}/images/{{.post.Author.Avatar}})center center no-repeat;background-size: cover;")
-                    div  
-                        p.Name= .post.Author.FullName
-                        p.small.lead Founder #[a(href='https://bitdev.io') BitDev.io]
-                        p.small.lead Software Engineer
-                        p: a(href='https://github.com/{{.user.Name}}')
-                            i.fa.fa-github-alt(aria-hidden="true")
+                    span= .post.Author.FullName
+                    span Founder #[a(href='https://bitdev.io') BitDev.io]
+                    span Software Engineer
+                    span: a(href='https://github.com/{{.user.Name}}')
+                        i.fa.fa-github-alt(aria-hidden="true")
             div.col-sm-9.lead
                 if .current_user 
                     if .current_user.Admin

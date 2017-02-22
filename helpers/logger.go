@@ -27,7 +27,7 @@ func FlushLog() {
 		file.WriteString(buffed)
 		sendSMS(buffed)
 		errBuf.Reset()
-		defer file.Close()
+		file.Close()
 	}
 }
 
