@@ -1,6 +1,9 @@
 package helpers
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // CacheObject shut up
 type CacheObject struct {
@@ -10,6 +13,7 @@ type CacheObject struct {
 
 // Cache Actual cache in memory
 var cache = make(map[string]*CacheObject)
+var mutex = &sync.Mutex{}
 
 const defaultExpiration = time.Hour * time.Duration(1)
 
@@ -25,7 +29,9 @@ const defaultExpiration = time.Hour * time.Duration(1)
 //
 func Get(key string, fallback func() *CacheObject) *CacheObject {
 	if cache[key] == nil {
+		mutex.Lock()
 		cache[key] = fallback()
+		mutex.Unlock()
 	}
 	return cache[key]
 }

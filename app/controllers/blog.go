@@ -36,11 +36,19 @@ func (c Blog) Search(a helpers.RouterArgs) {
 
 //Index New index function
 func (c Blog) Index(a helpers.RouterArgs) {
-
-	blogs, err := models.AllBlogs()
-	if err != nil {
-		helpers.Logger.Printf("Error: %s", err)
-		return
+	var blogs []models.Blog
+	var err error
+	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
+		blogs, err = models.GetBlogsByTags(strings.ToLower(a.Request.FormValue("search")))
+		if err != nil {
+			helpers.Logger.Printf("Error: %s", err)
+		}
+	} else {
+		blogs, err = models.AllBlogs()
+		if err != nil {
+			helpers.Logger.Printf("Error: %s", err)
+			return
+		}
 	}
 	blogsTop, err := models.AllBlogs()
 	if err != nil {
@@ -54,14 +62,13 @@ func (c Blog) Index(a helpers.RouterArgs) {
 		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
-	users, err := models.AllUsers()
-	if err != nil {
-		helpers.Logger.Printf("Error: %s", err)
-	}
+	// users, err := models.AllUsers()
+	// if err != nil {
+	// 	helpers.Logger.Printf("Error: %s", err)
+	// }
 	helpers.Render(a, "blog/index", map[string]interface{}{
 		"blog":  blogs,
 		"top":   blogsTop,
-		"users": users,
 		"title": "Blog",
 	})
 }

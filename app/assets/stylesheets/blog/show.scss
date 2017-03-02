@@ -1,8 +1,6 @@
 // code
 $transblack: rgba( 0, 0, 0, .4);
-main {
-  padding-top: 28px; 
-}
+
 
 .Avatar{
 
@@ -78,18 +76,18 @@ main {
       }
     }
   }
-.suggestions{
-    margin-top: -15px;
-}
-
 #cards {
   padding-bottom: 20px;
     a{
-      
+    margin-left: 10px;
+    margin-right: 10px;
      &:hover {
         text-decoration: none;
       }
     }
+}
+.suggestions{
+    
 }
 .card{
     // min-height: 15em!important;

@@ -11,14 +11,15 @@
 #cards {
   padding-bottom: 20px;
     a{
-      
+    margin-left: 10px;
+    margin-right: 10px;
      &:hover {
         text-decoration: none;
       }
     }
 }
 .suggestions{
-    margin-top: -30px;
+    
 }
 
 .highlighted {
@@ -54,6 +55,10 @@
 
 .controls{
     display: flex;
+    position: relative;
+    top: 44px;
+    left: 1px;
+    z-index: 10;
 }
 
 .card-img-top{
