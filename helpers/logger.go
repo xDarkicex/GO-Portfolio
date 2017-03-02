@@ -13,8 +13,7 @@ import (
 	"github.com/xDarkicex/PortfolioGo/config"
 )
 
-type errorLog struct {
-}
+type errorLog struct{}
 
 var errBuf = bytes.NewBuffer([]byte{})
 

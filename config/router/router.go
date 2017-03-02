@@ -62,6 +62,7 @@ func GetRoutes() *httprouter.Router {
 	router.POST("/post/:url", route(blog.Update, true))     // update Update a specific post
 	router.GET("/post/:url/edit/", route(blog.Edit, true))  // So Form for updating a specific post I maybe should mke a new method to make a more tailored form
 	router.GET("/post/:url/images/:imageID", route(blog.Image, false))
+	router.GET("/api/posts/search", route(blog.APIIndex, false))
 
 	///////////////////////////////////////////////////////////
 	// Examples routes

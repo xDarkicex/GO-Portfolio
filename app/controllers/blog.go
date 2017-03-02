@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -25,13 +26,9 @@ func (c Blog) Search(a helpers.RouterArgs) {
 		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
-	users, err := models.AllUsers()
-	if err != nil {
-		helpers.Logger.Printf("Error: %s", err)
-	}
+
 	helpers.Render(a, "blog/index", map[string]interface{}{
 		"blog":  blogs,
-		"users": users,
 		"title": searchValue,
 	})
 
@@ -213,4 +210,17 @@ func (c Blog) Image(a helpers.RouterArgs) {
 		return
 	}
 	a.Response.Write(b)
+}
+
+func (c Blog) APIIndex(a helpers.RouterArgs) {
+	indexBlogs, err := models.AllBlogs()
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
+	data, err := json.Marshal(indexBlogs)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
+	a.Response.Header().Set("Content-Type", "application/json")
+	a.Response.Write(data)
 }

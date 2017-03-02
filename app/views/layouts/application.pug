@@ -38,8 +38,11 @@ html(lang="en")
             li: a(href="/posts") Blog
             li 
               form.navbar-form.navbar-right(role="search", method="post", action="/posts/search")
-                div.form-group.shrinking#searching: input.form-control(type="text", name="search",autocomplete="off", placeholder="Search...")
-                div.btn.btn-default(onclick="shrinker()"): i.fa-search.fa
+                div.form-group.shrinking#searching
+                  input.form-control#searchInput(type="text", name="search", list="json-datalist", placeholder="Search...")
+                  datalist#json-datalist
+                div.btn.btn-default#btn-search: i.fa-search.fa
+                
     range ParseFlashes .flashes
       div(class="flash alert alert-dismissible alert-{{.Type}}" style="display: none;")
         button(type="button" class="close" data-dismiss="alert") &times;

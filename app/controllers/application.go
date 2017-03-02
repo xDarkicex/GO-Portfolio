@@ -54,7 +54,7 @@ func (c Application) Contact(a helpers.RouterArgs) {
 	body := (a.Request.FormValue("contactBody"))
 	subject := "Message From " + name + " - " + address
 	m := email.NewMessage(subject, body)
-	m.From = mail.Address{Name: "From", Address: config.Data.Email}
+	m.From = mail.Address{Name: name, Address: config.Data.Email}
 	m.To = []string{"grolofson@bitdev.io"}
 	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
 	gmailSMTP := config.Data.SMTP.Host + ":" + strconv.Itoa(config.Data.SMTP.Port)

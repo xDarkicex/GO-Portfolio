@@ -1,6 +1,8 @@
 package db
 
-import mgo "gopkg.in/mgo.v2"
+import (
+	mgo "gopkg.in/mgo.v2"
+)
 
 // Session is our database session
 var _session *mgo.Session

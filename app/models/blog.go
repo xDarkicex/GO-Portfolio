@@ -233,8 +233,12 @@ func GetBlogsByTags(searchTerm string) (blogs []Blog, err error) {
 	blogTags := helpers.Get(searchTerm, func() *helpers.CacheObject {
 		var rawBlogs []dbBlog
 		err = db.Session().DB(config.Data.Env).C("Blog").Find(bson.M{
-			"tags": searchTerm,
-		}).All(&rawBlogs)
+			"$or": []bson.M{bson.M{
+				"tags": searchTerm,
+			},
+				bson.M{
+					"title": &bson.RegEx{Pattern: searchTerm, Options: "i"},
+				}}}).All(&rawBlogs)
 		if err != nil {
 			helpers.Logger.Println(err)
 		}
