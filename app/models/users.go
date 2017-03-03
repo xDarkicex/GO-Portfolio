@@ -175,7 +175,7 @@ func Login(name string, password string) (user User, err error) {
 	return user, nil
 }
 
-//FindUserByName finds a user by name
+// FindUserByName finds a user by name
 func FindUserByName(name string) (user User, err error) {
 	findByName := helpers.Get(name, func() *helpers.CacheObject {
 		var rawUser dbUser
@@ -194,17 +194,14 @@ func FindUserByName(name string) (user User, err error) {
 // FindUserByID ...
 func FindUserByID(userID bson.ObjectId) (user User, err error) {
 	var rawUser dbUser
-	findByID := helpers.Get(string(userID), func() *helpers.CacheObject {
-		session := db.Session()
-		defer session.Close()
-		err = session.DB(config.Data.Env).C("User").FindId(userID).One(&rawUser)
-		if err != nil {
-			helpers.Logger.Println(err)
-		}
-		user = userify(rawUser)
-		return helpers.NewCacheObject(user)
-	})
-	return findByID.Object.(User), err
+	session := db.Session()
+	defer session.Close()
+	err = session.DB(config.Data.Env).C("User").FindId(userID).One(&rawUser)
+	if err != nil {
+		helpers.Logger.Println(err)
+	}
+	user = userify(rawUser)
+	return user, err
 }
 
 // FinddbUserByID ...
@@ -212,10 +209,11 @@ func finddbUserByID(id string) (user dbUser, err error) {
 	dbfindByID := helpers.Get(id, func() *helpers.CacheObject {
 		session := db.Session()
 		defer session.Close()
-		err = session.DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
+		err := session.DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
 		if err != nil {
 			helpers.Logger.Println(err)
 		}
+
 		return helpers.NewCacheObject(user)
 	})
 	return dbfindByID.Object.(dbUser), err
@@ -227,13 +225,14 @@ func AllUsers() (users []User, err error) {
 		var rawUsers []dbUser
 		session := db.Session()
 		defer session.Close()
-		err = session.DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
+		err := session.DB(config.Data.Env).C("User").Find(bson.M{}).All(&rawUsers)
 		if err != nil {
 			helpers.Logger.Println(err)
 		}
 		for _, e := range rawUsers {
 			users = append(users, userify(e))
 		}
+
 		return helpers.NewCacheObject(users)
 	})
 	return allUsers.Object.([]User), err

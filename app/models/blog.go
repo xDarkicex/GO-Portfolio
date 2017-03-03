@@ -42,8 +42,12 @@ func AllBlogs() (blogs []Blog, err error) {
 	allBlogs := helpers.Get("blogIndex", func() *helpers.CacheObject {
 		var rawblogs []dbBlog
 		session := db.Session()
+		fmt.Println(session)
 		defer session.Close()
-		err = session.DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
+		err := session.DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
 		for _, e := range rawblogs {
 			blogs = append(blogs, blogify(e))
 		}
@@ -121,14 +125,12 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 	gridFile, err := gridFS.Create("")
 	if err != nil {
 		helpers.Logger.Println(err)
-		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
 	defer helpers.Close(gridFile)
 	_, err = gridFile.Write(blogImage)
 	if err != nil {
 		helpers.Logger.Println(err)
-		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
 	c := session.DB(config.Data.Env).C("Blog")
@@ -145,7 +147,6 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 	})
 	if err != nil {
 		helpers.Logger.Println(err)
-		fmt.Println("Can not Create New Blog post")
 		return "This didnt work", err
 	}
 	return "Blog Post created", nil
@@ -153,6 +154,7 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 
 // BlogDestroy Blog Destroy
 func BlogDestroy(id bson.ObjectId) error {
+	helpers.DeleteCache(string(id))
 	session := db.Session()
 	defer session.Close()
 	return session.DB(config.Data.Env).C("Blog").RemoveId(id)

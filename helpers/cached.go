@@ -28,11 +28,11 @@ const defaultExpiration = time.Hour * time.Duration(1)
 // })
 //
 func Get(key string, fallback func() *CacheObject) *CacheObject {
+	mutex.Lock()
 	if cache[key] == nil {
-		mutex.Lock()
 		cache[key] = fallback()
-		mutex.Unlock()
 	}
+	mutex.Unlock()
 	return cache[key]
 }
 
