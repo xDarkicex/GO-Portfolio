@@ -10,6 +10,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"regexp"
+
 	"github.com/Joker/jade"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
@@ -21,7 +23,11 @@ var t *template.Template
 
 //Render function renders page with our data
 func Render(a RouterArgs, view string, object map[string]interface{}) {
-	// a.Response.Header().Set("Connection", "upgrade")
+	device := a.Request.UserAgent()
+	expression := regexp.MustCompile("(Mobi(le|/xyz)|Tablet)")
+	if !expression.MatchString(device) {
+		a.Response.Header().Set("Connection", "keep-alive")
+	}
 	a.Response.Header().Set("Vary", "Accept-Encoding")
 	a.Response.Header().Set("Cache-Control", "private, max-age=7776000")
 	a.Response.Header().Set("Transfer-Encoding", "gzip, chunked")
