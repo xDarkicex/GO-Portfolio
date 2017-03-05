@@ -42,7 +42,6 @@ func AllBlogs() (blogs []Blog, err error) {
 	allBlogs := helpers.Get("blogIndex", func() *helpers.CacheObject {
 		var rawblogs []dbBlog
 		session := db.Session()
-		fmt.Println(session)
 		defer session.Close()
 		err := session.DB(config.Data.Env).C("Blog").Find(bson.M{}).All(&rawblogs)
 		if err != nil {
