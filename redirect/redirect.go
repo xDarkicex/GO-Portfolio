@@ -1,7 +1,16 @@
 package redirect
-import "net/http"
+
+import (
+	"log"
+	"net/http"
+)
 
 //HTTPS will redirect https traffic too http
 func HTTPS(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
+	target := "https://" + r.Host + r.URL.Path
+	if len(r.URL.RawQuery) > 0 {
+		target += "?" + r.URL.RawQuery
+	}
+	log.Printf("redirect to: %s", target)
+	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
 }

@@ -23,7 +23,7 @@ const defaultExpiration = time.Hour * time.Duration(1)
 //
 // Example:
 // object := Cache.Get("layout", func() {
-//   getOurLayoutShit := parseFileOrWhatever();
+//   getOurLayout := parseFileOrWhatever();
 //   return NewCacheObject(getOurLayoutShit)
 // })
 //
