@@ -1,6 +1,26 @@
 extends ./app/views/layouts/application.pug
 
 block main-content
+    {{$user := .current_user}}
     div.container-fluid
-
-        h1 THIS IS A VIEW
+        div.row(style="padding-top:20px;margin-left:0.1em;margin-right:5em;")
+            if $user
+                if $user.Admin
+                    div.pull-right
+                        a.btn.btn-primary(href="/projects/new") New Project
+        if .project
+             range .project
+                div.controls
+                    //- a.btn.btn-primary(href=/post/{{.URL}}) Read More
+                    if $user
+                        if $user.Admin
+                            a.btn.btn-primary(href=/post/{{.URL}}/edit): i.fa.fa-edit
+                            a.btn.btn-danger(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?"): i.fa.fa-close
+                a(href=/post/{{.URL}})
+                    div.card
+                        div.card-block
+                            div.card-img-top(style="height: 350px; background: url(/project/{{.URL}}/images/{{.Image}})center center no-repeat; background-size: cover;")
+                                div.card-block
+                                    h4.card-title= .Title
+                                        time.h4: script document.write(new Date("{{formatPostTime .Time}}").toLocaleDateString())
+                                    p.card-text= .Summary

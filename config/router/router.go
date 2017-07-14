@@ -69,7 +69,13 @@ func GetRoutes() *httprouter.Router {
 	///////////////////////////////////////////////////////////
 
 	projects := controllers.Projects{}
-	router.GET("/projects", route(projects.Index, false))
+	router.GET("/projects", route(projects.Index, false))  // index pages
+	router.GET("/projects/new", route(projects.New, true)) // render page for creation of new project
+	router.POST("/projects", route(projects.Create, true)) // post to db
+	router.GET("/project/:url", route(projects.Show, false))
+	router.Post("/project/:url", route(projects.Update, true))
+	router.GET("/project/:url/edit/", route(projects.Edit, true))
+	router.GET("project/:url/images/:imageID", route(projects.Image, false))
 
 	///////////////////////////////////////////////////////////
 	// Static routes
