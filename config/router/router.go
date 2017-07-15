@@ -107,7 +107,9 @@ func DialSocket(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func Socket(ws *websocket.Conn) {
 	var msg string
 	for {
-		websocket.Message.Receive(ws, &msg)
+		if websocket.Message.Receive(ws, &msg) != nil {
+			break
+		}
 		var data = make(map[string]interface{})
 		json.Unmarshal([]byte(msg), &data)
 		switch data["api"] {
