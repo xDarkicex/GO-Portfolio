@@ -14,9 +14,9 @@ block main-content
                     //- a.btn.btn-primary(href=/post/{{.URL}}) Read More
                     if $user
                         if $user.Admin
-                            a.btn.btn-primary(href=/post/{{.URL}}/edit): i.fa.fa-edit
-                            a.btn.btn-danger(data-method="DELETE" href=/post/{{.URL}} confirmable="Are you sure you want to delete this post?"): i.fa.fa-close
-                a(href=/post/{{.URL}})
+                            a.btn.btn-primary(href=/project/{{.URL}}/edit): i.fa.fa-edit
+                            a.btn.btn-danger(data-method="DELETE" href=/project/{{.URL}} confirmable="Are you sure you want to delete this post?"): i.fa.fa-close
+                a(href=/project/{{.URL}})
                     div.card
                         div.card-block
                             div.card-img-top(style="height: 350px; background: url(/project/{{.URL}}/images/{{.Image}})center center no-repeat; background-size: cover;")

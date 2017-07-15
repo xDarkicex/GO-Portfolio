@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"html/template"
+
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"github.com/xDarkicex/PortfolioGo/helpers"
@@ -12,28 +14,30 @@ import (
 
 // dbProject struct
 type dbProject struct {
-	ID      bson.ObjectId `bson:"_id,omitempty"`
-	UserID  bson.ObjectId `bson:"user_id"`
-	Image   string        `bson:"Image"`
-	Title   string        `bson:"title"`
-	Body    string        `bson:"body"`
-	Summary string        `bson:"summary"`
-	URL     string        `bson:"url"`
-	Tags    []string      `bson:"tags"`
-	Time    time.Time     `bson:"time"`
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	UserID    bson.ObjectId `bson:"user_id"`
+	Image     string        `bson:"Image"`
+	Title     string        `bson:"title"`
+	Body      string        `bson:"body"`
+	Summary   string        `bson:"summary"`
+	URL       string        `bson:"url"`
+	CustomURL string        `bson:"customURL"`
+	Tags      []string      `bson:"tags"`
+	Time      time.Time     `bson:"time"`
 }
 
 // Project struct
 type Project struct {
-	ID      bson.ObjectId
-	Author  User
-	Image   string
-	Title   string
-	Body    string
-	Summary string
-	URL     string
-	Tags    []string
-	Time    time.Time
+	ID        bson.ObjectId
+	Author    User
+	Image     string
+	Title     string
+	Body      template.HTML
+	Summary   string
+	URL       string
+	CustomURL string
+	Tags      []string
+	Time      time.Time
 }
 
 // AllProjects Find all projects in mongoDB
@@ -51,20 +55,22 @@ func AllProjects() (projects []Project, err error) {
 func projectify(e dbProject) (project Project) {
 	author, _ := FindUserByID(e.UserID)
 	project = Project{
-		Author:  author,
-		ID:      e.ID,
-		Image:   e.Image,
-		Body:    e.Body,
-		Summary: e.Summary,
-		Tags:    e.Tags,
-		Time:    e.Time,
-		URL:     e.URL,
+		Title:     e.Title,
+		Author:    author,
+		ID:        e.ID,
+		Image:     e.Image,
+		Body:      template.HTML(e.Body),
+		Summary:   e.Summary,
+		Tags:      e.Tags,
+		Time:      e.Time,
+		URL:       e.URL,
+		CustomURL: e.CustomURL,
 	}
 	return project
 }
 
 // ProjectCreate creates a new project
-func ProjectCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, Image []byte) (string, error) {
+func ProjectCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, Image []byte, customURL string) (string, error) {
 	session := db.Session()
 	defer session.Close()
 	gridFS := session.DB(config.Data.Env).GridFS("fs")
@@ -82,14 +88,15 @@ func ProjectCreate(title string, body string, summary string, tags []string, use
 	c := session.DB(config.Data.Env).C("Project")
 	// Insert Datas
 	err = c.Insert(&dbProject{
-		Title:   title,
-		Body:    body,
-		Summary: summary,
-		UserID:  userID,
-		URL:     url,
-		Image:   gridFile.Id().(bson.ObjectId).Hex(),
-		Tags:    tags,
-		Time:    time.Now(),
+		Title:     title,
+		Body:      body,
+		Summary:   summary,
+		UserID:    userID,
+		URL:       url,
+		CustomURL: customURL,
+		Image:     gridFile.Id().(bson.ObjectId).Hex(),
+		Tags:      tags,
+		Time:      time.Now(),
 	})
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -117,4 +124,88 @@ func FindProjectByURL(url string) (project Project, err error) {
 		return helpers.NewCacheObject(project)
 	})
 	return projectURL.Object.(Project), err
+}
+
+// FindBlogByID ...
+func findDbProjectByID(id string) (project dbProject, err error) {
+	Projectdb := helpers.Get(id, func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("Project").FindId(bson.ObjectIdHex(id)).One(&project)
+		return helpers.NewCacheObject(project)
+	})
+	return Projectdb.Object.(dbProject), err
+}
+
+// ProjectUpdate Project Update!
+func ProjectUpdate(id string, updated map[string]interface{}) error {
+	helpers.DeleteCache(id)
+	session := db.Session()
+	defer session.Close()
+	c := session.DB(config.Data.Env).C("Project")
+	// Want to make each field optional how?
+	newProject, err := findDbProjectByID(id)
+	if err != nil {
+		return err
+	}
+	for key, actual := range map[string]*string{
+		"title":     &newProject.Title,
+		"body":      &newProject.Body,
+		"summary":   &newProject.Summary,
+		"url":       &newProject.URL,
+		"customURL": &newProject.CustomURL,
+	} {
+		if updated[key] != nil {
+			*actual = updated[key].(string)
+		}
+	}
+	if updated["tags"] != nil {
+		newProject.Tags = updated["tags"].([]string)
+	}
+	if updated["Image"] != nil {
+		gridFS := session.DB(config.Data.Env).GridFS("fs")
+		gridFile, err := gridFS.Create("")
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		defer helpers.Close(gridFile)
+		_, err = gridFile.Write(updated["Image"].([]byte))
+		if err != nil {
+			helpers.Logger.Println(err)
+			return err
+		}
+		newProject.Image = gridFile.Id().(bson.ObjectId).Hex()
+	}
+	err = c.UpdateId(bson.ObjectIdHex(id), newProject)
+	if err != nil {
+		helpers.Logger.Println(err)
+		return err
+	}
+	return nil
+}
+
+// GetProjectsByTags ...
+func GetProjectsByTags(searchTerm string) (projects []Project, err error) {
+	projectTags := helpers.Get(searchTerm, func() *helpers.CacheObject {
+		var rawProjects []dbProject
+		err = db.Session().DB(config.Data.Env).C("Project").Find(bson.M{
+			"$or": []bson.M{bson.M{
+				"tags": searchTerm,
+			},
+				bson.M{
+					"title": &bson.RegEx{Pattern: searchTerm, Options: "i"},
+				}}}).All(&rawProjects)
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		for _, e := range rawProjects {
+			projects = append(projects, projectify(e))
+		}
+		if err != nil {
+			helpers.Logger.Println(err)
+		}
+		return helpers.NewCacheObject(projects)
+	})
+	return projectTags.Object.([]Project), err
 }

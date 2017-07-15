@@ -2,15 +2,17 @@ extends ../layouts/application.pug
 
 block main-content
     div.container-fluid
-        h1 New Project
-        //- include "_form.pug"
-        script(src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js")
+        h1 Edit project
+        script(src='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js')
+        script(src='/static/assets/javascripts/ckeditor.js')
+        script(src='/static/assets/javascripts/config.js')
+        script(src='/static/assets/javascripts/styles.js')
+        script(src='/static/assets/javascripts/build-config.js')
         script(src='/static/assets/javascripts/tagsinput.js')
         //- script(src='/static/assets/javascripts/restfulizer.js')
         script(src='/static/assets/javascripts/boothelper.js')
         link(rel='stylesheet' type="text/css" href='/static/assets/CSS/tags.css')
-        //- - var form = ((view.endsWith('edit'))?['POST','/post/'+blog.URL]:['POST','/posts'])
-        form(method="POST", action="/projects", id="projectForm", enctype="multipart/form-data")
+        form(method="POST", action= /project/{{.project.URL}}, id="blogForm", enctype="multipart/form-data")
             div.form-group
                 //- label(for="URL") Permalink
                 input.form-control(id="URL" name="url" autocomplete="off" type="hidden" value="{{.project.URL}}")
@@ -31,8 +33,10 @@ block main-content
                 label(for="body") Body
                 textarea(name="body" id="bodyArea" rows="10" cols="80")= .project.Body
             div.form-group
+                {{ $arr := Join .project.Tags "," }}
                 label(for="tags")
-                input.form-control(id="tags" name="tags" placeholder="categories" data-role="tagsinput" autocomplete="off")
-            input.btn.btn-primary(type="submit")
+                input.form-control(id="tags" name="tags" placeholder="categories" data-role="tagsinput" autocomplete="off"  value={{$arr}})
+            div.form-group
+                input.btn.btn-primary(type="submit")
         script.
             CKEDITOR.replace('body')

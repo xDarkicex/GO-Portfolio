@@ -1,0 +1,11 @@
+extends ../layouts/application.pug
+
+block main-content
+    div.container-fluid
+      <div class="form" style="margin-bottom: 15px;">
+        <h2>Neuron is above Line Example.</h2>
+        <p>A Neuron has been trained to detect if point is above or below line.</p>
+        <p>Green: is above line. Red: is below line.<p>
+      </div>
+      <div id="viewport" style="min-height: 100vh; min-width: 100vw;"></div>
+      <script src='/static/assets/javascripts/ws.neuron.js'></script>
