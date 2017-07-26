@@ -63,6 +63,7 @@ func (c Projects) Create(a helpers.RouterArgs) {
 	URL := strings.Replace(rawURL, " ", "-", -1)
 	_, err := models.ProjectCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes, a.Request.FormValue("CustomURL"))
 	if err != nil {
+		fmt.Println(err)
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}

@@ -1,6 +1,9 @@
 
 document.addEventListener("DOMContentLoaded", function(e){
-  var websocket = new WebSocket("ws://localhost:3000/api/websocket")
+  var local = document.domain
+  console.log(local)
+  var host = local !== "localhost" ? "wss://"+local : 'ws://'+local+":3000"
+  var websocket = new WebSocket(host+"/api/websocket")
   websocket.onopen = function(e) {
     isOpen = true
   }
