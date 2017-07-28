@@ -10,7 +10,7 @@ import (
 
 var _store *sessions.CookieStore
 
-// Store Get the mongo store
+// Store Get the session cookie
 func Store() *sessions.CookieStore {
 	if _store == nil {
 		_store = sessions.NewCookieStore([]byte(config.Data.Secret))
@@ -19,10 +19,10 @@ func Store() *sessions.CookieStore {
 }
 
 //AddFlash Add a new flash to sessions
-func AddFlash(a RouterArgs, f Flash) {
+func AddFlash(a *Params, f Flash) {
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(f)
 	session, _ := _store.Get(a.Request, "user-session")
 	session.AddFlash(buf.String())
-	// Flashes are a fucking array of strings.
+	// Flashes are an a array of strings.
 }

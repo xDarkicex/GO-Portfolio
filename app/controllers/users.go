@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
@@ -13,8 +14,8 @@ import (
 // Users Controller!
 type Users helpers.Controller
 
-// Index function
-func (c Users) Index(a helpers.RouterArgs) {
+// // Index function
+func (c Users) Index(a *helpers.Params) {
 	users, err := models.AllUsers()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -25,8 +26,8 @@ func (c Users) Index(a helpers.RouterArgs) {
 	})
 }
 
-// Create a new user
-func (c Users) Create(a helpers.RouterArgs) {
+// // Create a new user
+func (c Users) Create(a *helpers.Params) {
 	session := a.Session
 	success, createErr := models.CreateUser(a.Request.FormValue("email"), a.Request.FormValue("name"), a.Request.FormValue("password"))
 	if success {
@@ -54,9 +55,11 @@ func (c Users) Create(a helpers.RouterArgs) {
 	http.Redirect(a.Response, a.Request, "/register", http.StatusFound)
 }
 
-// Show Show page for users
-func (c Users) Show(a helpers.RouterArgs) {
-	user, err := models.FindUserByName(a.Params.ByName("name"))
+// // Show Show page for users
+func (c Users) Show(a *helpers.Params) {
+	username := strings.Split(a.Request.URL.Path, "/")[2]
+	fmt.Println(username)
+	user, err := models.FindUserByName(username)
 	if err != nil {
 		session := a.Session
 		helpers.AddFlash(a, helpers.Flash{Type: "danger", Message: "User Not Found"})
@@ -71,8 +74,8 @@ func (c Users) Show(a helpers.RouterArgs) {
 	})
 }
 
-// New ...
-func (c Users) New(a helpers.RouterArgs) {
+// // New ...
+func (c Users) New(a *helpers.Params) {
 	if a.Session.Values["UserID"] == nil {
 		helpers.Render(a, "users/new", map[string]interface{}{})
 	} else {
@@ -80,10 +83,11 @@ func (c Users) New(a helpers.RouterArgs) {
 	}
 }
 
-// Update ...
-func (c Users) Update(a helpers.RouterArgs) {
+// // Update ...
+func (c Users) Update(a *helpers.Params) {
+	username := strings.Split(a.Request.URL.Path, "/")[2]
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
-		user, err := models.FindUserByName(a.Params.ByName("name"))
+		user, err := models.FindUserByName(username)
 		if err != nil {
 			helpers.Logger.Println(err)
 			http.Redirect(a.Response, a.Request, "/", 302)
@@ -99,7 +103,7 @@ func (c Users) Update(a helpers.RouterArgs) {
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
-	user, err := models.FindUserByName(a.Params.ByName("name"))
+	user, err := models.FindUserByName(username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -129,9 +133,10 @@ func (c Users) Update(a helpers.RouterArgs) {
 	http.Redirect(a.Response, a.Request, "/users/"+user.Name, 302)
 }
 
-// Edit shows selected user profile
-func (c Users) Edit(a helpers.RouterArgs) {
-	user, err := models.FindUserByName(a.Params.ByName("name"))
+// // Edit shows selected user profile
+func (c Users) Edit(a *helpers.Params) {
+	username := strings.Split(a.Request.URL.Path, "/")[2]
+	user, err := models.FindUserByName(username)
 	if err != nil {
 		helpers.Logger.Println(err)
 		http.Redirect(a.Response, a.Request, "/", 302)
@@ -147,13 +152,13 @@ func (c Users) Edit(a helpers.RouterArgs) {
 	}
 }
 
-//Image ..
-func (c Users) Image(a helpers.RouterArgs) {
-	b, err := models.GetImageByID(a.Params.ByName("imageID"))
-	if err != nil {
-		helpers.Logger.Println(err)
-		http.Redirect(a.Response, a.Request, "/", 302)
-		return
-	}
-	a.Response.Write(b)
-}
+// //Image ..
+// func (c Users) Image(a helpers.RouterArgs) {
+// 	b, err := models.GetImageByID(a.Params.ByName("imageID"))
+// 	if err != nil {
+// 		helpers.Logger.Println(err)
+// 		http.Redirect(a.Response, a.Request, "/", 302)
+// 		return
+// 	}
+// 	a.Response.Write(b)
+// }

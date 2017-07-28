@@ -5,24 +5,21 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"regexp"
 	"strings"
 	"time"
-
-	"gopkg.in/mgo.v2/bson"
-
-	"regexp"
 
 	"github.com/Joker/jade"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
-	"github.com/xDarkicex/PortfolioGo/config"
+	"gopkg.in/mgo.v2/bson"
 )
 
-// var pugEngine *html.Engine
 var t *template.Template
 
 //Render function renders page with our data
-func Render(a RouterArgs, view string, object map[string]interface{}) {
+func Render(a *Params, view string, object map[string]interface{}) {
+	fmt.Println("in render --->", a.Request.Host)
 	device := a.Request.UserAgent()
 	expression := regexp.MustCompile("(Mobi(le|/xyz)|Tablet)")
 	if !expression.MatchString(device) {
@@ -31,25 +28,17 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	a.Response.Header().Set("Vary", "Accept-Encoding")
 	a.Response.Header().Set("Cache-Control", "private, max-age=7776000")
 	a.Response.Header().Set("Transfer-Encoding", "gzip, chunked")
-	times := make(map[string]interface{})
-	times["total"] = time.Now()
 
 	object["current_user"] = a.User
 	object["view"] = view
 
-	// times["gorilla-save"] = time.Now()
-	object["flashes"] = a.Session.Flashes()
-	err := a.Session.Save(a.Request, a.Response)
-	if err != nil {
-		panic(err)
-	}
-	// times["gorilla-save"] = time.Since(times["gorilla-save"].(time.Time))
-
-	times["jade"] = time.Now()
+	// object["flashes"] = a.Session.Flashes()
+	// fmt.Println(a.Session.Flashes())
 
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
 	layout := Get("layout", func() *CacheObject {
+		fmt.Println("inside layout")
 		layout, err := jade.ParseFile("./app/views/layouts/application.pug")
 		if err != nil {
 			panic(err)
@@ -62,6 +51,7 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	})
 
 	currentView := Get(view, func() *CacheObject {
+		fmt.Println(view)
 		currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
 		if err != nil {
 			Logger.Printf("\nParseFile error: %v", err)
@@ -72,8 +62,6 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 		}
 		return NewCacheObject(minifiedView)
 	})
-
-	times["jade"] = time.Since(times["jade"].(time.Time))
 
 	////////////////////////////////////////////
 	// FUNCMAPS ARE LIFE!!! THIS IS LIFE NOW
@@ -86,9 +74,9 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	funcMap["Join"] = func(a []string, b string) string {
 		return strings.Join(a, b)
 	}
-	funcMap["ParseFlashes"] = func(fucks []interface{}) []Flash {
+	funcMap["ParseFlashes"] = func(f []interface{}) []Flash {
 		var flashes []Flash
-		for _, k := range fucks {
+		for _, k := range f {
 			var flash Flash
 			json.Unmarshal([]byte(k.(string)), &flash)
 			flashes = append(flashes, flash)
@@ -104,7 +92,6 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 		return strings.Title(title[1])
 	}
 
-	times["render-page"] = time.Now()
 	gotpl, err := template.New("layout").Funcs(funcMap).Parse(layout.Object.(string))
 	if err != nil {
 		Logger.Printf("\nTemplate parse error: %v", err)
@@ -117,16 +104,7 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	if err != nil {
 		log.Printf("\nExecute error: %v", err)
 	}
-	times["render-page"] = time.Since(times["render-page"].(time.Time))
 
-	times["total"] = time.Since(times["total"].(time.Time))
-	if config.Data.Env != "production" {
-		fmt.Println("Render Start ==>")
-		defer fmt.Println("Render Complete ==> ", times["total"])
-		for k, v := range times {
-			fmt.Printf("Time %s: %s\n", k, v)
-		}
-	}
 }
 
 // User struct for passing a user everywhere
