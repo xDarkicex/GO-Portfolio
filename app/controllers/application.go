@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 	"net/smtp"
+
 	"strconv"
 
 	"github.com/scorredoira/email"
@@ -17,7 +18,7 @@ import (
 type Application helpers.Controller
 
 //Index New index function
-func (c Application) Index(a *helpers.Params) {
+func (c Application) Index(a helpers.RouterArgs) {
 	fmt.Println(a.Request.Host)
 	blogs, err := models.AllBlogs()
 	if err != nil {
@@ -27,14 +28,13 @@ func (c Application) Index(a *helpers.Params) {
 	if len(blogs) >= 5 {
 		blogs = blogs[0:5]
 	}
-	fmt.Println("I got here")
 	helpers.Render(a, "application/index", map[string]interface{}{
 		"blog": blogs,
 	})
 }
 
 //About About me Pages
-func (c Application) About(a *helpers.Params) {
+func (c Application) About(a helpers.RouterArgs) {
 	user, err := models.FirstUser()
 	if err != nil {
 		panic(err)
@@ -47,7 +47,7 @@ func (c Application) About(a *helpers.Params) {
 }
 
 //Contact form function
-func (c Application) Contact(a *helpers.Params) {
+func (c Application) Contact(a helpers.RouterArgs) {
 
 	name := (a.Request.FormValue("contactName"))
 	address := (a.Request.FormValue("contactAddress"))

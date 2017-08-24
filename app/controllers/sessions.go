@@ -13,12 +13,12 @@ import (
 type Sessions helpers.Controller
 
 // New ...
-func (c Sessions) New(a *helpers.Params) {
+func (c Sessions) New(a helpers.RouterArgs) {
 	helpers.Render(a, "sessions/new", map[string]interface{}{})
 }
 
 // Create ..
-func (c Sessions) Create(a *helpers.Params) {
+func (c Sessions) Create(a helpers.RouterArgs) {
 	session := a.Session
 	user, err := models.Login(a.Request.FormValue("name"), a.Request.FormValue("password"))
 	if err != nil {
@@ -39,7 +39,7 @@ func (c Sessions) Create(a *helpers.Params) {
 }
 
 // Destroy ...
-func (c Sessions) Destroy(a helpers.Params) {
+func (c Sessions) Destroy(a helpers.RouterArgs) {
 	session := a.Session
 	session.Options = &sessions.Options{
 		MaxAge: -1,

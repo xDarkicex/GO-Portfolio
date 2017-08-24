@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -14,11 +15,13 @@ import (
 
 	"sync"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/weidewang/go-strftime"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/config/router"
 	"github.com/xDarkicex/PortfolioGo/db"
 	"github.com/xDarkicex/PortfolioGo/helpers"
+	"github.com/xDarkicex/PortfolioGo/redirect"
 )
 
 /////////////////////////////////////////////////////////////
@@ -26,7 +29,7 @@ import (
 /////////////////////////////////////////////////////////////
 
 var (
-	routes    *helpers.Server
+	routes    *httprouter.Router
 	waitGroup sync.WaitGroup
 	session   *mgo.Session
 )
@@ -46,7 +49,7 @@ func init() {
 	//LOG pid ID
 	helpers.Pidder()
 	// Create routes
-
+	routes = router.GetRoutes()
 	// Dial mongo Datastore
 	err := db.Dial()
 	if err != nil {
@@ -88,6 +91,13 @@ func main() {
 	}()
 	listen := fmt.Sprintf("%s:%d", config.Data.Host, config.Data.Port)
 	log.Printf("Listening on %s\n", listen)
-	router.GetRoutes().Serve(":3000")
+	if config.Data.SSL {
+		go func() {
+			helpers.Logger.Fatal(http.ListenAndServe(config.Data.Host+":80", http.HandlerFunc(redirect.HTTPS)))
+		}()
+		helpers.Logger.Fatal(http.ListenAndServeTLS(listen, config.Data.Cert, config.Data.Key, routes))
+	} else {
+		helpers.Logger.Fatal(http.ListenAndServe(listen, routes))
+	}
 
 }
