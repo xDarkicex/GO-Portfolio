@@ -15,7 +15,7 @@ type CacheObject struct {
 var cache = make(map[string]*CacheObject)
 var mutex = &sync.Mutex{}
 
-const defaultExpiration = time.Hour * time.Duration(1)
+const defaultExpiration = time.Minute * time.Duration(1)
 
 // Get cached Object
 // key: the key our cached object.

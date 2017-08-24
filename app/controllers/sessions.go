@@ -39,7 +39,7 @@ func (c Sessions) Create(a *helpers.Params) {
 }
 
 // Destroy ...
-func (c Sessions) Destroy(a helpers.Params) {
+func (c Sessions) Destroy(a *helpers.Params) {
 	session := a.Session
 	session.Options = &sessions.Options{
 		MaxAge: -1,

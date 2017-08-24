@@ -3,7 +3,6 @@ package helpers
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"regexp"
 
 	"log"
@@ -52,21 +51,25 @@ func (s *Server) AddRoute(route *Route) *Server {
 func (s *Server) Serve(port string) {
 	lime := ansi.ColorFunc("green+h:black")
 	red := ansi.ColorFunc("red+h:black")
-
 	s.Mux.HandleFunc("/", func(response http.ResponseWriter, request *http.Request) {
-		session, err := Store().Get(request, "user-session")
+		a := Params{Request: request, Response: response}
+		session, err := Store().Get(a.Request, "user-session")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+			http.Error(a.Response, err.Error(), http.StatusInternalServerError)
+			return
 		}
+		a.Session = session
 		for _, route := range s.Routes {
-			if (route.HasRegex && route.Regexp.MatchString(request.URL.Path) || request.URL.Path == route.Path) && route.Method == request.Method {
-				route.Handler(&Params{
-					Response: response,
-					Request:  request,
-					Session:  session,
-				})
-				log.Println("["+request.Method+"]", lime("200"), ":", request.Host, request.URL.String())
-				return
+			if route.Method == request.Method || request.Method == "HEAD" {
+				if route.HasRegex && route.Regexp.MatchString(request.URL.Path) || request.URL.Path == route.Path {
+					route.Handler(&Params{
+						Response: response,
+						Request:  request,
+						Session:  session,
+					})
+					log.Println("["+request.Method+"]", lime("200"), ":", request.Host, request.URL.String())
+					return
+				}
 			}
 		}
 		log.Println("["+request.Method+"]", red("404"), ":", request.Host, request.URL.String())

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
 	"regexp"
 	"strings"
 	"time"
@@ -19,26 +20,30 @@ var t *template.Template
 
 //Render function renders page with our data
 func Render(a *Params, view string, object map[string]interface{}) {
-	fmt.Println("in render --->", a.Request.Host)
 	device := a.Request.UserAgent()
 	expression := regexp.MustCompile("(Mobi(le|/xyz)|Tablet)")
 	if !expression.MatchString(device) {
 		a.Response.Header().Set("Connection", "keep-alive")
 	}
+
 	a.Response.Header().Set("Vary", "Accept-Encoding")
 	a.Response.Header().Set("Cache-Control", "private, max-age=7776000")
 	a.Response.Header().Set("Transfer-Encoding", "gzip, chunked")
+	a.Response.WriteHeader(http.StatusOK)
+
+	if a.Request.Method == "HEAD" {
+		fmt.Println("fuck")
+		a.Response.WriteHeader(http.StatusOK)
+		return
+	}
 
 	object["current_user"] = a.User
 	object["view"] = view
 
-	// object["flashes"] = a.Session.Flashes()
-	// fmt.Println(a.Session.Flashes())
-
+	object["flashes"] = a.Session.Flashes()
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
 	layout := Get("layout", func() *CacheObject {
-		fmt.Println("inside layout")
 		layout, err := jade.ParseFile("./app/views/layouts/application.pug")
 		if err != nil {
 			panic(err)
@@ -51,7 +56,6 @@ func Render(a *Params, view string, object map[string]interface{}) {
 	})
 
 	currentView := Get(view, func() *CacheObject {
-		fmt.Println(view)
 		currentView, err := jade.ParseFile("./app/views/" + view + ".pug")
 		if err != nil {
 			Logger.Printf("\nParseFile error: %v", err)

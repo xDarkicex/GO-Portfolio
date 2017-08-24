@@ -117,20 +117,20 @@ func findDbBlogByID(id string) (blog dbBlog, err error) {
 }
 
 // BlogCreate creates a new blog post
-func BlogCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, blogImage []byte) (string, error) {
+func BlogCreate(title string, body string, summary string, tags []string, userID bson.ObjectId, url string, blogImage []byte) error {
 	session := db.Session()
 	defer session.Close()
 	gridFS := session.DB(config.Data.Env).GridFS("fs")
 	gridFile, err := gridFS.Create("")
 	if err != nil {
 		helpers.Logger.Println(err)
-		return "This didnt work", err
+		return err
 	}
 	defer helpers.Close(gridFile)
 	_, err = gridFile.Write(blogImage)
 	if err != nil {
 		helpers.Logger.Println(err)
-		return "This didnt work", err
+		return err
 	}
 	c := session.DB(config.Data.Env).C("Blog")
 	// Insert Datas
@@ -146,9 +146,9 @@ func BlogCreate(title string, body string, summary string, tags []string, userID
 	})
 	if err != nil {
 		helpers.Logger.Println(err)
-		return "This didnt work", err
+		return err
 	}
-	return "Blog Post created", nil
+	return nil
 }
 
 // BlogDestroy Blog Destroy
@@ -169,6 +169,7 @@ func BlogUpdate(id string, updated map[string]interface{}) error {
 	// Want to make each field optional how?
 	newPost, err := findDbBlogByID(id)
 	if err != nil {
+		helpers.Logger.Println(err)
 		return err
 	}
 	for key, actual := range map[string]*string{

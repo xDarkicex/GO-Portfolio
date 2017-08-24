@@ -58,7 +58,6 @@ func (c Users) Create(a *helpers.Params) {
 // // Show Show page for users
 func (c Users) Show(a *helpers.Params) {
 	username := strings.Split(a.Request.URL.Path, "/")[2]
-	fmt.Println(username)
 	user, err := models.FindUserByName(username)
 	if err != nil {
 		session := a.Session
@@ -153,12 +152,14 @@ func (c Users) Edit(a *helpers.Params) {
 }
 
 // //Image ..
-// func (c Users) Image(a helpers.RouterArgs) {
-// 	b, err := models.GetImageByID(a.Params.ByName("imageID"))
-// 	if err != nil {
-// 		helpers.Logger.Println(err)
-// 		http.Redirect(a.Response, a.Request, "/", 302)
-// 		return
-// 	}
-// 	a.Response.Write(b)
-// }
+func (c Users) Image(a *helpers.Params) {
+	imageID := strings.Split(a.Request.URL.Path, "/")[4]
+	fmt.Println("image ID:", imageID)
+	b, err := models.GetImageByID(imageID)
+	if err != nil {
+		helpers.Logger.Println(err)
+		http.Redirect(a.Response, a.Request, "/", 302)
+		return
+	}
+	a.Response.Write(b)
+}

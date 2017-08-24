@@ -19,18 +19,25 @@ import (
 // }
 
 func GetRoutes() *helpers.Server {
-	application := controllers.Application{}
-	users := controllers.Users{}
-	s := helpers.New()
+	server := helpers.New()
+	///////////////////////////////////////////////////////////
+	// Static routes
+	///////////////////////////////////////////////////////////
 	fileServer := http.StripPrefix("/static/", http.FileServer(http.Dir("./public/")))
-	s.AddRoute(&helpers.Route{
+	server.AddRoute(&helpers.Route{
 		Method:   "GET",
 		Path:     "^/static/",
 		HasRegex: true,
 		Handler: func(p *helpers.Params) {
 			fileServer.ServeHTTP(p.Response, p.Request)
 		},
-	}).AddRoute(&helpers.Route{
+	})
+
+	///////////////////////////////////////////////////////////
+	// Main application routes
+	///////////////////////////////////////////////////////////
+	application := controllers.Application{}
+	server.AddRoute(&helpers.Route{
 		Method:  "GET",
 		Path:    "/",
 		Handler: application.Index,
@@ -42,7 +49,13 @@ func GetRoutes() *helpers.Server {
 		Method:  "POST",
 		Path:    "/contact",
 		Handler: application.Contact,
-	}).AddRoute(&helpers.Route{
+	})
+
+	///////////////////////////////////////////////////////////
+	// users routes
+	///////////////////////////////////////////////////////////
+	users := controllers.Users{}
+	server.AddRoute(&helpers.Route{
 		Method:  "GET",
 		Path:    "/users",
 		Handler: users.Index,
@@ -70,10 +83,86 @@ func GetRoutes() *helpers.Server {
 		Path:    "/register",
 		Handler: users.Create,
 	}).AddRoute(&helpers.Route{
-		Method: "GET",
-		Path:   "^\\/users\\/\\w+\\/images\\/w+\\/?$",
+		Method:   "GET",
+		Path:     "^\\/users\\/\\w+\\/images\\/\\w+\\/?$",
+		HasRegex: true,
+		Handler:  users.Image,
 	})
-	return s
+
+	///////////////////////////////////////////////////////////
+	// Session Management
+	///////////////////////////////////////////////////////////
+	sessions := controllers.Sessions{}
+	server.AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/signin",
+		Handler: sessions.New,
+	}).AddRoute(&helpers.Route{
+		Method:  "POST",
+		Path:    "/signin",
+		Handler: sessions.Create,
+	}).AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/signout",
+		Handler: sessions.Destroy,
+	})
+
+	///////////////////////////////////////////////////////////
+	// Blog routes
+	///////////////////////////////////////////////////////////
+	blog := controllers.Blog{}
+	server.AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/posts/new",
+		Handler: blog.New,
+	}).AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/posts",
+		Handler: blog.Index,
+	}).AddRoute(&helpers.Route{
+		Method:  "POST",
+		Path:    "/posts",
+		Handler: blog.Create,
+	}).AddRoute(&helpers.Route{
+		Method:  "POST",
+		Path:    "/posts/search",
+		Handler: blog.Search,
+	}).AddRoute(&helpers.Route{
+		Method:   "GET",
+		Path:     "^\\/post\\/\\w+?[_-][\\w-]+\\/?$",
+		HasRegex: true,
+		Handler:  blog.Show,
+	}).AddRoute(&helpers.Route{
+		Method:   "POST",
+		Path:     "^\\/post\\/\\w+?[_-][\\w-]+\\/?$",
+		HasRegex: true,
+		Handler:  blog.Update,
+	}).AddRoute(&helpers.Route{
+		Method:   "GET",
+		Path:     "^\\/post\\/\\w+?[_-][\\w-]+\\/edit\\/?$",
+		HasRegex: true,
+		Handler:  blog.Edit,
+	}).AddRoute(&helpers.Route{
+		Method:   "GET",
+		Path:     "^\\/post\\/\\w+?[_-][\\w-]+\\/images\\/\\w+\\/?$",
+		HasRegex: true,
+		Handler:  blog.Image,
+	}).AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/api/posts/search",
+		Handler: blog.APIIndex,
+	})
+
+	///////////////////////////////////////////////////////////
+	// Websocket Connection
+	///////////////////////////////////////////////////////////
+	w := controllers.Websocket{}
+	server.AddRoute(&helpers.Route{
+		Method:  "GET",
+		Path:    "/api/websocket",
+		Handler: w.DialSocket,
+	})
+	return server
 }
 
 // GetRoutes func to setup all routes
@@ -142,10 +231,10 @@ func GetRoutes() *helpers.Server {
 // 	router.GET("/projects/examples/neuron-demo", route(projects.NeuronShow, false))
 // 	router.GET("/api/websocket", DialSocket)
 
-// 	///////////////////////////////////////////////////////////
-// 	// Static routes
-// 	// Caching Static files
-// 	///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// Static routes
+// Caching Static files
+///////////////////////////////////////////////////////////
 // 	fileServer := http.FileServer(http.Dir("public"))
 // 	router.GET("/static/*filepath", gzip.Middleware(func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
 // 		res.Header().Set("Vary", "Accept-Encoding")
