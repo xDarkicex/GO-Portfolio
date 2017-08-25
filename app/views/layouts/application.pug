@@ -46,7 +46,7 @@ html(lang="en")
         button(type="button" class="close" data-dismiss="alert") &times;
         strong {{.Message}}
     script.
-       document.addEventListener("DOMContentLoaded", function(){ $(".flash").slideToggle().delay(400+5000).slideToggle() }); console.log('Hiding Flash') })
+      document.addEventListener("DOMContentLoaded", function(){ $(".flash").slideToggle().delay(400+5000).slideToggle() console.log('Hiding Flash') })
       //- p Header
     main
       block main-content
