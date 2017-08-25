@@ -19,7 +19,10 @@ type Application helpers.Controller
 
 //Index New index function
 func (c Application) Index(a helpers.RouterArgs) {
-	fmt.Println(a.Request.Host)
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	blogs, err := models.AllBlogs()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -35,11 +38,14 @@ func (c Application) Index(a helpers.RouterArgs) {
 
 //About About me Pages
 func (c Application) About(a helpers.RouterArgs) {
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	user, err := models.FirstUser()
 	if err != nil {
 		panic(err)
 	}
-
 	helpers.Render(a, "application/about", map[string]interface{}{
 		"user":  user,
 		"title": "About Me",

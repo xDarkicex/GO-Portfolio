@@ -15,11 +15,14 @@ type Users helpers.Controller
 
 // Index function
 func (c Users) Index(a helpers.RouterArgs) {
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	users, err := models.AllUsers()
 	if err != nil {
 		fmt.Printf("Error: %s", err)
 	}
-	// fmt.Printf("Users %s", users)
 	helpers.Render(a, "users/index", map[string]interface{}{
 		"users": users,
 	})
@@ -56,6 +59,10 @@ func (c Users) Create(a helpers.RouterArgs) {
 
 // Show Show page for users
 func (c Users) Show(a helpers.RouterArgs) {
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
 		session := a.Session
@@ -131,6 +138,10 @@ func (c Users) Update(a helpers.RouterArgs) {
 
 // Edit shows selected user profile
 func (c Users) Edit(a helpers.RouterArgs) {
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	user, err := models.FindUserByName(a.Params.ByName("name"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -139,6 +150,7 @@ func (c Users) Edit(a helpers.RouterArgs) {
 
 	}
 	if a.User == user {
+
 		helpers.Render(a, "users/edit", map[string]interface{}{
 			"user": user,
 		})
@@ -149,6 +161,10 @@ func (c Users) Edit(a helpers.RouterArgs) {
 
 //Image ..
 func (c Users) Image(a helpers.RouterArgs) {
+	if a.Request.Method == "HEAD" {
+		a.Response.WriteHeader(200)
+		return
+	}
 	b, err := models.GetImageByID(a.Params.ByName("imageID"))
 	if err != nil {
 		helpers.Logger.Println(err)

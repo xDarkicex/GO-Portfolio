@@ -12,5 +12,5 @@ func HTTPS(w http.ResponseWriter, r *http.Request) {
 		target += "?" + r.URL.RawQuery
 	}
 	log.Printf("redirect to: %s", target)
-	http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, target, http.StatusPermanentRedirect)
 }

@@ -29,7 +29,9 @@ func GetRoutes() *httprouter.Router {
 
 	application := controllers.Application{}
 	router.GET("/", route(application.Index, false))
+	router.HEAD("/", route(application.Index, false))
 	router.GET("/about", route(application.About, false))
+	router.HEAD("/about", route(application.About, false))
 	router.POST("/contact", route(application.Contact, false))
 
 	///////////////////////////////////////////////////////////
@@ -38,12 +40,16 @@ func GetRoutes() *httprouter.Router {
 
 	users := controllers.Users{}
 	router.GET("/users", route(users.Index, false))
+	router.HEAD("/users", route(users.Index, false))
 	router.GET("/users/:name", route(users.Show, false))
+	router.HEAD("/users/:name", route(users.Show, false))
 	router.GET("/register", route(users.New, false))
 	router.POST("/users/:name", route(users.Update, false))
 	router.GET("/users/:name/edit/", route(users.Edit, true))
+	router.HEAD("/users/:name/edit/", route(users.Edit, true))
 	router.POST("/register", route(users.Create, false))
 	router.GET("/users/:name/images/:imageID", route(users.Image, false))
+	router.HEAD("/users/:name/images/:imageID", route(users.Image, false))
 
 	///////////////////////////////////////////////////////////
 	// Session Management
