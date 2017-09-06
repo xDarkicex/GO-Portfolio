@@ -216,9 +216,10 @@ func (c Projects) ClassLocations(a helpers.RouterArgs) {
 	fmt.Println(a.Request.FormValue("lat"), a.Request.FormValue("lng"))
 	file, _ := os.OpenFile("locations.csv", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	defer file.Close()
-	file.WriteString(a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n")
+	r := strings.NewReplacer(",", " ")
+	file.WriteString(a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + r.Replace(a.Request.FormValue("address")) + "\n")
 	resp, err := http.PostForm(config.Data.DiscordEndPoint,
-		url.Values{"content": {a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n"}})
+		url.Values{"content": {a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + r.Replace(a.Request.FormValue("address")) + "\n"}})
 	if err != nil {
 		log.Println(err)
 	}
