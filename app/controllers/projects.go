@@ -5,11 +5,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/xDarkicex/PortfolioGo/app/models"
+	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -214,7 +216,13 @@ func (c Projects) ClassLocations(a helpers.RouterArgs) {
 	fmt.Println(a.Request.FormValue("lat"), a.Request.FormValue("lng"))
 	file, _ := os.OpenFile("locations.csv", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	defer file.Close()
-	file.WriteString(a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n")
+	file.WriteString(a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n")
+	resp, err := http.PostForm(config.Data.DiscordEndPoint,
+		url.Values{"content": {a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n"}})
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
 	a.Response.Header().Set("Origin", "localhost")
 	a.Response.Header().Set("Access-Control-Request-Method", "PUT")
 	a.Response.Header().Set("Access-Control-Allow-Origin", "*")

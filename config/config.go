@@ -15,17 +15,18 @@ var Data config
 
 // config is for config.Data
 type config struct {
-	Version string
-	Port    int
-	Host    string
-	SSL     bool
-	Cert    string
-	Key     string
-	Secret  string
-	Verbose bool
-	Env     string
-	Email   string
-	SMTP    smtp
+	Version         string
+	Port            int
+	Host            string
+	SSL             bool
+	Cert            string
+	Key             string
+	Secret          string
+	DiscordEndPoint string
+	Verbose         bool
+	Env             string
+	Email           string
+	SMTP            smtp
 }
 
 // SMTP for smtp settings
