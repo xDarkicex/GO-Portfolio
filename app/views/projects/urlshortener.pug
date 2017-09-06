@@ -1,0 +1,12 @@
+extends ../layouts/application.pug
+
+block main-content
+    div.container-fluid
+      <div class="form" style="margin-bottom: 15px;">
+        <h1>URL Shortener</h1>
+        form(method="POST", action="/projects/examples/url-shortener", id="urlShortenerForm")
+            div.form-group
+                label(for="origninal") URL
+                input.form-control(id="original" name="original" placeholder="url..." autocomplete="off" value= {{.project.Original}})
+            input.btn.btn-primary(type="submit")
+          script(src= /static/assets/javascripts/url-shortener.js)

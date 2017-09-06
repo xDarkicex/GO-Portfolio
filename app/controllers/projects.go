@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -15,6 +16,16 @@ import (
 
 // Projects controllers
 type Projects helpers.Controller
+
+//URL data type for url Shortener
+//Hash is the key to the data
+//Original is the original url to redirect too
+//New is the new shortened url
+// type URL struct {
+// 	Hash     string
+// 	Original string
+// 	New      string
+// }
 
 // Index ...
 func (c Projects) Index(a helpers.RouterArgs) {
@@ -194,6 +205,19 @@ func (c Projects) Update(a helpers.RouterArgs) {
 	http.Redirect(a.Response, a.Request, "/project/"+string(a.Request.FormValue("url")), 302)
 }
 
+//NeuronShow Method that is used to render Neuron Page
 func (c Projects) NeuronShow(a helpers.RouterArgs) {
 	helpers.Render(a, "projects/neuron", map[string]interface{}{})
+}
+
+func (c Projects) ClassLocations(a helpers.RouterArgs) {
+	fmt.Println(a.Request.FormValue("lat"), a.Request.FormValue("lng"))
+	file, _ := os.OpenFile("locations.csv", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+	defer file.Close()
+	file.WriteString(a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + "\n")
+	a.Response.Header().Set("Origin", "localhost")
+	a.Response.Header().Set("Access-Control-Request-Method", "PUT")
+	a.Response.Header().Set("Access-Control-Allow-Origin", "*")
+	a.Response.Header().Set("Access-Control-Request-Headers", "application/json")
+
 }

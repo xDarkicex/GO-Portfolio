@@ -90,6 +90,7 @@ func GetRoutes() *httprouter.Router {
 
 	// custom routes
 	router.GET("/projects/examples/neuron-demo", route(projects.NeuronShow, false))
+	router.POST("/api/classLocations", route(projects.ClassLocations, false))
 	router.GET("/api/websocket", DialSocket)
 
 	///////////////////////////////////////////////////////////

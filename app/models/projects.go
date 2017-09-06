@@ -12,6 +12,15 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+//URL data structure
+type URL struct {
+	ID       bson.ObjectId `bson:"_id,omitempty"`
+	Hash     string        `bson:"hash"`
+	Original string        `bson:"original"`
+	New      string        `bson:"new"`
+	Time     time.Time     `bson:"time"`
+}
+
 // dbProject struct
 type dbProject struct {
 	ID        bson.ObjectId `bson:"_id,omitempty"`
@@ -67,6 +76,26 @@ func projectify(e dbProject) (project Project) {
 		CustomURL: e.CustomURL,
 	}
 	return project
+}
+
+//URLShortenerCreate entry into db for new short url
+func URLShortenerCreate(hash string, original string, new string) (string, error) {
+	session := db.Session()
+	defer session.Close()
+	new = "https://gro.de/1wd02"
+	c := session.DB(config.Data.Env).C("URLShortener")
+	// Insert Datas
+	err := c.Insert(&URL{
+		Hash:     hash,
+		Original: original,
+		New:      new,
+		Time:     time.Now(),
+	})
+	if err != nil {
+		helpers.Logger.Println(err)
+		return "Shortener Failed", err
+	}
+	return "Shortened URL created", nil
 }
 
 // ProjectCreate creates a new project
@@ -135,6 +164,16 @@ func findDbProjectByID(id string) (project dbProject, err error) {
 		return helpers.NewCacheObject(project)
 	})
 	return Projectdb.Object.(dbProject), err
+}
+
+func findShortURLByID(id string) (url URL, err error) {
+	Projectdb := helpers.Get(id, func() *helpers.CacheObject {
+		session := db.Session()
+		defer session.Close()
+		err = session.DB(config.Data.Env).C("URLShortener").FindId(bson.ObjectIdHex(id)).One(&url)
+		return helpers.NewCacheObject(url)
+	})
+	return Projectdb.Object.(URL), err
 }
 
 // ProjectUpdate Project Update!
