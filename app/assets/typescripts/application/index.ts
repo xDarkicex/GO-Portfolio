@@ -8,12 +8,13 @@ $(function(){
 })
 
 let project = {
-     lang: [ ['Golang Developer', '<span class="devicons devicons-go"></span>'],
-     ['Ruby on Rails Developer', '<span class="devicons devicons-ruby_on_rails"></span>'], 
-    ['NodeJS Developer', '<span class="devicons devicons-nodejs_small"></span>'], 
-    ['Angular Developer', '<span class="devicons devicons-angular"</span>'], 
-    ['Bash Scripter', '<span class="devicons devicons-terminal"</span>' ]],
-     version: 1.7
+     lang: [ ['Golang Developer', '<span class="devicons devicon-go-line"></span>'],
+     ['Ruby on Rails Developer', '<span class="devicons devicon-rails-plain-wordmark"></span>'], 
+    ['NodeJS Developer', '<span class="devicons devicon-nodejs-plain"></span>'], 
+    ['Angular Developer', '<span class="devicons devicon-angularjs-plain-wordmark"></span>'], 
+    ['React Developer', '<span class="devicons devicon-react-original"></span>'],
+    ['Amazon Cloud Solution Architect', '<span class="devicons devicon-amazonwebservices-plain-wordmark"</span>' ]],
+     version: 2.0
 }
 let v = project.lang
 let i = 0

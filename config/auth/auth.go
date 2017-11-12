@@ -31,7 +31,6 @@ func Auth(fn helpers.RoutesHandler, requireAuth bool) httprouter.Handle {
 			}
 		} else if requireAuth {
 			http.Redirect(a.Response, a.Request, "/", 302)
-
 			return
 		} else {
 			// Auth not required, userID not found.

@@ -1,12 +1,24 @@
 extends ../layouts/application.pug
 
 block main-content
-    div.container-fluid
-      <div class="form" style="margin-bottom: 15px;">
-        <h1>URL Shortener</h1>
-        form(method="POST", action="/projects/examples/url-shortener", id="urlShortenerForm")
-            div.form-group
-                label(for="origninal") URL
-                input.form-control(id="original" name="original" placeholder="url..." autocomplete="off" value= {{.project.Original}})
-            input.btn.btn-primary(type="submit")
-          script(src= /static/assets/javascripts/url-shortener.js)
+    if .view
+        link(rel='stylesheet' type="text/css" href= /static/assets/stylesheets/{{.view}}.css)
+    div.urlShortener
+        div.well
+            .container
+                .row
+                    <h1>URL Shortener</h1>
+                    form.form-inline(id="urlShortenerForm")
+                        div.form-group
+                            input.form-control.mb-2.mr-sm-2.mb-sm-0(id="original" name="original" placeholder="url..." autocomplete="off")
+                            input.btn.btn-primary(type="submit")
+        .container
+            div.row
+                .form-group
+                    h2 Short URL
+                    p Shortend URL redirects to <span class="original"></span>
+                    div.input-group.mb-2.mr-sm-2.mb-sm-0
+                        div.input-group-addon.clipBoard(#data-clipboard-target="#data") 📋
+                        input.form-control.results#data(readonly)
+          script(src= /static/assets/javascripts/urlShortener.js)
+          script(src= /static/assets/javascripts/clipboard.js)

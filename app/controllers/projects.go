@@ -217,9 +217,9 @@ func (c Projects) ClassLocations(a helpers.RouterArgs) {
 	file, _ := os.OpenFile("locations.csv", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	defer file.Close()
 	r := strings.NewReplacer(",", " ")
-	file.WriteString(a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + r.Replace(a.Request.FormValue("address")) + "\n")
+	file.WriteString(a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + ", " + r.Replace(a.Request.FormValue("address")) + ", " + "\n")
 	resp, err := http.PostForm(config.Data.DiscordEndPoint,
-		url.Values{"content": {a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + r.Replace(a.Request.FormValue("address")) + "\n"}})
+		url.Values{"content": {a.Request.RemoteAddr + ", " + a.Request.FormValue("lat") + ", " + a.Request.FormValue("lng") + ", " + r.Replace(a.Request.FormValue("address")) + ", " + "\n"}})
 	if err != nil {
 		log.Println(err)
 	}
@@ -228,5 +228,8 @@ func (c Projects) ClassLocations(a helpers.RouterArgs) {
 	a.Response.Header().Set("Access-Control-Request-Method", "PUT")
 	a.Response.Header().Set("Access-Control-Allow-Origin", "*")
 	a.Response.Header().Set("Access-Control-Request-Headers", "application/json")
+}
 
+func (c Projects) Shorten(a helpers.RouterArgs) {
+	helpers.Render(a, "projects/urlshortener", map[string]interface{}{})
 }

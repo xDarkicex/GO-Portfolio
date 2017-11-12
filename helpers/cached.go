@@ -27,6 +27,7 @@ const defaultExpiration = time.Hour * time.Duration(1)
 //   return NewCacheObject(getOurLayoutShit)
 // })
 //
+
 func Get(key string, fallback func() *CacheObject) *CacheObject {
 	mutex.Lock()
 	if cache[key] == nil {
@@ -34,6 +35,7 @@ func Get(key string, fallback func() *CacheObject) *CacheObject {
 	}
 	mutex.Unlock()
 	return cache[key]
+
 }
 
 // DeleteCache object for updating pages
