@@ -11,6 +11,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/xDarkicex/PortfolioGo/app/controllers/filter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/helpers"
 )
@@ -36,8 +37,13 @@ func (c Blog) Search(a helpers.RouterArgs) {
 
 //Index New index function
 func (c Blog) Index(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		fmt.Println(err)
+		a.Response.WriteHeader(403)
+		return
+	}
 	var blogs []models.Blog
-	var err error
 	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
 		blogs, err = models.GetBlogsByTags(strings.ToLower(a.Request.FormValue("search")))
 		if err != nil {
@@ -62,10 +68,6 @@ func (c Blog) Index(a helpers.RouterArgs) {
 		helpers.Logger.Printf("Error: %s", err)
 		return
 	}
-	// users, err := models.AllUsers()
-	// if err != nil {
-	// 	helpers.Logger.Printf("Error: %s", err)
-	// }
 	helpers.Render(a, "blog/index", map[string]interface{}{
 		"blog":  blogs,
 		"top":   blogsTop,
@@ -75,6 +77,12 @@ func (c Blog) Index(a helpers.RouterArgs) {
 
 //New ....
 func (c Blog) New(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		fmt.Println(err)
+		a.Response.WriteHeader(403)
+		return
+	}
 	helpers.Render(a, "blog/new", map[string]interface{}{
 		"blog": &models.Blog{
 			Title:   "",
@@ -88,9 +96,13 @@ func (c Blog) New(a helpers.RouterArgs) {
 
 // Create ...
 func (c Blog) Create(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	session := a.Session
 	User := session.Values["UserID"]
-
 	// File processing ...
 	file, _, _ := a.Request.FormFile("file")
 	fileBytes, _ := ioutil.ReadAll(file)
@@ -99,18 +111,23 @@ func (c Blog) Create(a helpers.RouterArgs) {
 		tags[k] = strings.TrimSpace(v)
 	}
 	// URL Processing
-	rawURL := a.Request.FormValue("title")
-	URL := strings.Replace(rawURL, " ", "-", -1)
-	_, err := models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes)
+	urlValue := a.Request.FormValue("title")
+	URL := strings.Replace(urlValue, " ", "-", -1)
+	_, err = models.BlogCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes)
 	if err != nil {
 		http.Redirect(a.Response, a.Request, "/", 302)
 		return
 	}
-	http.Redirect(a.Response, a.Request, "/post/"+URL, 302)
+	http.Redirect(a.Response, a.Request, "/post/"+(URL), 302)
 }
 
 // Update ...
 func (c Blog) Update(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
 		blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 		if err != nil {
@@ -175,6 +192,11 @@ func (c Blog) Update(a helpers.RouterArgs) {
 
 // Show shows selected blog
 func (c Blog) Show(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -197,6 +219,11 @@ func (c Blog) Show(a helpers.RouterArgs) {
 
 // Edit shows selected blog
 func (c Blog) Edit(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	blog, err := models.FindBlogByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -220,6 +247,11 @@ func (c Blog) Image(a helpers.RouterArgs) {
 }
 
 func (c Blog) APIIndex(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	indexBlogs, err := models.AllBlogs()
 	if err != nil {
 		helpers.Logger.Println(err)

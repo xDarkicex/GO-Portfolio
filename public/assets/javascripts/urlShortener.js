@@ -12,7 +12,7 @@ document.addEventListener("submit", function(e){
  }
  var original = document.getElementById("original").value
  document.getElementsByClassName("original")[0].innerHTML = original
- xhr.open("POST", "http://localhost:3001/");
+ xhr.open("POST", "http://localhost:8080/");
  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
  xhr.send("original="+original)
 e.preventDefault()

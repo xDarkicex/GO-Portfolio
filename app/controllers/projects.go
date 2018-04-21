@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/xDarkicex/PortfolioGo/app/controllers/filter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/helpers"
@@ -31,8 +32,12 @@ type Projects helpers.Controller
 
 // Index ...
 func (c Projects) Index(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	var projects []models.Project
-	var err error
 	if len(strings.ToLower(a.Request.FormValue("search"))) > 0 {
 		projects, err = models.GetProjectsByTags(strings.ToLower(a.Request.FormValue("search")))
 		if err != nil {
@@ -61,6 +66,11 @@ func (c Projects) Index(a helpers.RouterArgs) {
 
 // Create ..
 func (c Projects) Create(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	session := a.Session
 	User := session.Values["UserID"]
 
@@ -74,7 +84,7 @@ func (c Projects) Create(a helpers.RouterArgs) {
 	// URL Processing
 	rawURL := a.Request.FormValue("title")
 	URL := strings.Replace(rawURL, " ", "-", -1)
-	_, err := models.ProjectCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes, a.Request.FormValue("CustomURL"))
+	_, err = models.ProjectCreate(a.Request.FormValue("title"), a.Request.FormValue("body"), a.Request.FormValue("summary"), tags, bson.ObjectIdHex(User.(string)), URL, fileBytes, a.Request.FormValue("CustomURL"))
 	if err != nil {
 		fmt.Println(err)
 		http.Redirect(a.Response, a.Request, "/", 302)
@@ -85,6 +95,11 @@ func (c Projects) Create(a helpers.RouterArgs) {
 
 // New ...
 func (c Projects) New(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	helpers.Render(a, "projects/new", map[string]interface{}{
 		"project": &models.Project{
 			Title:     "",
@@ -99,6 +114,11 @@ func (c Projects) New(a helpers.RouterArgs) {
 
 // Show shows selected project
 func (c Projects) Show(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	project, err := models.FindProjectByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -121,6 +141,11 @@ func (c Projects) Show(a helpers.RouterArgs) {
 
 // Edit shows selected blog
 func (c Projects) Edit(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	project, err := models.FindProjectByURL(a.Params.ByName("url"))
 	if err != nil {
 		helpers.Logger.Println(err)
@@ -145,6 +170,11 @@ func (c Projects) Image(a helpers.RouterArgs) {
 
 // Update ...
 func (c Projects) Update(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	if len(a.Request.FormValue("_method")) > 0 && string(a.Request.FormValue("_method")) == "DELETE" {
 		project, err := models.FindProjectByURL(a.Params.ByName("url"))
 		if err != nil {
@@ -213,6 +243,11 @@ func (c Projects) NeuronShow(a helpers.RouterArgs) {
 }
 
 func (c Projects) ClassLocations(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	fmt.Println(a.Request.FormValue("lat"), a.Request.FormValue("lng"))
 	file, _ := os.OpenFile("locations.csv", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
 	defer file.Close()
@@ -231,5 +266,10 @@ func (c Projects) ClassLocations(a helpers.RouterArgs) {
 }
 
 func (c Projects) Shorten(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	helpers.Render(a, "projects/urlshortener", map[string]interface{}{})
 }

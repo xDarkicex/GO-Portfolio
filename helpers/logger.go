@@ -13,9 +13,12 @@ import (
 	"github.com/xDarkicex/PortfolioGo/config"
 )
 
+// simple empty struct to link to Wrtie functionality
 type errorLog struct{}
+type silentLog struct{}
 
 var errBuf = bytes.NewBuffer([]byte{})
+var silentBuf = bytes.NewBuffer([]byte{})
 
 // FlushLog Flush queue to file, sms and msg.
 func FlushLog() {
@@ -30,36 +33,45 @@ func FlushLog() {
 	}
 }
 
+// FlushSilentLog Flush queue to file, sms and msg.
+func FlushSilentLog() {
+	length := silentBuf.Len()
+	if length > 0 {
+		file, _ := os.OpenFile("log/network.log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666)
+		buffed := silentBuf.String()
+		file.WriteString(buffed)
+		silentBuf.Reset()
+		file.Close()
+	}
+}
+
+// over write default write behavior
 func (e errorLog) Write(p []byte) (n int, err error) {
 	if config.Data.Verbose {
-		fmt.Print("Error: " + string(p))
+		fmt.Println("Error: " + string(p))
 	}
 	errBuf.Write(p)
+	return n, err
+}
+
+// over write default write behavior
+func (e silentLog) Write(p []byte) (n int, err error) {
+	if config.Data.Verbose {
+		fmt.Println(string(p))
+	}
+	silentBuf.Write(p)
 	return n, err
 }
 
 // Logger is a helpper method to print out a more useful error message
 var Logger = log.New(errorLog{}, "", log.Lmicroseconds|log.Lshortfile)
 
-// func sendMSG(msg string) {
-// 	ircobj := irc.IRC("PortfolioGo", "golang") //Create new ircobj
-// 	ircobj.Connect("irc.bitdev.io:6667")       //Connect to server
-// 	errors := strings.Split(msg, "\n")
-// 	ircobj.AddCallback("001", func(e *irc.Event) {
-// 		ircobj.Join("#notifier")
-// 		time.Sleep(1 * time.Second)
-// 		for k, v := range errors {
-// 			if len(v) > 0 {
-// 				ircobj.Privmsg("#notifier", fmt.Sprintf("Error %d: %s", k+1, v))
-// 			}
-// 		}
-// 		time.Sleep(1 * time.Second)
-// 		ircobj.Disconnect()
-// 	})
-// }
+// SilentLogger is for logging without SMS
+var SilentLogger = log.New(silentLog{}, "", log.Lmicroseconds|log.Lshortfile)
+
 func sendSMS(msg string) {
 	name := "PortfolioGo"
-	address := "127.168.0.1"
+	address := "rolofson.me"
 	body := msg
 	subject := ("Message From " + name + " - " + string(address))
 	m := email.NewMessage(subject, body)
@@ -68,6 +80,6 @@ func sendSMS(msg string) {
 	auth := smtp.PlainAuth("", config.Data.Email, config.Data.SMTP.Password, config.Data.SMTP.Host)
 	gmailSMTP := config.Data.SMTP.Host + ":" + fmt.Sprintf("%d", config.Data.SMTP.Port)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }

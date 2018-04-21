@@ -212,8 +212,8 @@ func finddbUserByID(id string) (user dbUser, err error) {
 		err := session.DB(config.Data.Env).C("User").FindId(bson.ObjectIdHex(id)).One(&user)
 		if err != nil {
 			helpers.Logger.Println(err)
-		}
 
+		}
 		return helpers.NewCacheObject(user)
 	})
 	return dbfindByID.Object.(dbUser), err

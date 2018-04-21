@@ -28,9 +28,10 @@ func Render(a RouterArgs, view string, object map[string]interface{}) {
 	if !expression.MatchString(device) {
 		a.Response.Header().Set("Connection", "keep-alive")
 	}
-	a.Response.Header().Set("Vary", "Accept-Encoding")
+	// a.Response.Header().Add("Vary", "Accept-Encoding")
 	a.Response.Header().Set("Cache-Control", "private, max-age=7776000")
 	a.Response.Header().Set("Transfer-Encoding", "gzip, chunked")
+	// a.Response.Header().Write(a.Response)
 	times := make(map[string]interface{})
 	times["total"] = time.Now()
 

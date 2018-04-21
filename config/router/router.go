@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+
 	"net/http"
 	"strconv"
 
@@ -88,6 +89,11 @@ func GetRoutes() *httprouter.Router {
 	router.GET("/project/:url/edit/", route(projects.Edit, true))
 	router.GET("/project/:url/images/:imageID", route(projects.Image, false))
 
+	blacklist := controllers.Blacklist{}
+	router.GET("/blacklist", route(blacklist.Index, true))
+	router.POST("/blacklist", route(blacklist.Index, true))
+	router.GET("/blacklist/:ip", route(blacklist.Remove, true))
+
 	// custom routes
 	router.GET("/projects/examples/neuron-demo", route(projects.NeuronShow, false))
 	router.GET("/projects/examples/url-shortener", route(projects.Shorten, false))
@@ -98,13 +104,15 @@ func GetRoutes() *httprouter.Router {
 	// Static routes
 	// Caching Static files
 	///////////////////////////////////////////////////////////
-	fileServer := http.FileServer(http.Dir("public"))
-	router.GET("/static/*filepath", gzip.Middleware(func(res http.ResponseWriter, req *http.Request, pm httprouter.Params) {
-		res.Header().Set("Vary", "Accept-Encoding")
-		res.Header().Set("Cache-Control", "public, max-age=7776000")
-		req.URL.Path = pm.ByName("filepath")
-		fileServer.ServeHTTP(res, req)
-	}))
+
+	router.GET("/static/*filepath", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
+		w.Header().Set("Vary", "Accept-Encoding")
+		w.Header().Set("Cache-Control", "public, max-age=7776000")
+		r.URL.Path = pm.ByName("filepath")
+		http.FileServer(http.Dir("public")).ServeHTTP(w, r)
+
+	})
+
 	return router
 }
 

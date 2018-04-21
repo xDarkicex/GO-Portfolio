@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/scorredoira/email"
+	"github.com/xDarkicex/PortfolioGo/app/controllers/filter"
 	"github.com/xDarkicex/PortfolioGo/app/models"
 	"github.com/xDarkicex/PortfolioGo/config"
 	"github.com/xDarkicex/PortfolioGo/helpers"
@@ -19,13 +20,19 @@ type Application helpers.Controller
 
 //Index New index function
 func (c Application) Index(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	if a.Request.Method == "HEAD" {
 		a.Response.WriteHeader(200)
 		return
 	}
+
 	blogs, err := models.AllBlogs()
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		helpers.Logger.Println(err)
 		return
 	}
 	if len(blogs) >= 5 {
@@ -38,6 +45,11 @@ func (c Application) Index(a helpers.RouterArgs) {
 
 //About About me Pages
 func (c Application) About(a helpers.RouterArgs) {
+	err := filter.IP(a.Request)
+	if err != nil {
+		http.Error(a.Response, err.Error(), 403)
+		return
+	}
 	if a.Request.Method == "HEAD" {
 		a.Response.WriteHeader(200)
 		return
@@ -67,7 +79,7 @@ func (c Application) Contact(a helpers.RouterArgs) {
 	fmt.Println(config.Data.SMTP.Port)
 	fmt.Println(gmailSMTP)
 	if err := email.Send(gmailSMTP, auth, m); err != nil {
-		fmt.Println(err)
+		helpers.Logger.Println(err)
 	}
 	http.Redirect(a.Response, a.Request, "/", 302)
 }

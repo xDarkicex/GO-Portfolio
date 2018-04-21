@@ -65,6 +65,12 @@ func main() {
 			helpers.FlushLog()
 		}
 	}()
+	go func() {
+		for true {
+			time.Sleep(5 * time.Second)
+			helpers.FlushSilentLog()
+		}
+	}()
 	// create self calling go routine
 	go func() {
 		interruptChannel := make(chan os.Signal, 0)

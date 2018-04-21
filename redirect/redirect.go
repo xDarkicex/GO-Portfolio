@@ -1,16 +1,24 @@
 package redirect
 
 import (
-	"log"
 	"net/http"
+
+	"github.com/xDarkicex/PortfolioGo/app/controllers/filter"
+	"github.com/xDarkicex/PortfolioGo/helpers"
 )
 
 //HTTPS will redirect https traffic too http
 func HTTPS(w http.ResponseWriter, r *http.Request) {
-	target := "https://" + r.Host + r.URL.Path
+	remoteIP := helpers.GetIP(r)
+	err := filter.IP(r)
+	if err != nil {
+		http.Error(w, err.Error(), 401)
+		return
+	}
+	target := "https://rolofson.me" + r.URL.EscapedPath()
 	if len(r.URL.RawQuery) > 0 {
 		target += "?" + r.URL.RawQuery
 	}
-	log.Printf("redirect to: %s", target)
-	http.Redirect(w, r, target, http.StatusPermanentRedirect)
+	helpers.SilentLogger.Printf("remoteIP: %s\ntarget: %s\n", remoteIP, target)
+	http.Redirect(w, r, target, http.StatusMovedPermanently)
 }
