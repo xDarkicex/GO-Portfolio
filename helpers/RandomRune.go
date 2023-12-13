@@ -5,13 +5,25 @@ import (
 	"time"
 )
 
-// RandStringRunes Takes n int length and returns a random string value for error hashing
+// RandStringRunes generates a random string of given length using specified runes.
 func RandStringRunes(n int) string {
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+	const letterRunes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 	rand.Seed(time.Now().UnixNano())
+
+	runes := []rune(letterRunes)
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+		b[i] = runes[rand.Intn(len(runes))]
 	}
+
 	return string(b)
+}
+
+// RandRune generates a random rune from the specified runes.
+func RandRune() rune {
+	const letterRunes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	rand.Seed(time.Now().UnixNano())
+
+	runes := []rune(letterRunes)
+	return runes[rand.Intn(len(runes))]
 }
